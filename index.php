@@ -1,5 +1,4 @@
 <?php
-require_once(__DIR__ . '/include/config.php');
 require_once(__DIR__ . '/include/connect.php');
 
 $stmt = $pdo->prepare("SELECT * FROM admins");
