@@ -4,6 +4,8 @@ require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 include(__DIR__ . '/include/html_functions.php');
 
+requireAdminLogin();
+
 ?>
 
 <?php

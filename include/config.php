@@ -16,3 +16,8 @@ ini_set('display_errors', 1);  // 1 to display errors, 0 to hide errors
 
 // TIMEZONE
 date_default_timezone_set('Europe/Sofia');
+
+// START SESSION
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
