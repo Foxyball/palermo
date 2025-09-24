@@ -2,8 +2,7 @@
 
 
 
-function headerContainer(): void
-{
+function headerContainer(): void {
 
 ?>
 
@@ -57,8 +56,7 @@ function headerContainer(): void
 }
 
 
-function navbarContainer(): void
-{
+function navbarContainer(): void {
 
     global $pdo;
     $stmt = $pdo->prepare("SELECT admin_id, admin_name, admin_email FROM admins WHERE admin_id = ? AND active = '1' LIMIT 1");
@@ -120,8 +118,9 @@ function navbarContainer(): void
     <?php }
 
 
-function sidebarContainer(): void
-{ ?>
+function sidebarContainer(): void { 
+    
+?>
 
 
         <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
@@ -156,8 +155,9 @@ function sidebarContainer(): void
     <?php }
 
 
-function infoBoxContainer(): void
-{ ?>
+function infoBoxContainer(): void { 
+    
+?>
 
         <div class="container-fluid">
             <div class="row">
@@ -269,8 +269,9 @@ function infoBoxContainer(): void
     <?php }
 
 
-function footerContainer(): void
-{ ?>
+function footerContainer(): void { 
+
+    ?>
 
         <footer class="app-footer">
             <strong>
