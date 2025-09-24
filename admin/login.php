@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
@@ -27,8 +26,6 @@ if (isset($_POST['login'])) {
 
       // Set session variables
       $_SESSION['admin_id'] = $admin['admin_id'];
-      $_SESSION['admin_name'] = $admin['admin_name'];
-      $_SESSION['admin_email'] = $admin['admin_email'];
       $_SESSION['created_at'] = $admin['created_at'];
       $_SESSION['admin_logged_in'] = true;
 
