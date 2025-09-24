@@ -1,0 +1,25 @@
+RewriteEngine On
+RewriteBase /palermo/
+
+# Hide .php extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ http%{ENV:SFORSSL}://%{HTTP_HOST}/$1 [R=301,QSA,L]
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule (.+) $1.php [QSA,L]
+
+# Handle 404 errors
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ 404.php [L]
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Disable directory listing
+Options -Indexes
+
+# Prevent access to .htaccess file
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
