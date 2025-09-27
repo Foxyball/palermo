@@ -53,7 +53,6 @@ include(__DIR__ . '/include/html_functions.php');
 
 				<div class="clear"></div>
 
-				<!-- Today's Menu Section -->
 				<div id="todays-menu" class="section dark m-0" style="padding: 80px 0; background: #101010 url('images/icon-bg-white.png') repeat center center;">
 					<div class="container">
 						<div class="row">
@@ -66,7 +65,6 @@ include(__DIR__ . '/include/html_functions.php');
 
 								<div class="clear"></div>
 
-								<!-- Hardcoded menu items -->
 								<div class="price-menu-warp img-hover-block" data-img="images/menu-items/пилешка_супа.jpg">
 									<div class="price-header">
 										<div class="price-name color">Chicken Soup</div>
@@ -129,7 +127,6 @@ include(__DIR__ . '/include/html_functions.php');
 				</div>
 			</div>
 
-			<!-- Blog Section -->
 			<div id="blog" class="section dark m-0" style="padding: 80px 0; background: #1a1a1a;">
 				<div class="container">
 					<div class="row mb-5">
@@ -141,7 +138,6 @@ include(__DIR__ . '/include/html_functions.php');
 						</div>
 					</div>
 					<div class="row">
-						<!-- Blog Article 1 -->
 						<div class="col-lg-4 col-md-6 mb-4">
 							<div class="card bg-dark border-secondary h-100" style="transition: transform 0.3s ease; border: 1px solid #444;">
 								<img src="images/menu-items/пилешка_супа.jpg" class="card-img-top" alt="Traditional Recipes" style="height: 200px; object-fit: cover;">
@@ -157,7 +153,6 @@ include(__DIR__ . '/include/html_functions.php');
 							</div>
 						</div>
 
-						<!-- Blog Article 2 -->
 						<div class="col-lg-4 col-md-6 mb-4">
 							<div class="card bg-dark border-secondary h-100" style="transition: transform 0.3s ease; border: 1px solid #444;">
 								<img src="images/menu-items/burgers/double.jpg" class="card-img-top" alt="New Menu Items" style="height: 200px; object-fit: cover;">
@@ -173,7 +168,6 @@ include(__DIR__ . '/include/html_functions.php');
 							</div>
 						</div>
 
-						<!-- Blog Article 3 -->
 						<div class="col-lg-4 col-md-6 mb-4">
 							<div class="card bg-dark border-secondary h-100" style="transition: transform 0.3s ease; border: 1px solid #444;">
 								<img src="images/svg/delivery.svg" class="card-img-top bg-secondary p-4" alt="Delivery Service" style="height: 200px; object-fit: contain;">
@@ -189,7 +183,7 @@ include(__DIR__ . '/include/html_functions.php');
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="row mt-4">
 						<div class="col-12 text-center">
 							<a href="#" class="btn btn-danger btn-lg">View All Articles</a>
@@ -223,9 +217,6 @@ include(__DIR__ . '/include/html_functions.php');
 						<span class="text-uppercase text-white ls1 fw-normal font-primary"><b>FREE DELIVERY</b> for orders over <b>25.00 lv.</b></span>
 					</div>
 				</div>
-			</div>
-			<div class="text-center py-3 text-white-50" style="background: #101010;">
-				<?php echo '&copy; ' . date('Y') . ' All rights reserved.'; ?>
 			</div>
 
 	</div>

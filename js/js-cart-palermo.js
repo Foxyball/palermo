@@ -192,6 +192,7 @@ class PalermoCartDropdown {
     }
 
     openCart() {
+          this.cartContent.removeAttribute('hidden');
         this.cartContent.style.display = 'block';
         // Force reflow
         this.cartContent.offsetHeight;

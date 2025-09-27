@@ -41,18 +41,86 @@ function footerContainer(): void
 
     ?>
 
-        <!-- Go To Top
-	============================================= -->
+
+
+        <footer id="footer" class="dark noborder pt-3" style="background-image: url('images/others/section-5.jpg');" data-top-bottom="background-position:100% -300px" data-bottom-top="background-position: 100% 300px">
+            <div class="container">
+
+                <div class="footer-widgets-wrap">
+
+                    <div class="row col-mb-50">
+                        <div class="col-lg-8">
+
+
+                            <div class="row col-mb-30">
+                                <div class="col-6 col-lg-4">
+                                    <div class="widget">
+
+                                        <h4 class="fw-bold">VISIT US</h4>
+
+                                        <ul class="list-unstyled ms-0">
+                                            <li class="mb-2"><a class="text-white-50" href="tel:+359789888871">+359 78 98 88 71</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="tel:+359885835171">+359 885 83 51 71</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="mailto:office@pizzaroyalkn.eu">office@pizzaroyalkn.eu</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="https://facebook.com/royal.kn" target="_blank">facebook.com/royal.kn</a></li>
+                                        </ul>
+                                        2 Vlasina Street<br>
+                                        Kyustendil, Bulgaria
+
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-4">
+                                    <div class="widget">
+
+                                        <h4 class="fw-bold">Useful Links</h4>
+
+                                        <ul class="list-unstyled ms-0">
+                                            <li class="mb-2"><a class="text-white-50" href="index.php">Home</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="#">Menu</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="contacts.php">Contact</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="#">Help</a></li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div><!-- .footer-widgets-wrap end -->
+            </div>
+
+            <!-- Copyrights
+			============================================= -->
+            <div id="copyrights">
+                <div class="container">
+
+                    <div class="row col-mb-30">
+                        <div class="col-md-6 text-center text-md-start">
+                            &copy; Pizza Royal, Kyustendil. All rights reserved.<br>
+                            <div class="copyright-links"><a href="https://balikgstudio.eu" target="_blank">Maintained by BalikG Studio.</a></div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div><!-- #copyrights end -->
+        </footer><!-- #footer end -->
+
+        </div><!-- #wrapper end -->
+
+
+
         <div id="gotoTop" class="fas fa-arrow-up"></div>
 
-        <!-- JavaScripts
-	============================================= -->
         <script src="js/jquery.js"></script>
         <script src="js/plugins.min.js"></script>
         <script src="js/hover-animate.js"></script>
 
-        <!-- Footer Scripts
-	============================================= -->
         <script src="js/functions.js"></script>
 
     <?php }
@@ -63,19 +131,15 @@ function navbarContainer(): void
 
     ?>
 
-        <!-- Header
-		============================================= -->
         <header id="header" class="transparent-header dark" data-sticky-class="dark-color" data-sticky-shrink-offset="0">
             <div id="header-wrap">
                 <div class="container">
                     <div class="header-row">
 
-                        <!-- Logo
-						============================================= -->
                         <div id="logo">
                             <a href="index.php" class="standard-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
                             <a href="index.php" class="retina-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
-                        </div><!-- #logo end -->
+                        </div>
 
 
                         <div id="primary-menu-trigger">
@@ -86,66 +150,36 @@ function navbarContainer(): void
                             </svg>
                         </div>
 
-                        <!-- Primary Navigation
-						============================================= -->
+
                         <nav class="primary-menu">
 
                             <ul class="one-page-menu menu-container" data-easing="easeInOutExpo" data-speed="1250" data-offset="60">
                                 <li class="menu-item"><a class="menu-link" href="https://dev.balikgstudio.eu/pizzaroyalkn/">
-                                        <div>Начало</div>
+                                        <div>Home</div>
                                     </a></li>
                                 <li class="menu-item"><a class="menu-link" href="#">
-                                        <div>Меню</div>
+                                        <div>Menu</div>
                                     </a>
                                     <ul class="sub-menu-container rounded-bottom">
                                         <li class="menu-item"><a class="menu-link" href="salati">
-                                                <div>Салати</div>
+                                                <div>Pizza</div>
                                             </a></li>
                                         <li class="menu-item"><a class="menu-link" href="supi">
-                                                <div>Супи</div>
+                                                <div>Pasta</div>
                                             </a></li>
                                         <li class="menu-item"><a class="menu-link" href="predqstiq">
-                                                <div>Топли предястия</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="pileshko">
-                                                <div>Ястия с пилешко</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="svinsko">
-                                                <div>Ястия със свинско</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="riba">
-                                                <div>Риба</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="zapekanki">
-                                                <div>Запеканки</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="spageti">
-                                                <div>Спагети</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="pici">
-                                                <div>Пици и бургери</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="hlebcheta">
-                                                <div>Хлебчета</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="sosove">
-                                                <div>Сосове</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="deserti">
-                                                <div>Десерти</div>
+                                                <div>Deserts</div>
                                             </a></li>
                                     </ul>
                                 </li>
-                                <li class="menu-item"><a class="menu-link" href="#">
-                                        <div>Контакти</div>
+                                <li class="menu-item"><a class="menu-link" href="contacts">
+                                        <div>Contacts</div>
                                     </a></li>
                             </ul>
 
-                        </nav><!-- #primary-menu end -->
+                        </nav>
 
-                        <!-- Cart
-                        ============================================= -->
-                        <div class="js-cart-dropdown d-flex align-items-center ms-auto">
+                        <div class="hidden js-cart-dropdown d-flex align-items-center ms-auto">
                             <a href="#" class="js-cart-dropdown__trigger d-flex align-items-center text-white">
                                 <i class="fas fa-shopping-cart me-2"></i>
                                 <span class="js-cart-dropdown__counter bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center">1</span>
@@ -155,14 +189,13 @@ function navbarContainer(): void
                                     <h4 class="mb-0">Shopping Cart</h4>
                                 </div>
                                 <div class="js-cart-dropdown__items p-3">
-                                    <!-- Dummy cart item -->
                                     <div class="js-cart-dropdown__item d-flex align-items-center pb-3 border-bottom">
                                         <div class="js-cart-dropdown__item-image me-3">
                                             <img src="images/menu-items/пилешка_супа.jpg" alt="Пилешка супа" class="js-cart-dropdown__item-img">
                                         </div>
                                         <div class="js-cart-dropdown__item-desc flex-grow-1">
-                                            <div class="js-cart-dropdown__item-title fw-bold">Пилешка супа</div>
-                                            <div class="js-cart-dropdown__item-price text-muted">1x 4.50 лв</div>
+                                            <div class="js-cart-dropdown__item-title fw-bold">Peperoni</div>
+                                            <div class="js-cart-dropdown__item-price text-muted">1x 4.50 lv</div>
                                         </div>
                                         <div class="js-cart-dropdown__item-actions">
                                             <a href="#" class="js-cart-dropdown__remove text-danger"><i class="fas fa-times"></i></a>
@@ -172,7 +205,7 @@ function navbarContainer(): void
                                 <div class="js-cart-dropdown__footer p-3 border-top">
                                     <div class="js-cart-dropdown__total d-flex justify-content-between mb-3">
                                         <span class="fw-bold">Total:</span>
-                                        <span class="fw-bold text-danger">4.50 лв</span>
+                                        <span class="fw-bold text-danger">4.50 lv</span>
                                     </div>
                                     <div class="d-grid gap-2">
                                         <a href="#" class="btn btn-sm js-cart-dropdown__view-btn">View Cart</a>
@@ -186,7 +219,7 @@ function navbarContainer(): void
                 </div>
             </div>
             <div class="header-wrap-clone"></div>
-        </header><!-- #header end -->
+        </header>
 
     <?php }
 
@@ -197,8 +230,6 @@ function sliderContainer(): void
     ?>
 
 
-        <!-- Slider
-		============================================= -->
         <section id="slider" class="slider-element min-vh-100 page-section slide-img include-header" data-animate="img-to-right" style="background: url('images/hero_bg.png') center center no-repeat; background-size: cover;">
             <div class="slider-inner">
 

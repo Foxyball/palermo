@@ -16659,3 +16659,8 @@ label.checkbox { padding-left: 20px; }
 }
 
 
+.js-cart-dropdown__content {
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+}
