@@ -57,7 +57,7 @@ function headerContainer(): void
         <link rel="stylesheet" href="../node_modules/toastr/build/toastr.min.css" />
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="../node_modules/toastr/build/toastr.min.js"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <?php
 }
 
@@ -353,8 +353,29 @@ function footerContainer(): void
             integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
             crossorigin="anonymous"></script>
         <script>
+            // SweetAlert2 helper
+            window.confirmDelete = async function (options) {
+                const {
+                    title = 'Are you sure?',
+                    text = 'This action cannot be undone.',
+                    confirmButtonText = 'Yes, delete',
+                    icon = 'danger',
+                } = options || {};
+                const res = await Swal.fire({
+                    title,
+                    text,
+                    icon,
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText,
+                    reverseButtons: true,
+                });
+                return res.isConfirmed;
+            };
+        </script>
 
-            
+        <script>
             <?php if (isset($_SESSION['success'])) { ?>
                 toastr.success("<?php echo addslashes($_SESSION['success']); ?>");
                 <?php unset($_SESSION['success']); ?>

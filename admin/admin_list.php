@@ -180,7 +180,7 @@ headerContainer();
                                                                     <?php
                                                                     } else if ($is_current_super_admin && $admin['admin_id'] != $current_admin_id) {
                                                                     ?>
-                                                                        <button type="button" class="btn btn-sm btn-outline-danger admin-delete-btn"
+                                                                        <button type="button" class="btn btn-sm btn-outline-danger js-admin-delete-btn"
                                                                             data-admin-id="<?php echo $admin['admin_id']; ?>"
                                                                             data-admin-name="<?php echo $admin['admin_name']; ?>">
                                                                             <i class="bi bi-trash"></i>
@@ -341,6 +341,61 @@ headerContainer();
                     })
                     .always(function() {
                         $cb.prop('disabled', false);
+                    });
+            });
+
+            // SweetAlert2 delete handler
+            $(document).on('click', '.js-admin-delete-btn', async function(e) {
+                e.preventDefault();
+                const $btn = $(this);
+                const adminId = $btn.data('admin-id');
+                const adminName = $btn.data('admin-name');
+
+                const confirmed = await Swal.fire({
+                    title: 'Delete admin?',
+                    html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(adminName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#d33',
+                    reverseButtons: true,
+                    focusCancel: true,
+                }).then(r => r.isConfirmed);
+
+                if (!confirmed) return;
+
+                $btn.prop('disabled', true).addClass('opacity-50');
+
+                $.ajax({
+                        url: 'ajax_admin_delete.php',
+                        method: 'POST',
+                        data: {
+                            admin_id: adminId
+                        },
+                        dataType: 'json'
+                    })
+                    .done(function(resp) {
+                        if (resp && resp.success) {
+                            toastr.success('Administrator deleted');
+                            // Remove row gracefully
+                            const $row = $btn.closest('tr');
+                            $row.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            toastr.error(resp && resp.message ? resp.message : 'Delete failed');
+                        }
+                    })
+                    .fail(function(xhr) {
+                        let msg = 'Server error';
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        toastr.error(msg);
+                    })
+                    .always(function() {
+                        $btn.prop('disabled', false).removeClass('opacity-50');
                     });
             });
         });
