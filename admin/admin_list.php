@@ -108,7 +108,7 @@ headerContainer();
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="form-check form-switch">
-                                                                    <input class="form-check-input admin-status-toggle" type="checkbox"
+                                                                    <input class="form-check-input js-admin-status-toggle" type="checkbox"
                                                                         data-admin-id="<?php echo $admin['admin_id']; ?>"
                                                                         <?php echo $admin['active'] == '1' ? 'checked' : ''; ?>
                                                                         <?php
@@ -269,8 +269,43 @@ headerContainer();
         }
     </style>
 
+  
+<!-- AJAX Change Status -->
+    <script>
+        $(function () {
+            $('.js-admin-status-toggle:not(:disabled)').on('change', function () {
+                const $cb = $(this);
+                const adminId = $cb.data('admin-id');
+                const originalChecked = !$cb.prop('checked'); 
+                $cb.prop('disabled', true);
 
-
+                $.ajax({
+                    url: 'ajax_admin_toggle_status.php',
+                    method: 'POST',
+                    data: { admin_id: adminId },
+                    dataType: 'json'
+                })
+                .done(function (resp) {
+                    if (!resp || resp.success !== true) {
+                        $cb.prop('checked', originalChecked);
+                        toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
+                    } else {
+                        toastr.success('Status updated');
+                    }
+                })
+                .fail(function (xhr) {
+                    $cb.prop('checked', originalChecked);
+                    let msg = 'Network / server error';
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    toastr.error(msg);
+                })
+                .always(function () {
+                    $cb.prop('disabled', false);
+                });
+            });
+        });
+    </script>
 </body>
-
 </html>

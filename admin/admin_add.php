@@ -14,7 +14,6 @@ if (!isCurrentSuperAdmin($current_admin)) {
 }
 
 $errors = [];
-$success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['admin_name'] ?? '');
@@ -45,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt = $pdo->prepare('INSERT INTO admins (admin_name, admin_email, admin_password, active, is_super_admin, created_at, updated_at) VALUES (?, ?, ?, "1", ?, NOW(), NOW())');
             $stmt->execute([$name, $email, $password_hash, $is_super_admin]);
-            $success = true;
             $_SESSION['success'] = 'Administrator created successfully';
             header('Location: admin_list');
             exit;
@@ -132,7 +130,7 @@ headerContainer();
         <?php footerContainer(); ?>
     </div>
 
-    
+
 </body>
 
 </html>
