@@ -57,9 +57,9 @@ headerContainer();
                                     <h3 class="card-title">All Administrators</h3>
                                     <?php if ($is_current_super_admin) { ?>
                                         <div class="card-tools">
-                                            <button type="button" class="btn btn-primary btn-sm">
+                                            <a href="admin_add" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-plus"></i> Add New Admin
-                                            </button>
+                                            </a>
                                         </div>
                                     <?php } ?>
                                 </div>

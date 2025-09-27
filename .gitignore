@@ -1,0 +1,55 @@
+# Node dependencies
+node_modules/
+
+# PHP dependencies
+vendor/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+.vscode-test/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache / temp
+.cache/
+.tmp/
+*.tmp
+composer.lock
+
+# Build outputs / compiled assets
+dist/
+build/
+public/build/
+
+# Coverage
+coverage/
+
+# Misc
+.sass-cache/
+*.pid
+*.seed
+*.cover
+*.orig
+
+# SQL dumps
+*.sql
+!install.sql
+
+# Uploaded files (keep directory, ignore contents)
+uploads/*
+!uploads/.gitkeep

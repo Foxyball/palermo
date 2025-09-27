@@ -2,7 +2,8 @@
 
 
 
-function headerContainer(): void {
+function headerContainer(): void
+{
 
 ?>
 
@@ -52,11 +53,17 @@ function headerContainer(): void {
             integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
             crossorigin="anonymous" />
 
+
+        <link rel="stylesheet" href="../node_modules/toastr/build/toastr.min.css" />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="../node_modules/toastr/build/toastr.min.js"></script>
+
     <?php
 }
 
 
-function navbarContainer(): void {
+function navbarContainer(): void
+{
 
     global $pdo;
     $stmt = $pdo->prepare("SELECT admin_id, admin_name, admin_email FROM admins WHERE admin_id = ? AND active = '1' LIMIT 1");
@@ -118,9 +125,10 @@ function navbarContainer(): void {
     <?php }
 
 
-function sidebarContainer(): void { 
-    
-?>
+function sidebarContainer(): void
+{
+
+    ?>
 
 
         <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
@@ -146,7 +154,7 @@ function sidebarContainer(): void {
                                     Dashboard
                                 </p>
                             </a>
-                        </li>  
+                        </li>
 
 
                         <li class="nav-item">
@@ -182,9 +190,10 @@ function sidebarContainer(): void {
     <?php }
 
 
-function infoBoxContainer(): void { 
-    
-?>
+function infoBoxContainer(): void
+{
+
+    ?>
 
         <div class="container-fluid">
             <div class="row">
@@ -296,7 +305,8 @@ function infoBoxContainer(): void {
     <?php }
 
 
-function footerContainer(): void { 
+function footerContainer(): void
+{
 
     ?>
 
@@ -343,6 +353,18 @@ function footerContainer(): void {
             integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
             crossorigin="anonymous"></script>
         <script>
+
+            
+            <?php if (isset($_SESSION['success'])) { ?>
+                toastr.success("<?php echo addslashes($_SESSION['success']); ?>");
+                <?php unset($_SESSION['success']); ?>
+            <?php } ?>
+            <?php if (isset($_SESSION['error'])) { ?>
+                toastr.error("<?php echo addslashes($_SESSION['error']); ?>");
+                <?php unset($_SESSION['error']); ?>
+            <?php } ?>
+
+
 
             const visitors_chart_options = {
                 series: [{
