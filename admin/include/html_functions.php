@@ -147,6 +147,33 @@ function sidebarContainer(): void {
                                 </p>
                             </a>
                         </li>  
+
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon bi bi-person-gear"></i>
+                                <p>
+                                    Admin
+                                    <i class="bi bi-chevron-down right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="admin_list" class="nav-link">
+                                        <i class="bi bi-person-lines-fill nav-icon"></i>
+                                        <p>Admins</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/palermo/admin/users" class="nav-link">
+                                        <i class="bi bi-people nav-icon"></i>
+                                        <p>Users</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
                     </ul>
                 </nav>
             </div>
