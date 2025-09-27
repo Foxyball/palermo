@@ -5,7 +5,7 @@ include(__DIR__ . '/include/html_functions.php');
 
 <?php headerContainer(); ?>
 
-<title>Palermo | Contacts</title>
+<title><?php echo SITE_TITLE; ?> | Contacts</title>
 </head>
 
 <body class="stretched">
