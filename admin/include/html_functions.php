@@ -58,6 +58,7 @@ function headerContainer(): void
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="../node_modules/toastr/build/toastr.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="./js/session-renew.js"></script>
     <?php
 }
 
@@ -131,13 +132,13 @@ function sidebarContainer(): void
     ?>
 
 
-        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" style="position: relative;">
             <div class="sidebar-brand">
                 <a href="./index.html" class="brand-link">
                     <span class="brand-text fw-light">Admin Panel | <?php echo SITE_TITLE; ?></span>
                 </a>
             </div>
-            <div class="sidebar-wrapper">
+            <div class="sidebar-wrapper" style="padding-bottom: 80px; height: calc(100vh - 57px); overflow-y: auto;">
                 <nav class="mt-2">
                     <!--begin::Sidebar Menu-->
                     <ul
