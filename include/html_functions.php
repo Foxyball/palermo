@@ -30,6 +30,7 @@ function headerContainer(): void
         <link rel="stylesheet" href="css/fonts.css" type="text/css" />
 
         <script src="js/js-cart-palermo.js"></script>
+        <script src="js/js-account-dropdown.js"></script>
 
 
 
