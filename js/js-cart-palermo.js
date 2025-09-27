@@ -18,6 +18,9 @@ class PalermoCartDropdown {
             return;
         }
 
+        // Show the cart dropdown by removing hidden class
+        this.cartContainer.classList.remove('hidden');
+
         this.setupStyles();
         this.bindEvents();
         this.applyTheme();
@@ -293,6 +296,8 @@ class PalermoCartDropdown {
         this.showEmptyCart();
     }
 }
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     window.palermoCart = new PalermoCartDropdown();

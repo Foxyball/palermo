@@ -30,6 +30,7 @@ function headerContainer(): void
         <link rel="stylesheet" href="css/fonts.css" type="text/css" />
 
         <script src="js/js-cart-palermo.js"></script>
+        <script src="js/js-account-dropdown.js"></script>
 
 
 
@@ -179,7 +180,50 @@ function navbarContainer(): void
 
                         </nav>
 
-                        <div class="hidden js-cart-dropdown d-flex align-items-center ms-auto">
+                        <!-- Header Actions (Account & Cart) -->
+                        <div class="d-flex align-items-center ms-auto">
+                            <!-- Account Dropdown -->
+                            <div class="hidden js-account-dropdown d-flex align-items-center me-2">
+                                <a href="#" class="js-account-dropdown__trigger d-flex align-items-center text-white">
+                                    <i class="fas fa-user me-1"></i>
+                                    <span class="d-none d-md-inline me-1">Account</span>
+                                    <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                                </a>
+                                <div class="js-account-dropdown__content shadow-lg rounded">
+                                    <div class="js-account-dropdown__header p-3 border-bottom">
+                                        <h5 class="mb-0">My Account</h5>
+                                        <small class="text-muted">Sign in to your account</small>
+                                    </div>
+                                    <div class="js-account-dropdown__items p-3">
+                                        <div class="d-grid gap-2 mb-3">
+                                            <a href="#" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                                            </a>
+                                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-user-plus me-2"></i>Register
+                                            </a>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="list-group list-group-flush">
+                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
+                                                <i class="fas fa-user me-2"></i>My Profile
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
+                                                <i class="fas fa-shopping-bag me-2"></i>My Orders
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
+                                                <i class="fas fa-heart me-2"></i>Favorites
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
+                                                <i class="fas fa-cog me-2"></i>Settings
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shopping Cart -->
+                            <div class="hidden js-cart-dropdown d-flex align-items-center">
                             <a href="#" class="js-cart-dropdown__trigger d-flex align-items-center text-white">
                                 <i class="fas fa-shopping-cart me-2"></i>
                                 <span class="js-cart-dropdown__counter bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center">1</span>
@@ -214,6 +258,7 @@ function navbarContainer(): void
                                 </div>
                             </div>
                         </div>
+                        <!-- End Header Actions -->
 
                     </div>
                 </div>
