@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/include/Paginator.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -10,27 +11,38 @@ $current_admin = getCurrentAdmin($pdo);
 $current_admin_id = $current_admin['admin_id'] ?? null;
 $is_current_super_admin = isCurrentSuperAdmin($current_admin);
 
-$search = isset($_GET['q']) ? trim($_GET['q']) : '';
+$search = $_GET['q'] ?? '';
+$page = $_GET['page'] ?? 1;
+$perPage = 3;
 
-$sql = "SELECT admin_id, admin_name, admin_email, active, is_super_admin, last_log_date, last_log_ip, created_at FROM admins";
-$where = [];
+$whereSql = '';
 $params = [];
 if ($search !== '') {
-    $where[] = "(admin_name LIKE '%$search%' OR admin_email LIKE '%$search%')";
+    $whereSql = ' WHERE (admin_name LIKE :keyword OR admin_email LIKE :keyword)';
+    $params[':keyword'] = '%' . $search . '%';
 }
 
-if ($where) {
-    $sql .= ' WHERE ' . implode(' OR ', $where);
+$countSql = 'SELECT COUNT(*) FROM admins' . $whereSql;
+$stmtCount = $pdo->prepare($countSql);
+$stmtCount->execute($params);
+$total_admins_count = $stmtCount->fetchColumn();
+
+$paginator = new Paginator($total_admins_count, $page, $perPage);
+
+$dataSql = 'SELECT admin_id, admin_name, admin_email, active, is_super_admin, last_log_date, last_log_ip, created_at
+            FROM admins' . $whereSql . ' ORDER BY admin_id DESC LIMIT :lim OFFSET :off';
+
+$stmt = $pdo->prepare($dataSql);
+
+foreach ($params as $k => $v) {
+    $stmt->bindValue($k, $v, PDO::PARAM_STR);
 }
 
-$sql .= ' ORDER BY admin_id DESC';
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
+$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
+$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
+$stmt->execute();
 $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$stmtCount = $pdo->query("SELECT COUNT(*) FROM admins");
-$total_admins_count = (int)$stmtCount->fetchColumn();
 
 
 
@@ -205,21 +217,42 @@ headerContainer();
                                 </div>
                                 <?php if (!empty($admins)) { ?>
                                     <div class="card-footer">
-                                        <div class="row align-items-center">
-                                            <div class="col-sm-6">
-                                                <small class="text-muted">
-                                                    <?php if ($search !== '') { ?>
-                                                        Found <?php echo count($admins); ?> / <?php echo $total_admins_count; ?> administrator<?php echo count($admins) !== 1 ? 's' : ''; ?>
-                                                        matching "<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>"
+                                        <div class="row align-items-center g-3">
+                                            <div class="col-md-4">
+                                                <small class="text-muted d-block">
+                                                    <?php
+                                                    $start = $paginator->offset() + 1;
+                                                    $end = $paginator->offset() + count($admins);
+                                                    ?>
+                                                    <?php if ($total_admins_count > 0) { ?>
+                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_admins_count; ?>
                                                     <?php } else { ?>
-                                                        Showing <?php echo count($admins); ?> administrator<?php echo count($admins) !== 1 ? 's' : ''; ?>
+                                                        No results
                                                     <?php } ?>
                                                 </small>
+                                                <?php if ($search !== '') { ?>
+                                                    <small class="text-muted">Filtered by "<?php echo $search; ?>"</small>
+                                                <?php } ?>
                                             </div>
-                                            <div class="col-sm-6 text-end">
-                                                <small class="text-muted">
-                                                    Last updated: <?php echo date('M j, Y g:i A'); ?>
-                                                </small>
+                                            <div class="col-md-4 text-md-center">
+                                                <nav aria-label="Pagination">
+                                                    <ul class="pagination pagination-sm mb-0 justify-content-center">
+                                                        <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
+                                                            <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1)); ?>" tabindex="-1">&laquo;</a>
+                                                        </li>
+                                                        <?php foreach ($paginator->pages() as $pg) { ?>
+                                                            <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
+                                                                <a class="page-link" href="<?php echo buildPageUrl($pg); ?>"><?php echo $pg; ?></a>
+                                                            </li>
+                                                        <?php } ?>
+                                                        <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
+                                                            <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1)); ?>">&raquo;</a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                            <div class="col-md-4 text-md-end">
+                                                <small class="text-muted d-block">Last updated: <?php echo date('M j, Y g:i A'); ?></small>
                                             </div>
                                         </div>
                                     </div>
