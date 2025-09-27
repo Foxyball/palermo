@@ -88,7 +88,9 @@ headerContainer();
                                         <h3 class="card-title mb-0">All Administrators</h3>
                                         <form class="d-flex" method="get" action="admin_list" role="search">
                                             <div class="input-group input-group-sm">
-                                                <input type="text" name="q" class="form-control" placeholder="Search name, email, id" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" />
+                                                <label>
+                                                    <input type="text" name="q" class="form-control" placeholder="Search name, email, id" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" />
+                                                </label>
                                                 <button class="btn btn-outline-secondary" type="submit" title="Search">
                                                     <i class="bi bi-search"></i>
                                                 </button>

@@ -102,12 +102,16 @@ if (isset($_POST['login'])) {
         <form action="#" method="post" onsubmit="showLoading()">
 
           <div class="input-group mb-3">
-            <input type="email" name="email" class="form-control" placeholder="Email" required />
-            <div class="input-group-text"><span class="bi bi-envelope"></span></div>
+              <label>
+                  <input type="email" name="email" class="form-control" placeholder="Email" required />
+              </label>
+              <div class="input-group-text"><span class="bi bi-envelope"></span></div>
           </div>
           <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Password" required />
-            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+              <label>
+                  <input type="password" name="password" class="form-control" placeholder="Password" required />
+              </label>
+              <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
           </div>
           <div class="row">
             <div class="col-4">

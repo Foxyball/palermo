@@ -55,9 +55,9 @@ function headerContainer(): void
 
 
         <link rel="stylesheet" href="../node_modules/toastr/build/toastr.min.css" />
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="./js/jquery.js"></script>
         <script src="../node_modules/toastr/build/toastr.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
         <script src="./js/session-renew.js"></script>
     <?php
 }
@@ -144,7 +144,7 @@ function sidebarContainer(): void
                     <ul
                         class="nav sidebar-menu flex-column"
                         data-lte-toggle="treeview"
-                        role="navigation"
+                        role="listbox"
                         aria-label="Main navigation"
                         data-accordion="false"
                         id="navigation">
