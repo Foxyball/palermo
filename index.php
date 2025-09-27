@@ -224,6 +224,9 @@ include(__DIR__ . '/include/html_functions.php');
 					</div>
 				</div>
 			</div>
+			<div class="text-center py-3 text-white-50" style="background: #101010;">
+				<?php echo '&copy; ' . date('Y') . ' All rights reserved.'; ?>
+			</div>
 
 	</div>
 
