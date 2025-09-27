@@ -13,7 +13,7 @@ $is_current_super_admin = isCurrentSuperAdmin($current_admin);
 
 $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
-$perPage = 3;
+$perPage = 10;
 
 $whereSql = '';
 $params = [];

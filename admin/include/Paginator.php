@@ -37,7 +37,6 @@ class Paginator
 
     public function pages(): array
     {
-        // Simple pages list (no windowing required for small dataset)
         return range(1, $this->totalPages);
     }
 }
