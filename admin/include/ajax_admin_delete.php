@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../include/connect.php');
-require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../../include/connect.php');
+require_once(__DIR__ . '/functions.php');
 
 requireAdminLogin();
 
@@ -28,12 +28,13 @@ if ($admin_id <= 0) {
 
 if ($admin_id === (int)$current_admin['admin_id']) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'You cannot change your own status']);
+    echo json_encode(['success' => false, 'message' => 'You cannot delete your own account']);
     exit;
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT admin_id, active FROM admins WHERE admin_id = ? LIMIT 1');
+    // Check exists & super admin count safety
+    $stmt = $pdo->prepare('SELECT admin_id, is_super_admin FROM admins WHERE admin_id = ? LIMIT 1');
     $stmt->execute([$admin_id]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$admin) {
@@ -42,16 +43,20 @@ try {
         exit;
     }
 
-    $newStatus = $admin['active'] === '1' ? '0' : '1';
-    $upd = $pdo->prepare('UPDATE admins SET active = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
-    $upd->execute([$newStatus, $admin_id]);
+    if ((int)$admin['is_super_admin'] === 1) {
+        $countStmt = $pdo->query("SELECT COUNT(*) FROM admins WHERE is_super_admin = 1");
+        $superCount = (int)$countStmt->fetchColumn();
+        if ($superCount <= 1) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Cannot delete the last super administrator']);
+            exit;
+        }
+    }
 
-    echo json_encode([
-        'success' => true,
-        'message' => 'Status updated',
-        'admin_id' => $admin_id,
-        'active' => $newStatus,
-    ]);
+    $del = $pdo->prepare('DELETE FROM admins WHERE admin_id = ? LIMIT 1');
+    $del->execute([$admin_id]);
+
+    echo json_encode(['success' => true, 'message' => 'Administrator deleted', 'admin_id' => $admin_id]);
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Database error']);

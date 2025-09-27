@@ -349,7 +349,7 @@ headerContainer();
                 $cb.prop('disabled', true);
 
                 $.ajax({
-                        url: 'ajax_admin_toggle_status.php',
+                        url: './include/ajax_admin_toggle_status.php',
                         method: 'POST',
                         data: {
                             admin_id: adminId
@@ -401,7 +401,7 @@ headerContainer();
                 $btn.prop('disabled', true).addClass('opacity-50');
 
                 $.ajax({
-                        url: 'ajax_admin_delete.php',
+                        url: './include/ajax_admin_delete.php',
                         method: 'POST',
                         data: {
                             admin_id: adminId
