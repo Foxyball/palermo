@@ -10,9 +10,27 @@ $current_admin = getCurrentAdmin($pdo);
 $current_admin_id = $current_admin['admin_id'] ?? null;
 $is_current_super_admin = isCurrentSuperAdmin($current_admin);
 
-$stmt = $pdo->prepare("SELECT admin_id, admin_name, admin_email, active, is_super_admin, last_log_date, last_log_ip, created_at FROM admins ORDER BY admin_id DESC");
-$stmt->execute();
+$search = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+$sql = "SELECT admin_id, admin_name, admin_email, active, is_super_admin, last_log_date, last_log_ip, created_at FROM admins";
+$where = [];
+$params = [];
+if ($search !== '') {
+    $where[] = "(admin_name LIKE '%$search%' OR admin_email LIKE '%$search%')";
+}
+
+if ($where) {
+    $sql .= ' WHERE ' . implode(' OR ', $where);
+}
+
+$sql .= ' ORDER BY admin_id DESC';
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$stmtCount = $pdo->query("SELECT COUNT(*) FROM admins");
+$total_admins_count = (int)$stmtCount->fetchColumn();
 
 
 
@@ -53,10 +71,23 @@ headerContainer();
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">All Administrators</h3>
+                                <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <h3 class="card-title mb-0">All Administrators</h3>
+                                        <form class="d-flex" method="get" action="admin_list" role="search">
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" name="q" class="form-control" placeholder="Search name, email, id" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" />
+                                                <button class="btn btn-outline-secondary" type="submit" title="Search">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                                <?php if ($search !== '') { ?>
+                                                    <a class="btn btn-outline-danger" href="admin_list" title="Clear search">&times;</a>
+                                                <?php } ?>
+                                            </div>
+                                        </form>
+                                    </div>
                                     <?php if ($is_current_super_admin) { ?>
-                                        <div class="card-tools">
+                                        <div class="card-tools ms-md-auto">
                                             <a href="admin_add" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-plus"></i> Add New Admin
                                             </a>
@@ -135,9 +166,9 @@ headerContainer();
                                                             <td class="align-middle">
                                                                 <div class="btn-group" role="group">
                                                                     <?php if ($is_current_super_admin || $admin['admin_id'] == $current_admin_id) { ?>
-                                                                        <button type="button" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                                        <a href="admin_edit?id=<?php echo $admin['admin_id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                                             <i class="bi bi-pencil"></i>
-                                                                        </button>
+                                                                        </a>
                                                                     <?php } ?>
 
                                                                     <?php
@@ -177,7 +208,12 @@ headerContainer();
                                         <div class="row align-items-center">
                                             <div class="col-sm-6">
                                                 <small class="text-muted">
-                                                    Showing <?php echo count($admins); ?> administrator<?php echo count($admins) !== 1 ? 's' : ''; ?>
+                                                    <?php if ($search !== '') { ?>
+                                                        Found <?php echo count($admins); ?> / <?php echo $total_admins_count; ?> administrator<?php echo count($admins) !== 1 ? 's' : ''; ?>
+                                                        matching "<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>"
+                                                    <?php } else { ?>
+                                                        Showing <?php echo count($admins); ?> administrator<?php echo count($admins) !== 1 ? 's' : ''; ?>
+                                                    <?php } ?>
                                                 </small>
                                             </div>
                                             <div class="col-sm-6 text-end">
@@ -269,43 +305,46 @@ headerContainer();
         }
     </style>
 
-  
-<!-- AJAX Change Status -->
+
+    <!-- AJAX Change Status -->
     <script>
-        $(function () {
-            $('.js-admin-status-toggle:not(:disabled)').on('change', function () {
+        $(function() {
+            $('.js-admin-status-toggle:not(:disabled)').on('change', function() {
                 const $cb = $(this);
                 const adminId = $cb.data('admin-id');
-                const originalChecked = !$cb.prop('checked'); 
+                const originalChecked = !$cb.prop('checked');
                 $cb.prop('disabled', true);
 
                 $.ajax({
-                    url: 'ajax_admin_toggle_status.php',
-                    method: 'POST',
-                    data: { admin_id: adminId },
-                    dataType: 'json'
-                })
-                .done(function (resp) {
-                    if (!resp || resp.success !== true) {
+                        url: 'ajax_admin_toggle_status.php',
+                        method: 'POST',
+                        data: {
+                            admin_id: adminId
+                        },
+                        dataType: 'json'
+                    })
+                    .done(function(resp) {
+                        if (!resp || resp.success !== true) {
+                            $cb.prop('checked', originalChecked);
+                            toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
+                        } else {
+                            toastr.success('Status updated');
+                        }
+                    })
+                    .fail(function(xhr) {
                         $cb.prop('checked', originalChecked);
-                        toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
-                    } else {
-                        toastr.success('Status updated');
-                    }
-                })
-                .fail(function (xhr) {
-                    $cb.prop('checked', originalChecked);
-                    let msg = 'Network / server error';
-                    if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    toastr.error(msg);
-                })
-                .always(function () {
-                    $cb.prop('disabled', false);
-                });
+                        let msg = 'Network / server error';
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        toastr.error(msg);
+                    })
+                    .always(function() {
+                        $cb.prop('disabled', false);
+                    });
             });
         });
     </script>
 </body>
+
 </html>
