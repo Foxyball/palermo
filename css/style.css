@@ -1,5 +1,29 @@
 
 
+/* Hidden class to prevent flickering */
+.hidden {
+	display: none !important;
+}
+
+/* Fix header height when sticky */
+.sticky-header #header-wrap {
+	min-height: 60px !important;
+	max-height: 80px !important;
+}
+
+.sticky-header .header-row {
+	min-height: 60px !important;
+	max-height: 80px !important;
+	padding: 8px 0 !important;
+}
+
+/* Ensure account and cart dropdowns don't affect header height */
+.sticky-header .js-account-dropdown,
+.sticky-header .js-cart-dropdown {
+	height: auto !important;
+	line-height: normal !important;
+}
+
 @media (prefers-reduced-motion: no-preference) {
 	:root {
 		scroll-behavior: auto;
@@ -16664,3 +16688,4 @@ label.checkbox { padding-left: 20px; }
   opacity: 0;
   transform: translateY(-10px);
 }
+
