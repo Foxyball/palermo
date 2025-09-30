@@ -18,8 +18,9 @@ $perPage = 10;
 $whereSql = '';
 $params = [];
 if ($search !== '') {
-    $whereSql = ' WHERE (admin_name LIKE :keyword OR admin_email LIKE :keyword)';
+    $whereSql = ' WHERE (admin_name LIKE :keyword OR admin_email LIKE :keyword OR admin_id = :admin_id)';
     $params[':keyword'] = '%' . $search . '%';
+    $params[':admin_id'] = $search;
 }
 
 $countSql = 'SELECT COUNT(*) FROM admins' . $whereSql;

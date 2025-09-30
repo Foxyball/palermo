@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$admin_id = isset($_POST['admin_id']) ? (int)$_POST['admin_id'] : 0;
+$admin_id = $_POST['admin_id'] ?? 0;
 if ($admin_id <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid admin ID']);

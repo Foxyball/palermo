@@ -174,7 +174,7 @@ function sidebarContainer(): void
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/palermo/admin/users" class="nav-link">
+                                    <a href="/palermo/admin/user_list" class="nav-link">
                                         <i class="bi bi-people nav-icon"></i>
                                         <p>Users</p>
                                     </a>
