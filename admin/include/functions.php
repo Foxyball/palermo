@@ -48,3 +48,21 @@ function buildPageUrl(int $page, ?string $base = null): string {
     $qs = http_build_query($query);
     return $base . ($qs ? ('?' . $qs) : '');
 }
+
+/**
+ * Generate a URL-friendly slug from a string
+ * 
+ * @param string $text The text to convert to slug
+ * @return string Clean slug suitable for URLs
+ */
+function generateSlug(string $text): string {
+    return strtolower(
+        trim(
+            preg_replace(
+                ['/[^a-z0-9\s-]/', '/\s+/', '/-+/', '/^-|-$/'],
+                ['', '-', '-', ''],
+                $text
+            )
+        )
+    );
+}
