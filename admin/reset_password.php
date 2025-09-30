@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../include/smtp_class.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -59,7 +60,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt = $pdo->prepare('UPDATE admins SET admin_password = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
             $stmt->execute([$newPasswordHash, $current_admin['admin_id']]);
-            $_SESSION['success'] = 'Password updated successfully';
+
+            // Send email notification about password change
+            $emailSubject = 'Password Changed - ' . SITE_TITLE;
+            $emailBody = "
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: #007bff; color: white; padding: 20px; text-align: center; }
+                    .content { padding: 20px; background: #f8f9fa; }
+                    .footer { padding: 10px; text-align: center; color: #666; font-size: 12px; }
+                    .alert { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 15px 0; border-radius: 4px; }
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h2>" . SITE_TITLE . " - Security Alert</h2>
+                    </div>
+                    <div class='content'>
+                        <h3>Password Changed Successfully</h3>
+                        <p>Hello " . htmlspecialchars($current_admin['admin_name']) . ",</p>
+                        <p>Your admin account password has been successfully changed.</p>
+                        
+                        <div class='alert'>
+                            <strong>Account Details:</strong><br>
+                            Name: " . htmlspecialchars($current_admin['admin_name']) . "<br>
+                            Email: " . htmlspecialchars($current_admin['admin_email']) . "<br>
+                            Admin ID: #" . htmlspecialchars($current_admin['admin_id']) . "<br>
+                            Date: " . date('M j, Y g:i A') . "<br>
+                            IP Address: " . htmlspecialchars($_SERVER['REMOTE_ADDR'] ?? 'Unknown') . "
+                        </div>
+                        
+                        <p>If you did not make this change, please contact the system administrator immediately.</p>
+                        <p>For security reasons, please ensure you:</p>
+                        <ul>
+                            <li>Keep your new password secure and confidential</li>
+                            <li>Do not share your login credentials with anyone</li>
+                            <li>Log out when you're finished using the admin panel</li>
+                        </ul>
+                    </div>
+                    <div class='footer'>
+                        <p>This is an automated security notification from " . SITE_TITLE . "</p>
+                        <p>Please do not reply to this email.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
+
+            try {
+                $emailSent = sendEmail(
+                    $current_admin['admin_email'],
+                    $current_admin['admin_name'],
+                    $emailSubject,
+                    $emailBody
+                );
+            } catch (Exception $e) {
+                $emailSent = false;
+                // Email failed, but password was still changed successfully
+            }
+
+            if ($emailSent) {
+                $_SESSION['success'] = 'Password updated successfully.';
+            } else {
+                $_SESSION['success'] = 'Password updated successfully.';
+            }
+
             header('Location: reset_password');
             exit;
         } catch (PDOException $e) {
