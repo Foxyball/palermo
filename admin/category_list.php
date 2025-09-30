@@ -14,20 +14,20 @@ $perPage = 10;
 $whereSql = '';
 $params = [];
 if ($search !== '') {
-    $whereSql = ' WHERE (first_name LIKE :keyword OR last_name LIKE :keyword OR email LIKE :keyword OR id = :id)';
+    $whereSql = ' WHERE (name LIKE :keyword OR id = :id)';
     $params[':keyword'] = '%' . $search . '%';
     $params[':id'] = $search;
 }
 
-$countSql = 'SELECT COUNT(*) FROM users' . $whereSql;
+$countSql = 'SELECT COUNT(*) FROM categories' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
-$total_users_count = $stmtCount->fetchColumn();
+$total_categories_count = $stmtCount->fetchColumn();
 
-$paginator = new Paginator($total_users_count, $page, $perPage);
+$paginator = new Paginator($total_categories_count, $page, $perPage);
 
-$dataSql = 'SELECT id, first_name, last_name, email, active, created_at
-            FROM users' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
+$dataSql = 'SELECT id, name, active, created_at
+            FROM categories' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
 
 $stmt = $pdo->prepare($dataSql);
 
@@ -38,7 +38,7 @@ foreach ($params as $k => $v) {
 $stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
 $stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
 $stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -46,7 +46,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 headerContainer();
 ?>
 
-<title>Customers | <?php echo SITE_TITLE; ?></title>
+<title>Categories | <?php echo SITE_TITLE; ?></title>
 
 </head>
 
@@ -68,7 +68,7 @@ headerContainer();
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
                                 <li class="breadcrumb-item"><a href="/palermo/admin">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Customer List</li>
+                                <li class="breadcrumb-item active" aria-current="page">Category List</li>
                             </ol>
                         </div>
                     </div>
@@ -82,25 +82,25 @@ headerContainer();
                             <div class="card">
                                 <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                                     <div class="d-flex align-items-center gap-3">
-                                        <h3 class="card-title mb-0">All Customers</h3>
-                                        <form class="d-flex" method="get" action="user_list" role="search">
+                                        <h3 class="card-title mb-0">All Categories</h3>
+                                        <form class="d-flex" method="GET" action="category_list" role="search">
                                             <div class="input-group input-group-sm">
                                                 <label>
-                                                    <input type="text" name="q" class="form-control" placeholder="Search name, email, id" value="<?php echo $search; ?>" />
+                                                    <input type="text" name="q" class="form-control" placeholder="Search name, id" value="<?php echo $search; ?>" />
                                                 </label>
                                                 <button class="btn btn-outline-secondary" type="submit" title="Search">
                                                     <i class="bi bi-search"></i>
                                                 </button>
                                                 <?php if ($search !== '') { ?>
-                                                    <a class="btn btn-outline-danger" href="user_list" title="Clear search">&times;</a>
+                                                    <a class="btn btn-outline-danger" href="category_list" title="Clear search">&times;</a>
                                                 <?php } ?>
                                             </div>
                                         </form>
                                     </div>
 
                                     <div class="card-tools ms-md-auto">
-                                        <a href="user_add" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-plus"></i> Add New Customer
+                                        <a href="category_add" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-plus"></i> Add New Category
                                         </a>
                                     </div>
 
@@ -111,15 +111,14 @@ headerContainer();
                                             <thead class="table-dark">
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Name</th>
-                                                    <th>Email</th>
+                                                    <th>Category</th>
                                                     <th>Status</th>
                                                     <th>Created</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php if (empty($users)) { ?>
+                                                <?php if (empty($categories)) { ?>
                                                     <tr>
                                                         <td colspan="8" class="text-center py-4">
                                                             <div class="text-muted">
@@ -129,39 +128,34 @@ headerContainer();
                                                         </td>
                                                     </tr>
                                                 <?php } else { ?>
-                                                    <?php foreach ($users as $user) { ?>
+                                                    <?php foreach ($categories as $category) { ?>
                                                         <tr>
                                                             <td class="align-middle">
-                                                                <strong>#<?php echo $user['id']; ?></strong>
+                                                                <strong>#<?php echo $category['id']; ?></strong>
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="d-flex align-items-center">
-                                                                    <?php echo $user['first_name'] . ' ' . $user['last_name']; ?>
+                                                                    <?php echo $category['name']; ?>
                                                                 </div>
                                                             </td>
                                                             <td class="align-middle">
-                                                                <a href="mailto:<?php echo $user['email']; ?>" class="text-decoration-none">
-                                                                    <?php echo $user['email']; ?>
-                                                                </a>
-                                                            </td>
-                                                            <td class="align-middle">
                                                                 <div class="form-check form-switch">
-                                                                    <input class="form-check-input js-user-status-toggle" type="checkbox" data-user-id="<?php echo $user['id']; ?>" <?php echo $user['active'] == '1' ? 'checked' : ''; ?>>
+                                                                    <input class="form-check-input js-category-status-toggle" type="checkbox" data-category-id="<?php echo $category['id']; ?>" <?php echo $category['active'] == '1' ? 'checked' : ''; ?>>
                                                                 </div>
                                                             </td>
                                                             <td class="align-middle">
                                                                 <small class="text-muted">
-                                                                    <?php echo date('M j, Y', strtotime($user['created_at'])); ?>
+                                                                    <?php echo date('M j, Y', strtotime($category['created_at'])); ?>
                                                                 </small>
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="btn-group" role="group">
-                                                                    <a href="user_edit?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                                    <a href="category_edit?id=<?php echo $category['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                                         <i class="bi bi-pencil"></i>
                                                                     </a>
-                                                                    <button type="button" class="btn btn-sm btn-outline-danger js-user-delete-btn"
-                                                                        data-user-id="<?php echo $user['id']; ?>"
-                                                                        data-user-name="<?php echo ($user['first_name'] . ' ' . $user['last_name']); ?>">
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger js-category-delete-btn"
+                                                                        data-category-id="<?php echo $category['id']; ?>"
+                                                                        data-category-name="<?php echo $category['name']; ?>">
                                                                         <i class="bi bi-trash"></i>
                                                                     </button>
                                                                 </div>
@@ -173,17 +167,17 @@ headerContainer();
                                         </table>
                                     </div>
                                 </div>
-                                <?php if (!empty($users)) { ?>
+                                <?php if (!empty($categories)) { ?>
                                     <div class="card-footer">
                                         <div class="row align-items-center g-3">
                                             <div class="col-md-4">
                                                 <small class="text-muted d-block">
                                                     <?php
                                                     $start = $paginator->offset() + 1;
-                                                    $end = $paginator->offset() + count($users);
+                                                    $end = $paginator->offset() + count($categories);
                                                     ?>
-                                                    <?php if ($total_users_count > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_users_count; ?>
+                                                    <?php if ($total_categories_count > 0) { ?>
+                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_categories_count; ?>
                                                     <?php } else { ?>
                                                         No results
                                                     <?php } ?>
@@ -196,15 +190,15 @@ headerContainer();
                                                 <nav aria-label="Pagination">
                                                     <ul class="pagination pagination-sm mb-0 justify-content-center">
                                                         <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'user_list'); ?>" tabindex="-1">&laquo;</a>
+                                                            <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'category_list'); ?>" tabindex="-1">&laquo;</a>
                                                         </li>
                                                         <?php foreach ($paginator->pages() as $pg) { ?>
                                                             <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
-                                                                <a class="page-link" href="<?php echo buildPageUrl($pg, 'user_list'); ?>"><?php echo $pg; ?></a>
+                                                                <a class="page-link" href="<?php echo buildPageUrl($pg, 'category_list'); ?>"><?php echo $pg; ?></a>
                                                             </li>
                                                         <?php } ?>
                                                         <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'user_list'); ?>">&raquo;</a>
+                                                            <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'category_list'); ?>">&raquo;</a>
                                                         </li>
                                                     </ul>
                                                 </nav>
@@ -289,17 +283,17 @@ headerContainer();
     <!-- AJAX Change Status -->
     <script>
         $(function() {
-            $('.js-user-status-toggle:not(:disabled)').on('change', function() {
+            $('.js-category-status-toggle:not(:disabled)').on('change', function() {
                 const $cb = $(this);
-                const userId = $cb.data('user-id');
+                const categoryId = $cb.data('category-id');
                 const originalChecked = !$cb.prop('checked');
                 $cb.prop('disabled', true);
 
                 $.ajax({
-                        url: './include/ajax_user_toggle_status.php',
+                        url: './include/ajax_category_toggle_status.php',
                         method: 'POST',
                         data: {
-                            user_id: userId
+                            id: categoryId,
                         },
                         dataType: 'json'
                     })
@@ -325,15 +319,15 @@ headerContainer();
             });
 
             // SweetAlert2 delete handler
-            $(document).on('click', '.js-user-delete-btn', async function(e) {
+            $(document).on('click', '.js-category-delete-btn', async function(e) {
                 e.preventDefault();
                 const $btn = $(this);
-                const userId = $btn.data('user-id');
-                const userName = $btn.data('user-name');
+                const categoryId = $btn.data('category-id');
+                const categoryName = $btn.data('category-name');
 
                 const confirmed = await Swal.fire({
-                    title: 'Delete Customer?',
-                    html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(userName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
+                    title: 'Delete Category?',
+                    html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(categoryName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete',
@@ -348,16 +342,16 @@ headerContainer();
                 $btn.prop('disabled', true).addClass('opacity-50');
 
                 $.ajax({
-                        url: './include/ajax_user_delete.php',
+                        url: './include/ajax_category_delete.php',
                         method: 'POST',
                         data: {
-                            user_id: userId
+                            id: categoryId,
                         },
                         dataType: 'json'
                     })
                     .done(function(resp) {
                         if (resp && resp.success) {
-                            toastr.success('Customer deleted');
+                            toastr.success('Category deleted');
                             // Remove row from table
                             const $row = $btn.closest('tr');
                             $row.fadeOut(300, function() {

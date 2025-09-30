@@ -138,9 +138,15 @@ function sidebarContainer(): void
         'user_add', 
         'user_edit'
     ];
+    $articlePages = [
+        'category_list',
+        'category_add',
+        'category_edit'
+    ];
     $dashboardPages = ['index'];
     
     $isAdminSection = in_array($currentPage, $adminPages);
+    $isArticleSection = in_array($currentPage, $articlePages);
     $isDashboard = in_array($currentPage, $dashboardPages) || $currentPage === 'index';
 
     ?>
@@ -190,6 +196,25 @@ function sidebarContainer(): void
                                     <a href="/palermo/admin/user_list" class="nav-link <?php echo in_array($currentPage, ['user_list', 'user_add', 'user_edit']) ? 'active' : ''; ?>">
                                         <i class="bi bi-people nav-icon"></i>
                                         <p>Customers</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                          <li class="nav-item <?php echo $isArticleSection ? 'menu-open' : ''; ?>">
+                            <a href="#" class="nav-link <?php echo $isArticleSection ? 'active' : ''; ?>">
+                                <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <p>
+                                    Articles
+                                    <i class="bi bi-chevron-down right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="category_list" class="nav-link <?php echo in_array($currentPage, ['category_list', 'category_add', 'category_edit']) ? 'active' : ''; ?>">
+                                        <i class="bi bi-person-lines-fill nav-icon"></i>
+                                        <p>Categories</p>
                                     </a>
                                 </li>
                             </ul>

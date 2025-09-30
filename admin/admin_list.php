@@ -90,7 +90,7 @@ headerContainer();
                                         <form class="d-flex" method="get" action="admin_list" role="search">
                                             <div class="input-group input-group-sm">
                                                 <label>
-                                                    <input type="text" name="q" class="form-control" placeholder="Search name, email, id" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" />
+                                                    <input type="text" name="q" class="form-control" placeholder="Search name, email, id" value="<?php echo $search; ?>" />
                                                 </label>
                                                 <button class="btn btn-outline-secondary" type="submit" title="Search">
                                                     <i class="bi bi-search"></i>
