@@ -1,0 +1,210 @@
+<?php
+
+require_once(__DIR__ . '/../include/connect.php');
+require_once(__DIR__ . '/include/functions.php');
+include(__DIR__ . '/include/html_functions.php');
+
+requireAdminLogin();
+
+$current_admin = getCurrentAdmin($pdo);
+if (!$current_admin) {
+    $_SESSION['error'] = 'Unable to load account information.';
+    header('Location: index');
+    exit;
+}
+
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $currentPassword = $_POST['current_password'] ?? '';
+    $newPassword = $_POST['new_password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
+
+    // Validation
+    if ($currentPassword === '') {
+        $errors[] = 'Current password is required';
+    }
+    if ($newPassword === '') {
+        $errors[] = 'New password is required';
+    } elseif (strlen($newPassword) < 6) {
+        $errors[] = 'New password must be at least 6 characters';
+    }
+    if ($confirmPassword === '') {
+        $errors[] = 'Password confirmation is required';
+    } elseif ($newPassword !== $confirmPassword) {
+        $errors[] = 'New password and confirmation do not match';
+    }
+
+    // Verify current password
+    if (empty($errors)) {
+        $stmt = $pdo->prepare('SELECT admin_password FROM admins WHERE admin_id = ? LIMIT 1');
+        $stmt->execute([$current_admin['admin_id']]);
+        $adminPassword = $stmt->fetchColumn();
+
+        if (!$adminPassword || md5($currentPassword) !== $adminPassword) {
+            $errors[] = 'Current password is incorrect';
+        }
+    }
+
+    // Check if new password is same as current
+    if (empty($errors)) {
+        if (md5($newPassword) === $adminPassword) {
+            $errors[] = 'New password must be different from current password';
+        }
+    }
+
+    // Update password
+    if (empty($errors)) {
+        $newPasswordHash = md5($newPassword);
+        try {
+            $stmt = $pdo->prepare('UPDATE admins SET admin_password = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
+            $stmt->execute([$newPasswordHash, $current_admin['admin_id']]);
+            $_SESSION['success'] = 'Password updated successfully';
+            header('Location: reset_password');
+            exit;
+        } catch (PDOException $e) {
+            $errors[] = 'There was an error updating your password. Please try again.';
+        }
+    }
+}
+
+headerContainer();
+?>
+</head>
+
+<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <div class="app-wrapper">
+        <?php navbarContainer(); ?>
+        <?php sidebarContainer(); ?>
+
+        <main class="app-main">
+            <div class="app-content-header">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="mb-0"><?php echo SITE_TITLE; ?> | Change Password</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-end">
+                                <li class="breadcrumb-item"><a href="/palermo/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="account">My Account</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Change Password</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h3 class="card-title">Change Password</h3>
+                                    <p class="card-text mb-0 text-muted">Update your account password for security</p>
+                                </div>
+                                <div class="card-body">
+                                    <?php if (!empty($errors)) { ?>
+                                        <div class="alert alert-danger">
+                                            <ul class="mb-0">
+                                                <?php foreach ($errors as $err) { ?>
+                                                    <li><?php echo htmlspecialchars($err); ?></li>
+                                                <?php } ?>
+                                            </ul>
+                                        </div>
+                                    <?php } ?>
+
+                                    <div class="mb-4">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="user-avatar me-3" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f8f9fa;color:#003b79;border-radius:50%;">
+                                                <?php echo strtoupper($current_admin['admin_name'][0]); ?>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-0"><?php echo htmlspecialchars($current_admin['admin_name']); ?></h5>
+                                                <small class="text-muted"><?php echo htmlspecialchars($current_admin['admin_email']); ?></small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <form method="POST" novalidate>
+                                        <div class="mb-3">
+                                            <label class="form-label">Current Password *</label>
+                                            <input type="password" name="current_password" class="form-control" required autocomplete="current-password">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">New Password *</label>
+                                            <input type="password" name="new_password" class="form-control" required autocomplete="new-password">
+                                            <small class="text-muted">Minimum 6 characters</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Confirm New Password *</label>
+                                            <input type="password" name="confirm_password" class="form-control" required autocomplete="new-password">
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <a href="account" class="btn btn-outline-secondary">Cancel</a>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-key"></i> Update Password
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row text-center">
+                                        <div class="col">
+                                            <small class="text-muted">
+                                                <i class="bi bi-shield-check"></i>
+                                                Your password is encrypted and secure
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <?php footerContainer(); ?>
+    </div>
+
+    <script>
+        // strength indicator
+        document.querySelector('input[name="new_password"]').addEventListener('input', function() {
+            const password = this.value;
+            const strength = getPasswordStrength(password);
+            updatePasswordStrengthIndicator(strength);
+        });
+
+        function getPasswordStrength(password) {
+            let score = 0;
+            if (password.length >= 6) score++;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            return score;
+        }
+
+        function updatePasswordStrengthIndicator(strength) {
+            const colors = ['danger', 'warning', 'info', 'success', 'success'];
+            const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+
+            let indicator = document.querySelector('.password-strength');
+            if (!indicator) {
+                indicator = document.createElement('small');
+                indicator.className = 'password-strength d-block mt-1';
+                document.querySelector('input[name="new_password"]').parentNode.appendChild(indicator);
+            }
+
+            if (strength > 0) {
+                indicator.className = `password-strength d-block mt-1 text-${colors[strength - 1]}`;
+                indicator.textContent = `Password strength: ${texts[strength - 1]}`;
+            } else {
+                indicator.textContent = '';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -114,7 +114,7 @@ function navbarContainer(): void
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                <a href="/palermo/admin/account" class="btn btn-default btn-flat">Profile</a>
                                 <a href="/palermo/admin/logout?logout" class="btn btn-default btn-flat float-end">Sign out</a>
                             </li>
                         </ul>
