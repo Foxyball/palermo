@@ -128,6 +128,20 @@ function navbarContainer(): void
 
 function sidebarContainer(): void
 {
+    $currentPage = basename($_SERVER['PHP_SELF'], '.php');
+    
+    $adminPages = [
+        'admin_list', 
+        'admin_add', 
+        'admin_edit', 
+        'user_list', 
+        'user_add', 
+        'user_edit'
+    ];
+    $dashboardPages = ['index'];
+    
+    $isAdminSection = in_array($currentPage, $adminPages);
+    $isDashboard = in_array($currentPage, $dashboardPages) || $currentPage === 'index';
 
     ?>
 
@@ -140,7 +154,6 @@ function sidebarContainer(): void
             </div>
             <div class="sidebar-wrapper" style="padding-bottom: 80px; height: calc(100vh - 57px); overflow-y: auto;">
                 <nav class="mt-2">
-                    <!--begin::Sidebar Menu-->
                     <ul
                         class="nav sidebar-menu flex-column"
                         data-lte-toggle="treeview"
@@ -149,7 +162,7 @@ function sidebarContainer(): void
                         data-accordion="false"
                         id="navigation">
                         <li class="nav-item">
-                            <a href="/palermo/admin" class="nav-link active">
+                            <a href="/palermo/admin" class="nav-link <?php echo $isDashboard ? 'active' : ''; ?>">
                                 <i class="nav-icon bi bi-speedometer"></i>
                                 <p>
                                     Dashboard
@@ -158,8 +171,8 @@ function sidebarContainer(): void
                         </li>
 
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
+                        <li class="nav-item <?php echo $isAdminSection ? 'menu-open' : ''; ?>">
+                            <a href="#" class="nav-link <?php echo $isAdminSection ? 'active' : ''; ?>">
                                 <i class="nav-icon bi bi-person-gear"></i>
                                 <p>
                                     Admin
@@ -168,15 +181,15 @@ function sidebarContainer(): void
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="admin_list" class="nav-link">
+                                    <a href="admin_list" class="nav-link <?php echo in_array($currentPage, ['admin_list', 'admin_add', 'admin_edit']) ? 'active' : ''; ?>">
                                         <i class="bi bi-person-lines-fill nav-icon"></i>
                                         <p>Admins</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/palermo/admin/user_list" class="nav-link">
+                                    <a href="/palermo/admin/user_list" class="nav-link <?php echo in_array($currentPage, ['user_list', 'user_add', 'user_edit']) ? 'active' : ''; ?>">
                                         <i class="bi bi-people nav-icon"></i>
-                                        <p>Users</p>
+                                        <p>Customers</p>
                                     </a>
                                 </li>
                             </ul>
