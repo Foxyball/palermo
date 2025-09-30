@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../include/connect.php');
-require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../../include/connect.php');
+require_once(__DIR__ . '/functions.php');
 
 requireAdminLogin();
 
@@ -33,7 +33,6 @@ if ($admin_id === (int)$current_admin['admin_id']) {
 }
 
 try {
-    // Check exists & super admin count safety
     $stmt = $pdo->prepare('SELECT admin_id, is_super_admin FROM admins WHERE admin_id = ? LIMIT 1');
     $stmt->execute([$admin_id]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);

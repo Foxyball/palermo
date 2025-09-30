@@ -16,9 +16,9 @@ if (!isCurrentSuperAdmin($current_admin)) {
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['admin_name'] ?? '');
-    $email = trim($_POST['admin_email'] ?? '');
-    $password = $_POST['admin_password'] ?? '';
+    $name = trim($_POST['admin_name'] ?? null);
+    $email = trim($_POST['admin_email'] ?? null);
+    $password = $_POST['admin_password'] ?? null;
     $is_super_admin = isset($_POST['is_super_admin']) ? 1 : 0;
 
     if ($name === '') {
@@ -99,15 +99,15 @@ headerContainer();
                                     <?php } ?>
                                     <form method="post" novalidate>
                                         <div class="mb-3">
-                                            <label class="form-label">Name</label>
+                                            <label class="form-label">Name *</label>
                                             <input type="text" name="admin_name" class="form-control" value="<?php echo htmlspecialchars($_POST['admin_name'] ?? ''); ?>" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Email</label>
+                                            <label class="form-label">Email *</label>
                                             <input type="email" name="admin_email" class="form-control" value="<?php echo htmlspecialchars($_POST['admin_email'] ?? ''); ?>" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Password</label>
+                                            <label class="form-label">Password *</label>
                                             <input type="password" name="admin_password" class="form-control" required>
                                             <small class="text-muted">Min 6 characters</small>
                                         </div>
