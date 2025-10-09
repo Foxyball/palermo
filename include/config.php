@@ -10,6 +10,9 @@ define("DB_NAME", "palermo_live");
 define("BASE_URL", "");
 define("SITE_TITLE", "Palermo");
 
+// CURRENCY SETTINGS
+define("BGN_TO_EUR_RATE",1.95583);
+
 // ERROR REPORTING
 error_reporting(E_ALL & ~E_NOTICE); // E_ALL for development, E_ALL & ~E_NOTICE for production
 ini_set('display_errors', 1);  // 1 to display errors, 0 to hide errors
