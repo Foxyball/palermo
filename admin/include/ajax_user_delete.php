@@ -1,39 +1,66 @@
 <?php
+
+declare(strict_types=1);
+
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../../include/connect.php');
-require_once(__DIR__ . '/functions.php');
+require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Invalid method']);
-    exit;
+    sendJsonError('Invalid request method', 405);
 }
 
-$userId = $_POST['user_id'] ?? 0;
+$userId = isset($_POST['user_id']) ? (int) $_POST['user_id'] : 0;
+
 if ($userId <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid user ID']);
-    exit;
+    sendJsonError('Invalid user ID', 400);
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT id FROM users WHERE id = ? LIMIT 1');
-    $stmt->execute([$userId]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $user = fetchUserById($pdo, $userId);
+
     if (!$user) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'User not found']);
-        exit;
+        sendJsonError('User not found', 404);
     }
 
-    $del = $pdo->prepare('DELETE FROM users WHERE id = ? LIMIT 1');
-    $del->execute([$userId]);
+    deleteUser($pdo, $userId);
 
-    echo json_encode(['success' => true, 'message' => 'User deleted', 'user_id' => $userId]);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    sendJsonResponse([
+        'success' => true,
+        'message' => 'User deleted successfully',
+        'user_id' => $userId,
+    ]);
+} catch (Throwable $e) {
+    sendJsonError('Server error', 500);
+}
+
+function fetchUserById(PDO $pdo, int $id): ?array
+{
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $user ?: null;
+}
+
+function deleteUser(PDO $pdo, int $id): void
+{
+    $stmt = $pdo->prepare('DELETE FROM users WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+}
+
+function sendJsonError(string $message, int $status = 400): void
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'message' => $message]);
+    exit;
+}
+
+function sendJsonResponse(array $data): void
+{
+    echo json_encode($data);
+    exit;
 }

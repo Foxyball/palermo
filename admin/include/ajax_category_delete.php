@@ -1,39 +1,66 @@
 <?php
+
+declare(strict_types=1);
+
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../../include/connect.php');
-require_once(__DIR__ . '/functions.php');
+require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Invalid method']);
-    exit;
+    sendJsonError('Invalid request method', 405);
 }
 
-$categoryId = $_POST['id'] ?? 0;
+$categoryId = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+
 if ($categoryId <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid category ID']);
-    exit;
+    sendJsonError('Invalid category ID', 400);
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT id FROM categories WHERE id = ? LIMIT 1');
-    $stmt->execute([$categoryId]);
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
+    $category = fetchCategoryById($pdo, $categoryId);
+
     if (!$category) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Category not found']);
-        exit;
+        sendJsonError('Category not found', 404);
     }
 
-    $del = $pdo->prepare('DELETE FROM categories WHERE id = ? LIMIT 1');
-    $del->execute([$categoryId]);
+    deleteCategory($pdo, $categoryId);
 
-    echo json_encode(['success' => true, 'message' => 'Category deleted', 'category_id' => $categoryId]);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    sendJsonResponse([
+        'success' => true,
+        'message' => 'Category deleted successfully',
+        'category_id' => $categoryId,
+    ]);
+} catch (Throwable $e) {
+    sendJsonError('Server error', 500);
+}
+
+function fetchCategoryById(PDO $pdo, int $id): ?array
+{
+    $stmt = $pdo->prepare('SELECT id FROM categories WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $category = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $category ?: null;
+}
+
+function deleteCategory(PDO $pdo, int $id): void
+{
+    $stmt = $pdo->prepare('DELETE FROM categories WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+}
+
+function sendJsonError(string $message, int $status = 400): void
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'message' => $message]);
+    exit;
+}
+
+function sendJsonResponse(array $data): void
+{
+    echo json_encode($data);
+    exit;
 }
