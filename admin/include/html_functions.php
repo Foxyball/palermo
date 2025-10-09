@@ -143,10 +143,18 @@ function sidebarContainer(): void
         'category_add',
         'category_edit'
     ];
+
+    $galleryPages = [
+            'gallery_list',
+        'gallery_add',
+        'gallery_edit'
+    ];
+
     $dashboardPages = ['index'];
     
     $isAdminSection = in_array($currentPage, $adminPages);
     $isArticleSection = in_array($currentPage, $articlePages);
+    $isGallerySection = in_array($currentPage, $galleryPages);
     $isDashboard = in_array($currentPage, $dashboardPages) || $currentPage === 'index';
 
     ?>
@@ -220,6 +228,23 @@ function sidebarContainer(): void
                             </ul>
                         </li>
 
+                        <li class="nav-item <?php echo $isGallerySection ? 'menu-open' : ''; ?>">
+                            <a href="#" class="nav-link <?php echo $isGallerySection ? 'active' : ''; ?>">
+                                <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <p>
+                                    Galleries
+                                    <i class="bi bi-chevron-down right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="gallery_list" class="nav-link <?php echo in_array($currentPage, ['gallery_list', 'gallery_add', 'gallery_edit']) ? 'active' : ''; ?>">
+                                        <i class="bi bi-person-lines-fill nav-icon"></i>
+                                        <p>Galleries</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
                     </ul>
                 </nav>
