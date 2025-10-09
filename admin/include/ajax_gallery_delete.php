@@ -1,39 +1,66 @@
 <?php
+
+declare(strict_types=1);
+
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../../include/connect.php');
-require_once(__DIR__ . '/functions.php');
+require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Invalid method']);
-    exit;
+    sendJsonError('Invalid request method', 405);
 }
 
-$galleryId = $_POST['id'] ?? 0;
+$galleryId = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+
 if ($galleryId <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid gallery ID']);
-    exit;
+    sendJsonError('Invalid gallery ID', 400);
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT id FROM galleries WHERE id = ? LIMIT 1');
-    $stmt->execute([$galleryId]);
-    $gallery = $stmt->fetch(PDO::FETCH_ASSOC);
+    $gallery = fetchGalleryById($pdo, $galleryId);
+
     if (!$gallery) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'gallery not found']);
-        exit;
+        sendJsonError('Gallery not found', 404);
     }
 
-    $del = $pdo->prepare('DELETE FROM galleries WHERE id = ? LIMIT 1');
-    $del->execute([$galleryId]);
+    deleteGallery($pdo, $galleryId);
 
-    echo json_encode(['success' => true, 'message' => 'gallery deleted', 'gallery_id' => $galleryId]);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    sendJsonResponse([
+        'success' => true,
+        'message' => 'Gallery deleted successfully',
+        'gallery_id' => $galleryId,
+    ]);
+} catch (Throwable $e) {
+    sendJsonError('Server error', 500);
+}
+
+function fetchGalleryById(PDO $pdo, int $id): ?array
+{
+    $stmt = $pdo->prepare('SELECT id FROM galleries WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $gallery = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $gallery ?: null;
+}
+
+function deleteGallery(PDO $pdo, int $id): void
+{
+    $stmt = $pdo->prepare('DELETE FROM galleries WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+}
+
+function sendJsonError(string $message, int $status = 400): void
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'message' => $message]);
+    exit;
+}
+
+function sendJsonResponse(array $data): void
+{
+    echo json_encode($data);
+    exit;
 }

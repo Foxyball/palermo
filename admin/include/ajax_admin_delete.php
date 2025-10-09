@@ -1,62 +1,91 @@
 <?php
+
+declare(strict_types=1);
+
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../../include/connect.php');
-require_once(__DIR__ . '/functions.php');
+require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-if (!isCurrentSuperAdmin($current_admin)) {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Permission denied']);
-    exit;
+$currentAdmin = getCurrentAdmin($pdo);
+
+if (!isCurrentSuperAdmin($currentAdmin)) {
+    sendJsonError('Permission denied', 403);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Invalid method']);
-    exit;
+    sendJsonError('Invalid request method', 405);
 }
 
-$admin_id = isset($_POST['admin_id']) ? (int)$_POST['admin_id'] : 0;
-if ($admin_id <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid admin ID']);
-    exit;
+$adminId = isset($_POST['admin_id']) ? (int) $_POST['admin_id'] : 0;
+
+if ($adminId <= 0) {
+    sendJsonError('Invalid admin ID', 400);
 }
 
-if ($admin_id === (int)$current_admin['admin_id']) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'You cannot delete your own account']);
-    exit;
+if ($adminId === (int) $currentAdmin['admin_id']) {
+    sendJsonError('You cannot delete your own account', 400);
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT admin_id, is_super_admin FROM admins WHERE admin_id = ? LIMIT 1');
-    $stmt->execute([$admin_id]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    $admin = fetchAdminById($pdo, $adminId);
+
     if (!$admin) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Admin not found']);
-        exit;
+        sendJsonError('Admin not found', 404);
     }
 
-    if ((int)$admin['is_super_admin'] === 1) {
-        $countStmt = $pdo->query("SELECT COUNT(*) FROM admins WHERE is_super_admin = 1");
-        $superCount = (int)$countStmt->fetchColumn();
-        if ($superCount <= 1) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Cannot delete the last super administrator']);
-            exit;
-        }
+    if (isSuperAdmin($admin) && isLastSuperAdmin($pdo)) {
+        sendJsonError('Cannot delete the last super administrator', 400);
     }
 
-    $del = $pdo->prepare('DELETE FROM admins WHERE admin_id = ? LIMIT 1');
-    $del->execute([$admin_id]);
+    deleteAdmin($pdo, $adminId);
 
-    echo json_encode(['success' => true, 'message' => 'Administrator deleted', 'admin_id' => $admin_id]);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    sendJsonResponse([
+        'success' => true,
+        'message' => 'Administrator deleted successfully',
+        'admin_id' => $adminId,
+    ]);
+} catch (Throwable $e) {
+    sendJsonError('Server error', 500);
+}
+
+function fetchAdminById(PDO $pdo, int $id): ?array
+{
+    $stmt = $pdo->prepare('SELECT admin_id, is_super_admin FROM admins WHERE admin_id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $admin ?: null;
+}
+
+function isSuperAdmin(array $admin): bool
+{
+    return (int) ($admin['is_super_admin'] ?? 0) === 1;
+}
+
+function isLastSuperAdmin(PDO $pdo): bool
+{
+    $stmt = $pdo->query('SELECT COUNT(*) FROM admins WHERE is_super_admin = 1');
+    return ((int) $stmt->fetchColumn()) <= 1;
+}
+
+function deleteAdmin(PDO $pdo, int $id): void
+{
+    $stmt = $pdo->prepare('DELETE FROM admins WHERE admin_id = ? LIMIT 1');
+    $stmt->execute([$id]);
+}
+
+function sendJsonError(string $message, int $status = 400): void
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'message' => $message]);
+    exit;
+}
+
+function sendJsonResponse(array $data): void
+{
+    echo json_encode($data);
+    exit;
 }
