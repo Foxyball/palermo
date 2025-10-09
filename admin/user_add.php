@@ -42,10 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $password_hash = md5($password);
+        $passwordHash = md5($password);
         try {
             $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, address, city, phone, zip_code, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
-            $stmt->execute([$firstName, $lastName, $address, $city, $phone, $zipCode, $email, $password_hash]);
+            $stmt->execute([$firstName, $lastName, $address, $city, $phone, $zipCode, $email, $passwordHash]);
             $_SESSION['success'] = 'User created successfully';
             header('Location: user_list');
             exit;

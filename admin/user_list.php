@@ -22,9 +22,9 @@ if ($search !== '') {
 $countSql = 'SELECT COUNT(*) FROM users' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
-$total_users_count = $stmtCount->fetchColumn();
+$totalUsersCount = $stmtCount->fetchColumn();
 
-$paginator = new Paginator($total_users_count, $page, $perPage);
+$paginator = new Paginator($totalUsersCount, $page, $perPage);
 
 $dataSql = 'SELECT id, first_name, last_name, email, active, created_at
             FROM users' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
@@ -182,8 +182,8 @@ headerContainer();
                                                     $start = $paginator->offset() + 1;
                                                     $end = $paginator->offset() + count($users);
                                                     ?>
-                                                    <?php if ($total_users_count > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_users_count; ?>
+                                                    <?php if ($totalUsersCount > 0) { ?>
+                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalUsersCount; ?>
                                                     <?php } else { ?>
                                                         No results
                                                     <?php } ?>

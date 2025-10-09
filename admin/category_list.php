@@ -22,9 +22,9 @@ if ($search !== '') {
 $countSql = 'SELECT COUNT(*) FROM categories' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
-$total_categories_count = $stmtCount->fetchColumn();
+$totalCategoriesCount = $stmtCount->fetchColumn();
 
-$paginator = new Paginator($total_categories_count, $page, $perPage);
+$paginator = new Paginator($totalCategoriesCount, $page, $perPage);
 
 $dataSql = 'SELECT id, name, active, created_at
             FROM categories' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
@@ -32,7 +32,7 @@ $dataSql = 'SELECT id, name, active, created_at
 $stmt = $pdo->prepare($dataSql);
 
 foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v, PDO::PARAM_STR);
+    $stmt->bindValue($k, $v);
 }
 
 $stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
@@ -176,8 +176,8 @@ headerContainer();
                                                     $start = $paginator->offset() + 1;
                                                     $end = $paginator->offset() + count($categories);
                                                     ?>
-                                                    <?php if ($total_categories_count > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_categories_count; ?>
+                                                    <?php if ($totalCategoriesCount > 0) { ?>
+                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalCategoriesCount; ?>
                                                     <?php } else { ?>
                                                         No results
                                                     <?php } ?>

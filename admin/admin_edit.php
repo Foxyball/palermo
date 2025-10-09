@@ -6,28 +6,28 @@ include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-$current_admin_id = $current_admin['admin_id'] ?? null;
-$is_current_super_admin = isCurrentSuperAdmin($current_admin);
+$currentAdmin = getCurrentAdmin($pdo);
+$currentAdminID = $currentAdmin['admin_id'] ?? null;
+$isCurrentSuperAdmin = isCurrentSuperAdmin($currentAdmin);
 
-$admin_id = $_GET['id'] ?? 0;
-if ($admin_id <= 0) {
+$adminID = $_GET['id'] ?? 0;
+if ($adminID <= 0) {
     $_SESSION['error'] = 'Invalid administrator selected.';
     header('Location: admin_list');
     exit;
 }
 
 $stmt = $pdo->prepare('SELECT admin_id, admin_name, admin_email, active, is_super_admin, created_at, updated_at FROM admins WHERE admin_id = ? LIMIT 1');
-$stmt->execute([$admin_id]);
-$admin_to_edit = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->execute([$adminID]);
+$adminToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$admin_to_edit) {
+if (!$adminToEdit) {
     $_SESSION['error'] = 'Administrator not found.';
     header('Location: admin_list');
     exit;
 }
 
-if (!$is_current_super_admin && $admin_id !== $current_admin_id) {
+if (!$isCurrentSuperAdmin && $adminID !== $currentAdminID) {
     $_SESSION['error'] = 'You do not have permission to edit this administrator.';
     header('Location: admin_list');
     exit;
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['admin_name'] ?? '');
     $email = trim($_POST['admin_email'] ?? '');
     $password = $_POST['admin_password'] ?? '';
-    $is_super_admin = isset($_POST['is_super_admin']) ? 1 : 0;
+    $isSuperAdmin = isset($_POST['is_super_admin']) ? 1 : 0;
 
     // Validation
     if ($name === '') {
@@ -49,20 +49,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Valid email is required';
     }
 
-    if ($email !== $admin_to_edit['admin_email']) {
+    if ($email !== $adminToEdit['admin_email']) {
         $stmt = $pdo->prepare('SELECT admin_id FROM admins WHERE admin_email = ? AND admin_id != ? LIMIT 1');
-        $stmt->execute([$email, $admin_id]);
+        $stmt->execute([$email, $adminID]);
         if ($stmt->fetch()) {
             $errors[] = 'Email already in use by another administrator';
         }
     }
 
-    $password_hash = null;
+    $passwordHash = null;
     if ($password !== '') {
         if (strlen($password) < 6) {
             $errors[] = 'Password must be at least 6 characters';
         } else {
-            $password_hash = md5($password);
+            $passwordHash = md5($password);
         }
     }
 
@@ -70,16 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $fields = ['admin_name = ?', 'admin_email = ?'];
         $params = [$name, $email];
-        if ($password_hash !== null) {
+        if ($passwordHash !== null) {
             $fields[] = 'admin_password = ?';
-            $params[] = $password_hash;
+            $params[] = $passwordHash;
         }
-        if ($is_current_super_admin) {
+        if ($isCurrentSuperAdmin) {
             $fields[] = 'is_super_admin = ?';
-            $params[] = $is_super_admin;
+            $params[] = $isSuperAdmin;
         }
         $fields[] = 'updated_at = NOW()';
-        $params[] = $admin_id;
+        $params[] = $adminID;
 
         $sql = 'UPDATE admins SET ' . implode(', ', $fields) . ' WHERE admin_id = ? LIMIT 1';
         try {
@@ -93,9 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 } else {
-    $name = $admin_to_edit['admin_name'];
-    $email = $admin_to_edit['admin_email'];
-    $is_super_admin = $admin_to_edit['is_super_admin'] ?? 0;
+    $name = $adminToEdit['admin_name'];
+    $email = $adminToEdit['admin_email'];
+    $isSuperAdmin = $adminToEdit['is_super_admin'] ?? 0;
 }
 
 headerContainer();
@@ -112,7 +112,7 @@ headerContainer();
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h3 class="mb-0">Edit Administrator <?php echo ($admin_to_edit['admin_name']); ?></h3>
+                            <h3 class="mb-0">Edit Administrator <?php echo ($adminToEdit['admin_name']); ?></h3>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
@@ -132,8 +132,8 @@ headerContainer();
                             <div class="card shadow-sm">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title mb-0">Update Administrator</h3>
-                                    <span class="badge text-bg-<?php echo ($admin_to_edit['active'] == '1') ? 'success' : 'secondary'; ?>">
-                                        <?php echo ($admin_to_edit['active'] == '1') ? 'Active' : 'Inactive'; ?>
+                                    <span class="badge text-bg-<?php echo ($adminToEdit['active'] == '1') ? 'success' : 'secondary'; ?>">
+                                        <?php echo ($adminToEdit['active'] == '1') ? 'Active' : 'Inactive'; ?>
                                     </span>
                                 </div>
                                 <div class="card-body">
@@ -159,9 +159,9 @@ headerContainer();
                                             <label class="form-label">New Password <small class="text-muted">(leave blank to keep unchanged)</small></label>
                                             <input type="password" name="admin_password" class="form-control" autocomplete="new-password">
                                         </div>
-                                        <?php if ($is_current_super_admin) { ?>
+                                        <?php if ($isCurrentSuperAdmin) { ?>
                                             <div class="form-check form-switch mb-3">
-                                                <input class="form-check-input" type="checkbox" id="is_super_admin" name="is_super_admin" <?php echo !empty($is_super_admin) ? 'checked' : ''; ?>>
+                                                <input class="form-check-input" type="checkbox" id="is_super_admin" name="is_super_admin" <?php echo !empty($isSuperAdmin) ? 'checked' : ''; ?>>
                                                 <label class="form-check-label" for="is_super_admin">Super Admin</label>
                                             </div>
                                         <?php } ?>
@@ -172,8 +172,8 @@ headerContainer();
                                     </form>
                                 </div>
                                 <div class="card-footer text-muted small">
-                                    Created: <?php echo date('M j, Y g:i A', strtotime($admin_to_edit['created_at'])); ?>
-                                    | Last Updated: <?php echo date('M j, Y g:i A', strtotime($admin_to_edit['updated_at'])); ?>
+                                    Created: <?php echo date('M j, Y g:i A', strtotime($adminToEdit['created_at'])); ?>
+                                    | Last Updated: <?php echo date('M j, Y g:i A', strtotime($adminToEdit['updated_at'])); ?>
                                 </div>
                             </div>
                         </div>

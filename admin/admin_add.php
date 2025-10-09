@@ -6,8 +6,8 @@ include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-if (!isCurrentSuperAdmin($current_admin)) {
+$currentAdmin = getCurrentAdmin($pdo);
+if (!isCurrentSuperAdmin($currentAdmin)) {
     $_SESSION['error'] = 'You do not have permission to access the Add Admin page.';
     header('Location: admin_list');
     exit;
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['admin_name'] ?? null);
     $email = trim($_POST['admin_email'] ?? null);
     $password = $_POST['admin_password'] ?? null;
-    $is_super_admin = isset($_POST['is_super_admin']) ? 1 : 0;
+    $isSuperAdmin = isset($_POST['is_super_admin']) ? 1 : 0;
 
     if ($name === '') {
         $errors[] = 'Name is required';
@@ -40,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $password_hash = md5($password);
+        $passwordHash = md5($password);
         try {
             $stmt = $pdo->prepare('INSERT INTO admins (admin_name, admin_email, admin_password, active, is_super_admin, created_at, updated_at) VALUES (?, ?, ?, "1", ?, NOW(), NOW())');
-            $stmt->execute([$name, $email, $password_hash, $is_super_admin]);
+            $stmt->execute([$name, $email, $passwordHash, $isSuperAdmin]);
             $_SESSION['success'] = 'Administrator created successfully';
             header('Location: admin_list');
             exit;

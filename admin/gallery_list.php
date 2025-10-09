@@ -22,9 +22,9 @@ if ($search !== '') {
 $countSql = 'SELECT COUNT(*) FROM galleries' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
-$total_galleries_count = $stmtCount->fetchColumn();
+$totalGalleriesCount = $stmtCount->fetchColumn();
 
-$paginator = new Paginator($total_galleries_count, $page, $perPage);
+$paginator = new Paginator($totalGalleriesCount, $page, $perPage);
 
 $dataSql = 'SELECT id, title, active, created_at
             FROM galleries' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
@@ -32,7 +32,7 @@ $dataSql = 'SELECT id, title, active, created_at
 $stmt = $pdo->prepare($dataSql);
 
 foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v, PDO::PARAM_STR);
+    $stmt->bindValue($k, $v);
 }
 
 $stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
@@ -179,8 +179,8 @@ headerContainer();
                                                     $start = $paginator->offset() + 1;
                                                     $end = $paginator->offset() + count($galleries);
                                                     ?>
-                                                    <?php if ($total_galleries_count > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_galleries_count; ?>
+                                                    <?php if ($totalGalleriesCount > 0) { ?>
+                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalGalleriesCount; ?>
                                                     <?php } else { ?>
                                                         No results
                                                     <?php } ?>

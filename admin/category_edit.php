@@ -15,9 +15,9 @@ if ($categoryId <= 0) {
 
 $stmt = $pdo->prepare('SELECT id, name, slug, active, created_at, updated_at FROM categories WHERE id = ? LIMIT 1');
 $stmt->execute([$categoryId]);
-$category_to_edit = $stmt->fetch(PDO::FETCH_ASSOC);
+$categoryToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$category_to_edit) {
+if (!$categoryToEdit) {
     $_SESSION['error'] = 'Category not found.';
     header('Location: category_list');
     exit;
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 } else {
-    $name = $category_to_edit['name'];
+    $name = $categoryToEdit['name'];
 }
 
 headerContainer();
@@ -90,8 +90,8 @@ headerContainer();
                             <div class="card shadow-sm">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title mb-0">Update Category</h3>
-                                    <span class="badge text-bg-<?php echo ($category_to_edit['active'] == '1') ? 'success' : 'secondary'; ?>">
-                                        <?php echo ($category_to_edit['active'] == '1') ? 'Active' : 'Inactive'; ?>
+                                    <span class="badge text-bg-<?php echo ($categoryToEdit['active'] == '1') ? 'success' : 'secondary'; ?>">
+                                        <?php echo ($categoryToEdit['active'] == '1') ? 'Active' : 'Inactive'; ?>
                                     </span>
                                 </div>
                                 <div class="card-body">
@@ -111,7 +111,7 @@ headerContainer();
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Slug</label>
-                                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($category_to_edit['slug']); ?>" readonly disabled>
+                                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($categoryToEdit['slug']); ?>" readonly disabled>
                                             <small class="text-muted">URL-friendly</small>
                                         </div>
                                         <div class="d-flex justify-content-between">
@@ -121,8 +121,8 @@ headerContainer();
                                     </form>
                                 </div>
                                 <div class="card-footer text-muted small">
-                                    Created: <?php echo date('M j, Y g:i A', strtotime($category_to_edit['created_at'])); ?>
-                                    | Last Updated: <?php echo date('M j, Y g:i A', strtotime($category_to_edit['updated_at'])); ?>
+                                    Created: <?php echo date('M j, Y g:i A', strtotime($categoryToEdit['created_at'])); ?>
+                                    | Last Updated: <?php echo date('M j, Y g:i A', strtotime($categoryToEdit['updated_at'])); ?>
                                 </div>
                             </div>
                         </div>

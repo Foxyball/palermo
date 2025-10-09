@@ -6,8 +6,8 @@ include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-if (!$current_admin) {
+$currentAdmin = getCurrentAdmin($pdo);
+if (!$currentAdmin) {
     $_SESSION['error'] = 'Unable to load account information.';
     header('Location: index');
     exit;
@@ -27,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Valid email is required';
     }
 
-    if (empty($errors) && $email !== $current_admin['admin_email']) {
+    if (empty($errors) && $email !== $currentAdmin['admin_email']) {
         $stmt = $pdo->prepare('SELECT admin_id FROM admins WHERE admin_email = ? AND admin_id != ? LIMIT 1');
-        $stmt->execute([$email, $current_admin['admin_id']]);
+        $stmt->execute([$email, $currentAdmin['admin_id']]);
         if ($stmt->fetch()) {
             $errors[] = 'Email already in use by another admin';
         }
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             $stmt = $pdo->prepare('UPDATE admins SET admin_name = ?, admin_email = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
-            $stmt->execute([$name, $email, $current_admin['admin_id']]);
+            $stmt->execute([$name, $email, $currentAdmin['admin_id']]);
 
             $_SESSION['success'] = 'Profile updated successfully';
             header('Location: account');
@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 } else {
-    $name = $current_admin['admin_name'];
-    $email = $current_admin['admin_email'];
+    $name = $currentAdmin['admin_name'];
+    $email = $currentAdmin['admin_email'];
 }
 
 headerContainer();
@@ -100,12 +100,12 @@ headerContainer();
                                     <div class="mb-4">
                                         <div class="d-flex align-items-center mb-2">
                                             <div class="user-avatar me-3" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f8f9fa;color:#003b79;border-radius:50%;">
-                                                <?php echo strtoupper($current_admin['admin_name'][0]); ?>
+                                                <?php echo strtoupper($currentAdmin['admin_name'][0]); ?>
                                             </div>
                                             <div>
-                                                <h5 class="mb-0"><?php echo htmlspecialchars($current_admin['admin_name']); ?></h5>
-                                                <small class="text-muted"><?php echo htmlspecialchars($current_admin['admin_email']); ?></small>
-                                                <?php if (isCurrentSuperAdmin($current_admin)) { ?>
+                                                <h5 class="mb-0"><?php echo htmlspecialchars($currentAdmin['admin_name']); ?></h5>
+                                                <small class="text-muted"><?php echo htmlspecialchars($currentAdmin['admin_email']); ?></small>
+                                                <?php if (isCurrentSuperAdmin($currentAdmin)) { ?>
                                                     <span class="badge text-bg-primary ms-2">Super Admin</span>
                                                 <?php } ?>
                                             </div>
