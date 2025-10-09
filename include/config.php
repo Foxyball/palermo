@@ -1,17 +1,17 @@
 <?php
 
 // DB CREDENTIALS
-define("DB_HOST", "localhost");
-define("DB_USER", "root");
-define("DB_PASS", "");
-define("DB_NAME", "palermo_live");
+const DB_HOST = "localhost";
+const DB_USER = "root";
+const DB_PASS = "";
+const DB_NAME = "palermo_live";
 
 // GENERAL SETTINGS
-define("BASE_URL", "");
-define("SITE_TITLE", "Palermo");
+const BASE_URL = "";
+const SITE_TITLE = "Palermo";
 
 // CURRENCY SETTINGS
-define("BGN_TO_EUR_RATE",1.95583);
+const BGN_TO_EUR_RATE = 1.95583;
 
 // ERROR REPORTING
 error_reporting(E_ALL & ~E_NOTICE); // E_ALL for development, E_ALL & ~E_NOTICE for production

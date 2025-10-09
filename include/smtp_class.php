@@ -53,7 +53,7 @@ function sendEmail(
         }
 
         // Content
-        $mail->isHTML(true);
+        $mail->isHTML();
         $mail->Subject = $subject;
         $mail->Body    = $body;
         $mail->AltBody = $altBody ?? strip_tags($body);

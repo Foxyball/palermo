@@ -7,9 +7,9 @@ include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-$current_admin_id = $current_admin['admin_id'] ?? null;
-$is_current_super_admin = isCurrentSuperAdmin($current_admin);
+$currentAdmin = getCurrentAdmin($pdo);
+$currentAdminID = $currentAdmin['admin_id'] ?? null;
+$isCurrentSuperAdmin = isCurrentSuperAdmin($currentAdmin);
 
 $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
@@ -26,9 +26,9 @@ if ($search !== '') {
 $countSql = 'SELECT COUNT(*) FROM admins' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
-$total_admins_count = $stmtCount->fetchColumn();
+$totalAdminsCount = $stmtCount->fetchColumn();
 
-$paginator = new Paginator($total_admins_count, $page, $perPage);
+$paginator = new Paginator($totalAdminsCount, $page, $perPage);
 
 $dataSql = 'SELECT admin_id, admin_name, admin_email, active, is_super_admin, last_log_date, last_log_ip, created_at
             FROM admins' . $whereSql . ' ORDER BY admin_id DESC LIMIT :lim OFFSET :off';
@@ -36,7 +36,7 @@ $dataSql = 'SELECT admin_id, admin_name, admin_email, active, is_super_admin, la
 $stmt = $pdo->prepare($dataSql);
 
 foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v, PDO::PARAM_STR);
+    $stmt->bindValue($k, $v);
 }
 
 $stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
@@ -101,7 +101,7 @@ headerContainer();
                                             </div>
                                         </form>
                                     </div>
-                                    <?php if ($is_current_super_admin) { ?>
+                                    <?php if ($isCurrentSuperAdmin) { ?>
                                         <div class="card-tools ms-md-auto">
                                             <a href="admin_add" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-plus"></i> Add New Admin
@@ -158,7 +158,7 @@ headerContainer();
                                                                         data-admin-id="<?php echo $admin['admin_id']; ?>"
                                                                         <?php echo $admin['active'] == '1' ? 'checked' : ''; ?>
                                                                         <?php
-                                                                        if ($admin['admin_id'] == $current_admin_id || !$is_current_super_admin) {
+                                                                        if ($admin['admin_id'] == $currentAdminID || !$isCurrentSuperAdmin) {
                                                                             echo 'disabled';
                                                                         }
                                                                         ?>>
@@ -180,20 +180,20 @@ headerContainer();
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="btn-group" role="group">
-                                                                    <?php if ($is_current_super_admin || $admin['admin_id'] == $current_admin_id) { ?>
+                                                                    <?php if ($isCurrentSuperAdmin || $admin['admin_id'] == $currentAdminID) { ?>
                                                                         <a href="admin_edit?id=<?php echo $admin['admin_id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                                             <i class="bi bi-pencil"></i>
                                                                         </a>
                                                                     <?php } ?>
 
                                                                     <?php
-                                                                    if ($admin['admin_id'] == $current_admin_id && !$is_current_super_admin) {
+                                                                    if ($admin['admin_id'] == $currentAdminID && !$isCurrentSuperAdmin) {
                                                                     ?>
                                                                         <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
                                                                             <i class="bi bi-shield-lock"></i>
                                                                         </button>
                                                                     <?php
-                                                                    } else if ($is_current_super_admin && $admin['admin_id'] != $current_admin_id) {
+                                                                    } else if ($isCurrentSuperAdmin && $admin['admin_id'] != $currentAdminID) {
                                                                     ?>
                                                                         <button type="button" class="btn btn-sm btn-outline-danger js-admin-delete-btn"
                                                                             data-admin-id="<?php echo $admin['admin_id']; ?>"
@@ -201,7 +201,7 @@ headerContainer();
                                                                             <i class="bi bi-trash"></i>
                                                                         </button>
                                                                     <?php
-                                                                    } else if ($admin['admin_id'] != $current_admin_id) {
+                                                                    } else if ($admin['admin_id'] != $currentAdminID) {
                                                                     ?>
                                                                         <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
                                                                             <i class="bi bi-lock"></i>
@@ -212,7 +212,7 @@ headerContainer();
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    <?php }; ?>
+                                                    <?php } ?>
                                                 <?php } ?>
                                             </tbody>
                                         </table>
@@ -227,8 +227,8 @@ headerContainer();
                                                     $start = $paginator->offset() + 1;
                                                     $end = $paginator->offset() + count($admins);
                                                     ?>
-                                                    <?php if ($total_admins_count > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $total_admins_count; ?>
+                                                    <?php if ($totalAdminsCount > 0) { ?>
+                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalAdminsCount; ?>
                                                     <?php } else { ?>
                                                         No results
                                                     <?php } ?>

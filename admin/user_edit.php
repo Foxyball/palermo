@@ -15,9 +15,9 @@ if ($userId <= 0) {
 
 $stmt = $pdo->prepare('SELECT id, first_name, last_name, email, active, address, city, phone, zip_code, created_at, updated_at FROM users WHERE id = ? LIMIT 1');
 $stmt->execute([$userId]);
-$user_to_edit = $stmt->fetch(PDO::FETCH_ASSOC);
+$userToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$user_to_edit) {
+if (!$userToEdit) {
     $_SESSION['error'] = 'User not found.';
     header('Location: user_list');
     exit;
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Valid email is required';
     }
 
-    if ($email !== $user_to_edit['email']) {
+    if ($email !== $userToEdit['email']) {
         $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1');
         $stmt->execute([$email, $userId]);
         if ($stmt->fetch()) {
@@ -55,12 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $password_hash = null;
+    $passwordHash = null;
     if ($password !== '') {
         if (strlen($password) < 6) {
             $errors[] = 'Password must be at least 6 characters';
         } else {
-            $password_hash = md5($password);
+            $passwordHash = md5($password);
         }
     }
 
@@ -68,9 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $fields = ['first_name = ?', 'last_name = ?', 'email = ?', 'address = ?', 'city = ?', 'phone = ?', 'zip_code = ?'];
         $params = [$firstName, $lastName, $email, $address, $city, $phone, $zipCode];
-        if ($password_hash !== null) {
+        if ($passwordHash !== null) {
             $fields[] = 'password = ?';
-            $params[] = $password_hash;
+            $params[] = $passwordHash;
         }
         $fields[] = 'updated_at = NOW()';
         $params[] = $userId;
@@ -87,13 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 } else {
-    $firstName = $user_to_edit['first_name'];
-    $lastName = $user_to_edit['last_name'];
-    $email = $user_to_edit['email'];
-    $address = $user_to_edit['address'];
-    $city = $user_to_edit['city'];
-    $phone = $user_to_edit['phone'];
-    $zipCode = $user_to_edit['zip_code'];
+    $firstName = $userToEdit['first_name'];
+    $lastName = $userToEdit['last_name'];
+    $email = $userToEdit['email'];
+    $address = $userToEdit['address'];
+    $city = $userToEdit['city'];
+    $phone = $userToEdit['phone'];
+    $zipCode = $userToEdit['zip_code'];
 }
 
 headerContainer();
@@ -110,7 +110,7 @@ headerContainer();
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h3 class="mb-0">Edit User <?php echo ($user_to_edit['first_name']); ?></h3>
+                            <h3 class="mb-0">Edit User <?php echo ($userToEdit['first_name']); ?></h3>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
@@ -130,8 +130,8 @@ headerContainer();
                             <div class="card shadow-sm">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title mb-0">Update User</h3>
-                                    <span class="badge text-bg-<?php echo ($user_to_edit['active'] == '1') ? 'success' : 'secondary'; ?>">
-                                        <?php echo ($user_to_edit['active'] == '1') ? 'Active' : 'Inactive'; ?>
+                                    <span class="badge text-bg-<?php echo ($userToEdit['active'] == '1') ? 'success' : 'secondary'; ?>">
+                                        <?php echo ($userToEdit['active'] == '1') ? 'Active' : 'Inactive'; ?>
                                     </span>
                                 </div>
                                 <div class="card-body">
@@ -191,8 +191,8 @@ headerContainer();
                                     </form>
                                 </div>
                                 <div class="card-footer text-muted small">
-                                    Created: <?php echo date('M j, Y g:i A', strtotime($user_to_edit['created_at'])); ?>
-                                    | Last Updated: <?php echo date('M j, Y g:i A', strtotime($user_to_edit['updated_at'])); ?>
+                                    Created: <?php echo date('M j, Y g:i A', strtotime($userToEdit['created_at'])); ?>
+                                    | Last Updated: <?php echo date('M j, Y g:i A', strtotime($userToEdit['updated_at'])); ?>
                                 </div>
                             </div>
                         </div>

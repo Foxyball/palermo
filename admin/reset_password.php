@@ -7,8 +7,8 @@ include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-if (!$current_admin) {
+$currentAdmin = getCurrentAdmin($pdo);
+if (!$currentAdmin) {
     $_SESSION['error'] = 'Unable to load account information.';
     header('Location: index');
     exit;
@@ -36,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'New password and confirmation do not match';
     }
 
-    // Verify current password
+    // Verify the current password
     if (empty($errors)) {
         $stmt = $pdo->prepare('SELECT admin_password FROM admins WHERE admin_id = ? LIMIT 1');
-        $stmt->execute([$current_admin['admin_id']]);
+        $stmt->execute([$currentAdmin['admin_id']]);
         $adminPassword = $stmt->fetchColumn();
 
         if (!$adminPassword || md5($currentPassword) !== $adminPassword) {
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newPasswordHash = md5($newPassword);
         try {
             $stmt = $pdo->prepare('UPDATE admins SET admin_password = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
-            $stmt->execute([$newPasswordHash, $current_admin['admin_id']]);
+            $stmt->execute([$newPasswordHash, $currentAdmin['admin_id']]);
 
             // Send email notification about password change
             $emailSubject = 'Password Changed - ' . SITE_TITLE;
@@ -82,14 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class='content'>
                         <h3>Password Changed Successfully</h3>
-                        <p>Hello " . htmlspecialchars($current_admin['admin_name']) . ",</p>
+                        <p>Hello " . htmlspecialchars($currentAdmin['admin_name']) . ",</p>
                         <p>Your admin account password has been successfully changed.</p>
                         
                         <div class='alert'>
                             <strong>Account Details:</strong><br>
-                            Name: " . htmlspecialchars($current_admin['admin_name']) . "<br>
-                            Email: " . htmlspecialchars($current_admin['admin_email']) . "<br>
-                            Admin ID: #" . htmlspecialchars($current_admin['admin_id']) . "<br>
+                            Name: " . htmlspecialchars($currentAdmin['admin_name']) . "<br>
+                            Email: " . htmlspecialchars($currentAdmin['admin_email']) . "<br>
+                            Admin ID: #" . htmlspecialchars($currentAdmin['admin_id']) . "<br>
                             Date: " . date('M j, Y g:i A') . "<br>
                             IP Address: " . htmlspecialchars($_SERVER['REMOTE_ADDR'] ?? 'Unknown') . "
                         </div>
@@ -112,21 +112,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             try {
                 $emailSent = sendEmail(
-                    $current_admin['admin_email'],
-                    $current_admin['admin_name'],
+                    $currentAdmin['admin_email'],
+                    $currentAdmin['admin_name'],
                     $emailSubject,
                     $emailBody
                 );
             } catch (Exception $e) {
                 $emailSent = false;
-                // Email failed, but password was still changed successfully
             }
 
-            if ($emailSent) {
-                $_SESSION['success'] = 'Password updated successfully.';
-            } else {
-                $_SESSION['success'] = 'Password updated successfully.';
-            }
+            $_SESSION['success'] = 'Password updated successfully.';
 
             header('Location: reset_password');
             exit;
@@ -185,11 +180,11 @@ headerContainer();
                                     <div class="mb-4">
                                         <div class="d-flex align-items-center mb-2">
                                             <div class="user-avatar me-3" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f8f9fa;color:#003b79;border-radius:50%;">
-                                                <?php echo strtoupper($current_admin['admin_name'][0]); ?>
+                                                <?php echo strtoupper($currentAdmin['admin_name'][0]); ?>
                                             </div>
                                             <div>
-                                                <h5 class="mb-0"><?php echo htmlspecialchars($current_admin['admin_name']); ?></h5>
-                                                <small class="text-muted"><?php echo htmlspecialchars($current_admin['admin_email']); ?></small>
+                                                <h5 class="mb-0"><?php echo htmlspecialchars($currentAdmin['admin_name']); ?></h5>
+                                                <small class="text-muted"><?php echo htmlspecialchars($currentAdmin['admin_email']); ?></small>
                                             </div>
                                         </div>
                                     </div>

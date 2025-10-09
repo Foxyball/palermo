@@ -30,12 +30,11 @@ if (isset($_POST['login'])) {
       $_SESSION['admin_logged_in'] = true;
 
       header('location: index');
-      exit;
     } else {
       $_SESSION['error'] = 'Wrong email or password.';
       header('location: login');
-      exit;
     }
+      exit;
   } catch (PDOException $e) {
     $_SESSION['error'] = 'Something went wrong.';
     header('location: login');
