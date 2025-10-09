@@ -434,4 +434,23 @@ function footerContainer(): void
                 },
             };
         </script>
+
+
+    <?php
+    if (!empty($_SESSION['success']) || !empty($_SESSION['error'])) { ?>
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                <?php if (!empty($_SESSION['success'])): ?>
+                toastr.success('<?php echo addslashes($_SESSION['success']); ?>');
+                <?php endif; ?>
+                <?php if (!empty($_SESSION['error'])): ?>
+                toastr.error('<?php echo addslashes($_SESSION['error']); ?>');
+                <?php endif; ?>
+            });
+        </script>
+    <?php
+    unset($_SESSION['success'], $_SESSION['error']);
+    };
+    ?>
+
     <?php }
