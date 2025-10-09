@@ -150,6 +150,9 @@ headerContainer();
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="btn-group" role="group">
+                                                                    <a href="gallery_images?id=<?php echo $gallery['id']; ?>" class="btn btn-sm btn-outline-warning" title="Manage Images">
+                                                                        <i class="bi bi-image"></i>
+                                                                    </a>
                                                                     <a href="gallery_edit?id=<?php echo $gallery['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                                         <i class="bi bi-pencil"></i>
                                                                     </a>

@@ -147,7 +147,8 @@ function sidebarContainer(): void
     $galleryPages = [
             'gallery_list',
         'gallery_add',
-        'gallery_edit'
+        'gallery_edit',
+        'gallery_images'
     ];
 
     $dashboardPages = ['index'];
@@ -238,7 +239,7 @@ function sidebarContainer(): void
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="gallery_list" class="nav-link <?php echo in_array($currentPage, ['gallery_list', 'gallery_add', 'gallery_edit']) ? 'active' : ''; ?>">
+                                    <a href="gallery_list" class="nav-link <?php echo in_array($currentPage, ['gallery_list', 'gallery_add', 'gallery_edit', 'gallery_images']) ? 'active' : ''; ?>">
                                         <i class="bi bi-person-lines-fill nav-icon"></i>
                                         <p>Galleries</p>
                                     </a>
@@ -402,167 +403,35 @@ function footerContainer(): void
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
             crossorigin="anonymous"></script>
         <script src="./js/adminlte.js"></script>
-        <script>
-            const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-            const Default = {
-                scrollbarTheme: 'os-theme-light',
-                scrollbarAutoHide: 'leave',
-                scrollbarClickScroll: true,
-            };
-            document.addEventListener('DOMContentLoaded', function() {
-                const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-                if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
-                    OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-                        scrollbars: {
-                            theme: Default.scrollbarTheme,
-                            autoHide: Default.scrollbarAutoHide,
-                            clickScroll: Default.scrollbarClickScroll,
-                        },
-                    });
-                }
-            });
-        </script>
+
         <script
             src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
-            integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
+            integrity="sha256-Er6+oxBM7ZLw8uYgrS0d6zPFq9B8NbhJvJ20g4/iU1Q="
             crossorigin="anonymous"></script>
-        <script>
-            // SweetAlert2 helper
-            window.confirmDelete = async function (options) {
-                const {
-                    title = 'Are you sure?',
-                    text = 'This action cannot be undone.',
-                    confirmButtonText = 'Yes, delete',
-                    icon = 'danger',
-                } = options || {};
-                const res = await Swal.fire({
-                    title,
-                    text,
-                    icon,
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText,
-                    reverseButtons: true,
-                });
-                return res.isConfirmed;
-            };
-        </script>
 
         <script>
-            <?php if (isset($_SESSION['success'])) { ?>
-                toastr.success("<?php echo addslashes($_SESSION['success']); ?>");
-                <?php unset($_SESSION['success']); ?>
-            <?php } ?>
-            <?php if (isset($_SESSION['error'])) { ?>
-                toastr.error("<?php echo addslashes($_SESSION['error']); ?>");
-                <?php unset($_SESSION['error']); ?>
-            <?php } ?>
+            // eslint-disable-next-line no-unused-vars
+            const Select2 = {
+                bs5Theme: () => {
+                    const $element = $(this);
+                    const hasMultiple = !!$element.attr('multiple');
+                    const hasInputGroup = $element.closest('.input-group').length;
 
+                    let theme = 'bootstrap-5';
 
+                    if (hasMultiple) {
+                        theme += ' select2-bootstrap-5-theme-multiple';
+                    }
 
-            const visitors_chart_options = {
-                series: [{
-                        name: 'High - 2023',
-                        data: [100, 120, 170, 167, 180, 177, 160],
-                    },
-                    {
-                        name: 'Low - 2023',
-                        data: [60, 80, 70, 67, 80, 77, 100],
-                    },
-                ],
-                chart: {
-                    height: 200,
-                    type: 'line',
-                    toolbar: {
-                        show: false,
-                    },
+                    if (hasInputGroup) {
+                        theme += ' select2-bootstrap-5-theme-input-group';
+                    }
+
+                    return theme;
                 },
-                colors: ['#0d6efd', '#adb5bd'],
-                stroke: {
-                    curve: 'smooth',
-                },
-                grid: {
-                    borderColor: '#e7e7e7',
-                    row: {
-                        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                        opacity: 0.5,
-                    },
-                },
-                legend: {
-                    show: false,
-                },
-                markers: {
-                    size: 1,
-                },
-                xaxis: {
-                    categories: ['22th', '23th', '24th', '25th', '26th', '27th', '28th'],
+                _init: () => {
+                    // page specific demo, per page to load specific select2 demo
                 },
             };
-
-            const visitors_chart = new ApexCharts(
-                document.querySelector('#visitors-chart'),
-                visitors_chart_options,
-            );
-            visitors_chart.render();
-
-            const sales_chart_options = {
-                series: [{
-                        name: 'Net Profit',
-                        data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-                    },
-                    {
-                        name: 'Revenue',
-                        data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-                    },
-                    {
-                        name: 'Free Cash Flow',
-                        data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
-                    },
-                ],
-                chart: {
-                    type: 'bar',
-                    height: 200,
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '55%',
-                        endingShape: 'rounded',
-                    },
-                },
-                legend: {
-                    show: false,
-                },
-                colors: ['#0d6efd', '#20c997', '#ffc107'],
-                dataLabels: {
-                    enabled: false,
-                },
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['transparent'],
-                },
-                xaxis: {
-                    categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-                },
-                fill: {
-                    opacity: 1,
-                },
-                tooltip: {
-                    y: {
-                        formatter: function(val) {
-                            return '$ ' + val + ' thousands';
-                        },
-                    },
-                },
-            };
-
-            const sales_chart = new ApexCharts(
-                document.querySelector('#sales-chart'),
-                sales_chart_options,
-            );
-            sales_chart.render();
         </script>
-
     <?php }
