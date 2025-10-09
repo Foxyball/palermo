@@ -109,21 +109,23 @@ headerContainer();
                             </div>
                             <div class="card-body">
                                 <?php if (!empty($messages)) { ?>
-                                    <div class="alert alert-success">
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                                         <ul class="mb-0">
                                             <?php foreach ($messages as $msg) { ?>
                                                 <li><?php echo htmlspecialchars($msg); ?></li>
                                             <?php } ?>
                                         </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                 <?php } ?>
                                 <?php if (!empty($errors)) { ?>
-                                    <div class="alert alert-danger">
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                         <ul class="mb-0">
                                             <?php foreach ($errors as $err) { ?>
                                                 <li><?php echo htmlspecialchars($err); ?></li>
                                             <?php } ?>
                                         </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                 <?php } ?>
                                 <form method="POST" enctype="multipart/form-data">
@@ -146,8 +148,8 @@ headerContainer();
                                 <h3 class="card-title mb-0">Images in "<?php echo htmlspecialchars($gallery['title']); ?>"</h3>
                             </div>
                             <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-striped mb-0 align-middle">
+                                <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                                <table class="table table-striped mb-0 align-middle">
                                         <thead>
                                             <tr>
                                                 <th style="width: 80px;">ID</th>
@@ -166,7 +168,7 @@ headerContainer();
                                                 <td>
                                                     <img src="<?php echo '/palermo/' . htmlspecialchars($img['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
                                                 </td>
-                                                <td><code><?php echo htmlspecialchars($img['image']); ?></code></td>
+                                                <td class="text-break"><code class="d-inline-block" style="max-width: 520px; white-space: normal; word-break: break-all; overflow-wrap: anywhere;">&nbsp;<?php echo htmlspecialchars($img['image']); ?></code></td>
                                                 <td><?php echo $img['created_at'] ? date('M j, Y g:i A', strtotime($img['created_at'])) : '-'; ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-sm btn-outline-danger js-gallery-image-delete-btn" title="Delete" data-image-id="<?php echo (int)$img['id']; ?>">
