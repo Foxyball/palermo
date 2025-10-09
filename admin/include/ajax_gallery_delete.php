@@ -26,11 +26,13 @@ try {
         sendJsonError('Gallery not found', 404);
     }
 
+    deleteGalleryImages($pdo, $galleryId);
+
     deleteGallery($pdo, $galleryId);
 
     sendJsonResponse([
         'success' => true,
-        'message' => 'Gallery deleted successfully',
+        'message' => 'Gallery and associated images deleted successfully',
         'gallery_id' => $galleryId,
     ]);
 } catch (Throwable $e) {
@@ -50,6 +52,22 @@ function deleteGallery(PDO $pdo, int $id): void
 {
     $stmt = $pdo->prepare('DELETE FROM galleries WHERE id = ? LIMIT 1');
     $stmt->execute([$id]);
+}
+
+function deleteGalleryImages(PDO $pdo, int $galleryId): void
+{
+    $stmt = $pdo->prepare('SELECT image FROM gallery_images WHERE gallery_id = ?');
+    $stmt->execute([$galleryId]);
+    $images = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    foreach ($images as $imagePath) {
+        if (!empty($imagePath)) {
+            deleteImageFile($imagePath);
+        }
+    }
+
+    $stmt = $pdo->prepare('DELETE FROM gallery_images WHERE gallery_id = ?');
+    $stmt->execute([$galleryId]);
 }
 
 function sendJsonError(string $message, int $status = 400): void
