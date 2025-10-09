@@ -1,58 +1,83 @@
 <?php
+
+declare(strict_types=1);
+
 header('Content-Type: application/json');
 
-require_once(__DIR__ . '/../../include/connect.php');
-require_once(__DIR__ . '/functions.php');
+require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
 
-$current_admin = getCurrentAdmin($pdo);
-if (!isCurrentSuperAdmin($current_admin)) {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Permission denied']);
-    exit;
+$currentAdmin = getCurrentAdmin($pdo);
+
+if (!isCurrentSuperAdmin($currentAdmin)) {
+    sendJsonError('Permission denied', 403);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Invalid method']);
-    exit;
+    sendJsonError('Invalid request method', 405);
 }
 
-$admin_id = $_POST['admin_id'] ?? 0;
-if ($admin_id <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid admin ID']);
-    exit;
+$adminId = isset($_POST['admin_id']) ? (int) $_POST['admin_id'] : 0;
+
+if ($adminId <= 0) {
+    sendJsonError('Invalid admin ID', 400);
 }
 
-if ($admin_id === (int)$current_admin['admin_id']) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'You cannot change your own status']);
-    exit;
+if ($adminId === (int) $currentAdmin['admin_id']) {
+    sendJsonError('You cannot change your own status', 400);
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT admin_id, active FROM admins WHERE admin_id = ? LIMIT 1');
-    $stmt->execute([$admin_id]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    $admin = fetchAdminById($pdo, $adminId);
+
     if (!$admin) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Admin not found']);
-        exit;
+        sendJsonError('Admin not found', 404);
     }
 
-    $newStatus = $admin['active'] === '1' ? '0' : '1';
-    $upd = $pdo->prepare('UPDATE admins SET active = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
-    $upd->execute([$newStatus, $admin_id]);
+    $newStatus = toggleAdminStatus($pdo, $adminId, $admin['active']);
 
-    echo json_encode([
+    sendJsonResponse([
         'success' => true,
         'message' => 'Status updated',
-        'admin_id' => $admin_id,
+        'admin_id' => $adminId,
         'active' => $newStatus,
     ]);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+} catch (Throwable $e) {
+    sendJsonError('Server error', 500);
+}
+
+function fetchAdminById(PDO $pdo, int $id): ?array
+{
+    $stmt = $pdo->prepare('SELECT admin_id, active FROM admins WHERE admin_id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $admin ?: null;
+}
+
+function toggleAdminStatus(PDO $pdo, int $id, string $currentStatus): string
+{
+    $newStatus = $currentStatus === '1' ? '0' : '1';
+
+    $stmt = $pdo->prepare(
+        'UPDATE admins SET active = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1'
+    );
+    $stmt->execute([$newStatus, $id]);
+
+    return $newStatus;
+}
+
+function sendJsonError(string $message, int $status = 400): void
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'message' => $message]);
+    exit;
+}
+
+function sendJsonResponse(array $data): void
+{
+    echo json_encode($data);
+    exit;
 }
