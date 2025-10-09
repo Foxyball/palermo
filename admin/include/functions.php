@@ -66,3 +66,123 @@ function generateSlug(string $text): string {
         )
     );
 }
+
+
+
+/**
+ * Upload multiple images to uploads/{year}/{month}/ and return their paths.
+ * Stores relative paths (e.g., uploads/2025/10/filename.jpg) suitable for web and DB.
+ * Saves files under project root, not under admin/.
+ * @param string $inputName The name attribute of the input[type=file] (should be an array - use inputName[])
+ * @param bool $isThumb Optional. If true, uploads to uploads/{year}/{month}/t1/. Default false.
+ * @return array ['paths' => string[], 'errors' => string[]]
+ */
+function uploadMultiImage(string $inputName, bool $isThumb = false) : array
+{
+    $paths = [];
+    $errors = [];
+
+    $year = date('Y');
+    $month = date('m');
+
+    $baseDirRel = "uploads/$year/$month";
+    $targetDirRel = $isThumb ? "$baseDirRel/t1" : $baseDirRel;
+
+    // Absolute filesystem base (project root)
+    $projectRoot = dirname(__DIR__, 2);
+    $targetDirFs = $projectRoot . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $targetDirRel);
+
+    if (!is_dir($targetDirFs)) {
+        if (!mkdir($targetDirFs, 0777, true) && !is_dir($targetDirFs)) {
+            $errors[] = 'Failed to create upload directory.';
+            return ['paths' => $paths, 'errors' => $errors];
+        }
+    }
+
+    // Allowed extensions and MIME types
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'svg'];
+    $allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/svg+xml',
+    ];
+    $maxFileSize = 2 * 1024 * 1024; // 2MB
+
+    // Check if files are uploaded
+    if (!empty($_FILES[$inputName]['name'][0])) {
+        $files = $_FILES[$inputName];
+        for ($i = 0; $i < count($files['name']); $i++) {
+            if ($files['error'][$i] === UPLOAD_ERR_OK) {
+                $originalName = basename($files['name'][$i]);
+                $fileSize = $files['size'][$i];
+                $fileTmp = $files['tmp_name'][$i];
+                $fileExt = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+                $fileMime = @mime_content_type($fileTmp) ?: '';
+
+                // Validate extension
+                if (!in_array($fileExt, $allowedExtensions, true)) {
+                    $errors[] = "File '$originalName' has an invalid file extension.";
+                    continue;
+                }
+                // Validate MIME type
+                if (!in_array($fileMime, $allowedMimeTypes, true)) {
+                    $errors[] = "File '$originalName' has an invalid MIME type.";
+                    continue;
+                }
+                // Validate file size
+                if ($fileSize > $maxFileSize) {
+                    $errors[] = "File '$originalName' exceeds the maximum allowed size of 2MB.";
+                    continue;
+                }
+
+                $safeName = uniqid() . '_' . preg_replace('/[^A-Za-z0-9_\-.]/', '_', $originalName);
+                $destinationFs = $targetDirFs . DIRECTORY_SEPARATOR . $safeName;
+                $destinationRel = $targetDirRel . '/' . $safeName;
+
+                if (move_uploaded_file($fileTmp, $destinationFs)) {
+                    $paths[] = $destinationRel;
+                } else {
+                    $errors[] = "File '$originalName' could not be uploaded due to a server error.";
+                }
+            } else {
+                $errors[] = "File '" . ($files['name'][$i] ?? 'unknown') . "' failed to upload. Error code: " . ($files['error'][$i] ?? '');
+            }
+        }
+    }
+
+    return ['paths' => $paths, 'errors' => $errors];
+}
+
+/**
+ * Delete a single file by its relative path under the project root uploads.
+ * Mirrors the simplicity of Laravel's File::delete approach.
+ * @param string $relativePath e.g. 'uploads/2025/10/image.jpg'
+ * @return bool True if deleted (or file missing), false if exists but could not be deleted
+ */
+function deleteImageFile(string $relativePath): bool
+{
+    $relativePath = trim($relativePath);
+    if ($relativePath === '') {
+        return false;
+    }
+
+    $projectRoot = dirname(__DIR__, 2);
+    $rootReal = realpath($projectRoot) ?: $projectRoot;
+
+    $candidate = $projectRoot . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+    $fileReal = @realpath($candidate) ?: $candidate;
+
+    if (strpos($fileReal, $rootReal) !== 0) {
+        return false;
+    }
+
+    if (!file_exists($fileReal)) {
+        return true;
+    }
+
+    if (is_file($fileReal) && is_writable($fileReal)) {
+        return @unlink($fileReal);
+    }
+
+    return false;
+}
