@@ -19,6 +19,7 @@ Open Command Prompt and run:
 cd C:\xampp\htdocs\palermo
 composer install
 npm install
+npm run build
 ```
 
 ## 3) Database setup

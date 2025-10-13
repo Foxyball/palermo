@@ -151,11 +151,25 @@ function sidebarContainer(): void
         'gallery_images'
     ];
 
+    $blogPages = [
+            'blog_list',
+        'blog_add',
+        'blog_edit'
+    ];
+
+    $blogCategoriesPages = [
+            'blog_category_list',
+        'blog_category_add',
+        'blog_category_edit'
+    ];
+
     $dashboardPages = ['index'];
     
     $isAdminSection = in_array($currentPage, $adminPages);
     $isArticleSection = in_array($currentPage, $articlePages);
     $isGallerySection = in_array($currentPage, $galleryPages);
+    $isBlogSection = in_array($currentPage, $blogPages);
+    $isBlogCategorySection = in_array($currentPage, $blogCategoriesPages);
     $isDashboard = in_array($currentPage, $dashboardPages) || $currentPage === 'index';
 
     ?>
@@ -222,7 +236,7 @@ function sidebarContainer(): void
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="category_list" class="nav-link <?php echo in_array($currentPage, ['category_list', 'category_add', 'category_edit']) ? 'active' : ''; ?>">
-                                        <i class="bi bi-person-lines-fill nav-icon"></i>
+                                        <i class="bi bi-tag-fill nav-icon"></i>
                                         <p>Categories</p>
                                     </a>
                                 </li>
@@ -231,7 +245,7 @@ function sidebarContainer(): void
 
                         <li class="nav-item <?php echo $isGallerySection ? 'menu-open' : ''; ?>">
                             <a href="#" class="nav-link <?php echo $isGallerySection ? 'active' : ''; ?>">
-                                <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <i class="nav-icon bi bi-file-earmark-image"></i>
                                 <p>
                                     Galleries
                                     <i class="bi bi-chevron-down right"></i>
@@ -240,12 +254,40 @@ function sidebarContainer(): void
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="gallery_list" class="nav-link <?php echo in_array($currentPage, ['gallery_list', 'gallery_add', 'gallery_edit', 'gallery_images']) ? 'active' : ''; ?>">
-                                        <i class="bi bi-person-lines-fill nav-icon"></i>
+                                        <i class="bi bi-file-image-fill nav-icon"></i>
                                         <p>Galleries</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
+                        <li class="nav-item <?php echo $isBlogSection ? 'menu-open' : ''; ?>">
+                            <a href="#" class="nav-link <?php echo $isBlogSection ? 'active' : ''; ?>">
+                                <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <p>
+                                    Blog
+                                    <i class="bi bi-chevron-down right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="blog_list" class="nav-link <?php echo in_array($currentPage, ['blog_list', 'blog_add', 'blog_edit']) ? 'active' : ''; ?>">
+                                        <i class="bi bi-newspaper nav-icon"></i>
+                                        <p>Blog Post</p>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="blog_category_list" class="nav-link <?php echo in_array($currentPage, ['blog_category_list', 'blog_category_add', 'blog_category_edit']) ? 'active' : ''; ?>">
+                                        <i class="bi bi-tag-fill nav-icon"></i>
+                                        <p>Blog Category</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
 
                     </ul>
                 </nav>
