@@ -154,6 +154,92 @@ function uploadMultiImage(string $inputName, bool $isThumb = false) : array
 }
 
 /**
+ * Upload single image to uploads/{year}/{month}/ and return its path.
+ * Stores relative path (e.g., uploads/2025/10/filename.jpg) suitable for web and DB.
+ * Saves files under project root, not under admin/.
+ * @param string $inputName The name attribute of the input[type=file]
+ * @param bool $isThumb Optional. If true, uploads to uploads/{year}/{month}/t1/
+ * @return array ['path' => ?string, 'error' => ?string]
+ */
+function uploadImage(string $inputName, bool $isThumb = false): array
+{
+    $result = ['path' => null, 'error' => null];
+
+    if (!isset($_FILES[$inputName]) || empty($_FILES[$inputName]['name'])) {
+        return $result; // No file selected
+    }
+
+    $file = $_FILES[$inputName];
+
+    if (!is_array($file) || !isset($file['error'])) {
+        $result['error'] = 'Invalid upload.';
+        return $result;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $result['error'] = 'Upload failed. Error code: ' . $file['error'];
+        return $result;
+    }
+
+    $year = date('Y');
+    $month = date('m');
+
+    $baseDirRel = "uploads/$year/$month";
+    $targetDirRel = $isThumb ? "$baseDirRel/t1" : $baseDirRel;
+
+    // Absolute filesystem base (project root)
+    $projectRoot = dirname(__DIR__, 2);
+    $targetDirFs = $projectRoot . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $targetDirRel);
+
+    if (!is_dir($targetDirFs)) {
+        if (!mkdir($targetDirFs, 0777, true) && !is_dir($targetDirFs)) {
+            $result['error'] = 'Failed to create upload directory.';
+            return $result;
+        }
+    }
+
+    // Allowed extensions and MIME types
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'svg'];
+    $allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/svg+xml',
+    ];
+    $maxFileSize = 2 * 1024 * 1024; // 2MB
+
+    $originalName = basename($file['name']);
+    $fileSize = $file['size'] ?? 0;
+    $fileTmp = $file['tmp_name'] ?? '';
+    $fileExt = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $fileMime = $fileTmp ? (@mime_content_type($fileTmp) ?: '') : '';
+
+    if (!in_array($fileExt, $allowedExtensions, true)) {
+        $result['error'] = "Invalid file extension.";
+        return $result;
+    }
+    if (!in_array($fileMime, $allowedMimeTypes, true)) {
+        $result['error'] = "Invalid file type.";
+        return $result;
+    }
+    if ($fileSize > $maxFileSize) {
+        $result['error'] = "File exceeds the maximum allowed size of 2MB.";
+        return $result;
+    }
+
+    $safeName = uniqid() . '_' . preg_replace('/[^A-Za-z0-9_\-.]/', '_', $originalName);
+    $destinationFs = $targetDirFs . DIRECTORY_SEPARATOR . $safeName;
+    $destinationRel = $targetDirRel . '/' . $safeName;
+
+    if (move_uploaded_file($fileTmp, $destinationFs)) {
+        $result['path'] = $destinationRel;
+    } else {
+        $result['error'] = 'File could not be uploaded due to a server error.';
+    }
+
+    return $result;
+}
+
+/**
  * Delete a single file by its relative path under the project root uploads.
  * Mirrors the simplicity of Laravel's File::delete approach.
  * @param string $relativePath e.g. 'uploads/2025/10/image.jpg'

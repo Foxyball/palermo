@@ -1,6 +1,17 @@
 {
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
+    "ckeditor5": "^47.0.0",
     "sweetalert2": "^11.23.0",
     "toastr": "^2.1.4"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1"
+  },
+  "scripts": {
+    "build": "webpack --mode production"
   }
 }

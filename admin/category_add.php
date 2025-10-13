@@ -10,8 +10,6 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
-    $slug = trim($_POST['slug'] ?? '');
-
     $slug = generateSlug($name);
 
     // Validation
