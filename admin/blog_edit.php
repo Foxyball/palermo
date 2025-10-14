@@ -72,14 +72,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $newImagePath = null;
+    $imageUrl = trim($_POST['image_url'] ?? '');
+    $hasFile = isset($_FILES['image']) && !empty($_FILES['image']['name']);
+    $hasUrl = $imageUrl !== '';
 
-    // if a new images is uploaded, it will replace the old one, otherwise nothing changes
+    if ($hasFile && $hasUrl) {
+        $errors[] = 'Please provide either a new image file or an image URL, not both.';
+    }
+
     if (empty($errors)) {
-        $upload = uploadImage('image',true);
-        if (!empty($upload['error'])) {
-            $errors[] = $upload['error'];
-        } else if (!empty($upload['path'])) {
-            $newImagePath = $upload['path'];
+        if ($hasFile) {
+            $upload = uploadImage('image', true);
+            if (!empty($upload['error'])) {
+                $errors[] = $upload['error'];
+            } elseif (!empty($upload['path'])) {
+                $newImagePath = $upload['path'];
+            }
+        } elseif ($hasUrl) {
+            $result = getImageFromUrl($imageUrl, true);
+            if (!empty($result['path'])) {
+                $newImagePath = $result['path'];
+            } elseif (!empty($result['error'])) {
+                $errors[] = $result['error'];
+            }
         }
     }
 
@@ -227,7 +242,7 @@ headerContainer();
                                         </div>
 
                                         <div class="col-12">
-                                            <label class="form-label d-block">Current Featured Image</label>
+                                            <label class="form-label" for="image">Current Featured Image</label>
                                             <?php if (!empty($imagePath)) { ?>
                                                 <img src="<?php echo '/palermo/' . htmlspecialchars($imagePath); ?>"
                                                      alt="Current image"
@@ -242,6 +257,15 @@ headerContainer();
                                             <input type="file" id="image" name="image" class="form-control"
                                                    accept="image/*"/>
                                             <small class="text-muted">Optional. JPG/PNG/SVG up to 2MB.</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="image_url">Or Image URL</label>
+                                            <input type="url" id="image_url" name="image_url" class="form-control" placeholder="https://example.com/image.jpg" value="<?php echo htmlspecialchars($_POST['image_url'] ?? ''); ?>"/>
+                                            <small class="text-muted">Paste a direct image URL (JPG, PNG, SVG, max 2MB).</small>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Preview</label><br>
+                                            <img class="js-image-preview" src="<?php echo (!empty($_POST['image_url'])) ? htmlspecialchars($_POST['image_url']) : ((!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name'])) ? '/palermo/' . htmlspecialchars($imagePath) : '#'); ?>" alt="Image preview" style="max-width:220px; max-height:180px;<?php echo (!empty($_POST['image_url']) || (!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name']))) ? '' : 'display:none;'; ?> border:1px solid #ccc; background:#fafafa;"/>
                                         </div>
                                     </div>
 
@@ -261,6 +285,48 @@ headerContainer();
 </div>
 
 <script src="./js/bundle.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    function showPreview(src) {
+        if (src) {
+            $('.js-image-preview').attr('src', src).show();
+        } else {
+            $('.js-image-preview').hide();
+        }
+    }
+    $('#image').change(function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                showPreview(e.target.result);
+            }
+            reader.readAsDataURL(file);
+        } else {
+            var url = $('#image_url').val().trim();
+            if (url && url.match(/^https?:\/\//i)) {
+                showPreview(url);
+            } else {
+                var current = $('.js-image-preview').attr('data-current');
+                showPreview(current || null);
+            }
+        }
+    });
+    $('#image_url').on('input', function() {
+        var url = $(this).val().trim();
+        if (url && url.match(/^https?:\/\//i)) {
+            showPreview(url);
+        } else if (!$('#image').val()) {
+            var current = $('.js-image-preview').attr('data-current');
+            showPreview(current || null);
+        }
+    });
+    // On page load, show preview if editing/returning to form
+    if ($('#image_url').val()) {
+        showPreview($('#image_url').val());
+    }
+});
+</script>
 
 </body>
 

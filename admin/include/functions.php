@@ -1,16 +1,19 @@
 <?php
-function checkAdminLogin(): bool {
+function checkAdminLogin(): bool
+{
     return isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 }
 
-function requireAdminLogin(): void {
+function requireAdminLogin(): void
+{
     if (!checkAdminLogin()) {
         header('Location: login');
         exit;
     }
 }
 
-function getCurrentAdmin(PDO $pdo): ?array {
+function getCurrentAdmin(PDO $pdo): ?array
+{
     if (!isset($_SESSION['admin_id'])) {
         return null;
     }
@@ -21,7 +24,8 @@ function getCurrentAdmin(PDO $pdo): ?array {
     return $admin !== false ? $admin : null;
 }
 
-function isCurrentSuperAdmin(?array $admin): bool {
+function isCurrentSuperAdmin(?array $admin): bool
+{
     if (!$admin) {
         return false;
     }
@@ -36,7 +40,8 @@ function isCurrentSuperAdmin(?array $admin): bool {
  * @param string|null $base Base script path (defaults to 'admin_list')
  * @return string URL with query string
  */
-function buildPageUrl(int $page, ?string $base = null): string {
+function buildPageUrl(int $page, ?string $base = null): string
+{
     $base = $base ?: 'admin_list';
     $query = [];
     if (isset($_GET['q']) && $_GET['q'] !== '') {
@@ -51,11 +56,12 @@ function buildPageUrl(int $page, ?string $base = null): string {
 
 /**
  * Generate a URL-friendly slug from a string
- * 
+ *
  * @param string $text The text to convert to slug
  * @return string Clean slug suitable for URLs
  */
-function generateSlug(string $text): string {
+function generateSlug(string $text): string
+{
     return strtolower(
         trim(
             preg_replace(
@@ -68,7 +74,6 @@ function generateSlug(string $text): string {
 }
 
 
-
 /**
  * Upload multiple images to uploads/{year}/{month}/ and return their paths.
  * Stores relative paths (e.g., uploads/2025/10/filename.jpg) suitable for web and DB.
@@ -77,7 +82,7 @@ function generateSlug(string $text): string {
  * @param bool $isThumb Optional. If true, uploads to uploads/{year}/{month}/t1/. Default false.
  * @return array ['paths' => string[], 'errors' => string[]]
  */
-function uploadMultiImage(string $inputName, bool $isThumb = false) : array
+function uploadMultiImage(string $inputName, bool $isThumb = false): array
 {
     $paths = [];
     $errors = [];
@@ -236,6 +241,85 @@ function uploadImage(string $inputName, bool $isThumb = false): array
         $result['error'] = 'File could not be uploaded due to a server error.';
     }
 
+    return $result;
+}
+
+/**
+ * Download an image from a URL and save it to uploads/{year}/{month}/ (or t1/ for thumbs).
+ * Returns ['path' => ?string, 'error' => ?string]
+ * @param string $imageUrl The URL of the image to download
+ * @param bool $isThumb Optional. If true, uploads to uploads/{year}/{month}/t1/
+ * @return array ['path' => ?string, 'error' => ?string]
+ */
+function getImageFromUrl(string $imageUrl, bool $isThumb = false): array
+{
+    $result = ['path' => null, 'error' => null];
+    if (empty($imageUrl) || !filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+        $result['error'] = 'Invalid image URL.';
+        return $result;
+    }
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'svg'];
+    $allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/svg+xml',
+    ];
+    $maxFileSize = 2 * 1024 * 1024; // 2MB
+    // Get image content
+    $imageData = @file_get_contents($imageUrl);
+    if ($imageData === false) {
+        $result['error'] = 'Could not download image.';
+        return $result;
+    }
+    if (strlen($imageData) > $maxFileSize) {
+        $result['error'] = 'Image exceeds the maximum allowed size of 2MB.';
+        return $result;
+    }
+    $urlPath = parse_url($imageUrl, PHP_URL_PATH);
+    $ext = strtolower(pathinfo($urlPath, PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExtensions, true)) {
+
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->buffer($imageData);
+        $ext = array_search($mime, [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'svg' => 'image/svg+xml',
+        ], true);
+        if ($ext === false) {
+            $result['error'] = 'Invalid or unsupported image type.';
+            return $result;
+        }
+    } else {
+        // Validate mime type
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->buffer($imageData);
+        if (!in_array($mime, $allowedMimeTypes, true)) {
+            $result['error'] = 'Invalid or unsupported image type.';
+            return $result;
+        }
+    }
+    $year = date('Y');
+    $month = date('m');
+    $baseDirRel = "uploads/$year/$month";
+    $targetDirRel = $isThumb ? "$baseDirRel/t1" : $baseDirRel;
+    $projectRoot = dirname(__DIR__, 2);
+    $targetDirFs = $projectRoot . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $targetDirRel);
+    if (!is_dir($targetDirFs)) {
+        if (!mkdir($targetDirFs, 0777, true) && !is_dir($targetDirFs)) {
+            $result['error'] = 'Failed to create upload directory.';
+            return $result;
+        }
+    }
+    $safeName = uniqid('url_') . '.' . $ext;
+    $destinationFs = $targetDirFs . DIRECTORY_SEPARATOR . $safeName;
+    $destinationRel = $targetDirRel . '/' . $safeName;
+    if (file_put_contents($destinationFs, $imageData) !== false) {
+        $result['path'] = $destinationRel;
+    } else {
+        $result['error'] = 'Failed to save image.';
+    }
     return $result;
 }
 
