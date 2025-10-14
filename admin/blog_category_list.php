@@ -86,13 +86,15 @@ headerContainer();
                                     <form class="d-flex" method="GET" action="blog_category_list" role="search">
                                         <div class="input-group input-group-sm">
                                             <label>
-                                                <input type="text" name="q" class="form-control" placeholder="Search name, id" value="<?php echo $search; ?>" />
+                                                <input type="text" name="q" class="form-control"
+                                                       placeholder="Search name, id" value="<?php echo $search; ?>"/>
                                             </label>
                                             <button class="btn btn-outline-secondary" type="submit" title="Search">
                                                 <i class="bi bi-search"></i>
                                             </button>
                                             <?php if ($search !== '') { ?>
-                                                <a class="btn btn-outline-danger" href="blog_category_list" title="Clear search">&times;</a>
+                                                <a class="btn btn-outline-danger" href="blog_category_list"
+                                                   title="Clear search">&times;</a>
                                             <?php } ?>
                                         </div>
                                     </form>
@@ -140,7 +142,9 @@ headerContainer();
                                                     </td>
                                                     <td class="align-middle">
                                                         <div class="form-check form-switch">
-                                                            <input class="form-check-input js-blog-category-status-toggle" type="checkbox" data-category-id="<?php echo $category['id']; ?>" <?php echo $category['status'] == '1' ? 'checked' : ''; ?>>
+                                                            <input class="form-check-input js-blog-category-status-toggle"
+                                                                   type="checkbox"
+                                                                   data-category-id="<?php echo $category['id']; ?>" <?php echo $category['status'] == '1' ? 'checked' : ''; ?>>
                                                         </div>
                                                     </td>
                                                     <td class="align-middle">
@@ -150,10 +154,12 @@ headerContainer();
                                                     </td>
                                                     <td class="align-middle">
                                                         <div class="btn-group" role="group">
-                                                            <a href="blog_category_edit?id=<?php echo $category['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                            <a href="blog_category_edit?id=<?php echo $category['id']; ?>"
+                                                               class="btn btn-sm btn-outline-primary" title="Edit">
                                                                 <i class="bi bi-pencil"></i>
                                                             </a>
-                                                            <button type="button" class="btn btn-sm btn-outline-danger js-blog-category-delete-btn"
+                                                            <button type="button"
+                                                                    class="btn btn-sm btn-outline-danger js-blog-category-delete-btn"
                                                                     data-category-id="<?php echo $category['id']; ?>"
                                                                     data-category-name="<?php echo $category['name']; ?>">
                                                                 <i class="bi bi-trash"></i>
@@ -190,21 +196,26 @@ headerContainer();
                                             <nav aria-label="Pagination">
                                                 <ul class="pagination pagination-sm mb-0 justify-content-center">
                                                     <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
-                                                        <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'blog_category_list'); ?>" tabindex="-1">&laquo;</a>
+                                                        <a class="page-link"
+                                                           href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'blog_category_list'); ?>"
+                                                           tabindex="-1">&laquo;</a>
                                                     </li>
                                                     <?php foreach ($paginator->pages() as $pg) { ?>
                                                         <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl($pg, 'blog_category_list'); ?>"><?php echo $pg; ?></a>
+                                                            <a class="page-link"
+                                                               href="<?php echo buildPageUrl($pg, 'blog_category_list'); ?>"><?php echo $pg; ?></a>
                                                         </li>
                                                     <?php } ?>
                                                     <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
-                                                        <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'blog_category_list'); ?>">&raquo;</a>
+                                                        <a class="page-link"
+                                                           href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'blog_category_list'); ?>">&raquo;</a>
                                                     </li>
                                                 </ul>
                                             </nav>
                                         </div>
                                         <div class="col-md-4 text-md-end">
-                                            <small class="text-muted d-block">Last updated: <?php echo date('M j, Y g:i A'); ?></small>
+                                            <small class="text-muted d-block">Last
+                                                updated: <?php echo date('M j, Y g:i A'); ?></small>
                                         </div>
                                     </div>
                                 </div>
@@ -282,8 +293,8 @@ headerContainer();
 
 <!-- AJAX Change Status -->
 <script>
-    $(function() {
-        $('.js-blog-category-status-toggle:not(:disabled)').on('change', function() {
+    $(function () {
+        $('.js-blog-category-status-toggle:not(:disabled)').on('change', function () {
             const $cb = $(this);
             const categoryId = $cb.data('category-id');
             const originalChecked = !$cb.prop('checked');
@@ -297,7 +308,7 @@ headerContainer();
                 },
                 dataType: 'json'
             })
-                .done(function(resp) {
+                .done(function (resp) {
                     if (!resp || resp.success !== true) {
                         $cb.prop('checked', originalChecked);
                         toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
@@ -305,7 +316,7 @@ headerContainer();
                         toastr.success('Status updated');
                     }
                 })
-                .fail(function(xhr) {
+                .fail(function (xhr) {
                     $cb.prop('checked', originalChecked);
                     let msg = 'Network / server error';
                     if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
@@ -313,13 +324,13 @@ headerContainer();
                     }
                     toastr.error(msg);
                 })
-                .always(function() {
+                .always(function () {
                     $cb.prop('disabled', false);
                 });
         });
 
         // SweetAlert2 delete handler
-        $(document).on('click', '.js-blog-category-delete-btn', async function(e) {
+        $(document).on('click', '.js-blog-category-delete-btn', async function (e) {
             e.preventDefault();
             const $btn = $(this);
             const categoryId = $btn.data('category-id');
@@ -349,26 +360,26 @@ headerContainer();
                 },
                 dataType: 'json'
             })
-                .done(function(resp) {
+                .done(function (resp) {
                     if (resp && resp.success) {
                         toastr.success('Blog category deleted');
                         // Remove row from table
                         const $row = $btn.closest('tr');
-                        $row.fadeOut(300, function() {
+                        $row.fadeOut(300, function () {
                             $(this).remove();
                         });
                     } else {
                         toastr.error(resp && resp.message ? resp.message : 'Delete failed');
                     }
                 })
-                .fail(function(xhr) {
+                .fail(function (xhr) {
                     let msg = 'Server error';
                     if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                         msg = xhr.responseJSON.message;
                     }
                     toastr.error(msg);
                 })
-                .always(function() {
+                .always(function () {
                     $btn.prop('disabled', false).removeClass('opacity-50');
                 });
         });

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$categoryId = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+$categoryId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 if ($categoryId <= 0) {
     sendJsonError('Invalid category ID', 400);

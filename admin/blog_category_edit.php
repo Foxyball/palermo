@@ -107,7 +107,9 @@ headerContainer();
                                 <form method="POST">
                                     <div class="mb-3">
                                         <label class="form-label">Blog Category Name *</label>
-                                        <input type="text" name="name" class="form-control" value="<?php echo htmlspecialchars($name); ?>" required placeholder="e.g. News">
+                                        <input type="text" name="name" class="form-control"
+                                               value="<?php echo htmlspecialchars($name); ?>" required
+                                               placeholder="e.g. News">
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <a href="blog_category_list" class="btn btn-outline-secondary">Cancel</a>
@@ -117,7 +119,8 @@ headerContainer();
                             </div>
                             <div class="card-footer text-muted small">
                                 Created: <?php echo date('M j, Y g:i A', strtotime($categoryToEdit['created_at'])); ?>
-                                | Last Updated: <?php echo date('M j, Y g:i A', strtotime($categoryToEdit['updated_at'])); ?>
+                                | Last
+                                Updated: <?php echo date('M j, Y g:i A', strtotime($categoryToEdit['updated_at'])); ?>
                             </div>
                         </div>
                     </div>
