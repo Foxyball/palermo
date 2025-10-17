@@ -67,7 +67,6 @@ jobs:
 
       # 10. Remote commands (DB migration + permissions + version log)
       - name: Remote commands: DB + Permissions + Version log
-        if: ${{ github.event_name == 'release' }}
         run: |
           set -e
           echo "${{ secrets.SERVER_SSH_KEY_LIVE }}" > private_key.pem
