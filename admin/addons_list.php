@@ -19,15 +19,15 @@ if ($search !== '') {
     $params[':id'] = $search;
 }
 
-$countSql = 'SELECT COUNT(*) FROM blog_categories' . $whereSql;
+$countSql = 'SELECT COUNT(*) FROM addons' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
-$totalCategoriesCount = $stmtCount->fetchColumn();
+$totalAddonsCount = $stmtCount->fetchColumn();
 
-$paginator = new Paginator($totalCategoriesCount, $page, $perPage);
+$paginator = new Paginator($totalAddonsCount, $page, $perPage);
 
 $dataSql = 'SELECT id, name, status, created_at
-            FROM blog_categories' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
+            FROM addons' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
 
 $stmt = $pdo->prepare($dataSql);
 
@@ -38,7 +38,7 @@ foreach ($params as $k => $v) {
 $stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
 $stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
 $stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$addons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -46,7 +46,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 headerContainer();
 ?>
 
-<title>Blog Categories | <?php echo SITE_TITLE; ?></title>
+<title>Addons| <?php echo SITE_TITLE; ?></title>
 
 </head>
 
@@ -63,12 +63,12 @@ headerContainer();
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Blog Category Management</h3>
+                        <h3 class="mb-0">Addons Management</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item"><a href="/palermo/admin">Home</a></li>
-                            <li class="breadcrumb-item status" aria-current="page">Blog Category List</li>
+                            <li class="breadcrumb-item status" aria-current="page">Addons List</li>
                         </ol>
                     </div>
                 </div>
@@ -82,8 +82,8 @@ headerContainer();
                         <div class="card">
                             <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                                 <div class="d-flex align-items-center gap-3">
-                                    <h3 class="card-title mb-0">All Blog Categories</h3>
-                                    <form class="d-flex" method="GET" action="blog_category_list" role="search">
+                                    <h3 class="card-title mb-0">All Addons</h3>
+                                    <form class="d-flex" method="GET" action="addons_list" role="search">
                                         <div class="input-group input-group-sm">
                                             <label>
                                                 <input type="text" name="q" class="form-control"
@@ -93,7 +93,7 @@ headerContainer();
                                                 <i class="bi bi-search"></i>
                                             </button>
                                             <?php if ($search !== '') { ?>
-                                                <a class="btn btn-outline-danger" href="blog_category_list"
+                                                <a class="btn btn-outline-danger" href="addons_list"
                                                    title="Clear search">&times;</a>
                                             <?php } ?>
                                         </div>
@@ -101,8 +101,8 @@ headerContainer();
                                 </div>
 
                                 <div class="card-tools ms-md-auto">
-                                    <a href="blog_category_add" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-plus"></i> Add New Blog Category
+                                    <a href="addons_add" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-plus"></i> Add New Addon
                                     </a>
                                 </div>
 
@@ -113,55 +113,55 @@ headerContainer();
                                         <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Blog Category</th>
+                                            <th>Addon</th>
                                             <th>Status</th>
                                             <th>Created</th>
                                             <th>Actions</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <?php if (empty($categories)) { ?>
+                                        <?php if (empty($addons)) { ?>
                                             <tr>
                                                 <td colspan="8" class="text-center py-4">
                                                     <div class="text-muted">
                                                         <i class="bi bi-person-x-fill fs-1"></i>
-                                                        <p class="mt-2">No blog categories found</p>
+                                                        <p class="mt-2">No Addons found</p>
                                                     </div>
                                                 </td>
                                             </tr>
                                         <?php } else { ?>
-                                            <?php foreach ($categories as $category) { ?>
+                                            <?php foreach ($addons as $addon) { ?>
                                                 <tr>
                                                     <td class="align-middle">
-                                                        <strong>#<?php echo $category['id']; ?></strong>
+                                                        <strong>#<?php echo $addon['id']; ?></strong>
                                                     </td>
                                                     <td class="align-middle">
                                                         <div class="d-flex align-items-center">
-                                                            <?php echo $category['name']; ?>
+                                                            <?php echo $addon['name']; ?>
                                                         </div>
                                                     </td>
                                                     <td class="align-middle">
                                                         <div class="form-check form-switch">
-                                                            <input class="form-check-input js-blog-category-status-toggle"
+                                                            <input class="form-check-input js-addon-status-toggle"
                                                                    type="checkbox"
-                                                                   data-category-id="<?php echo $category['id']; ?>" <?php echo $category['status'] == '1' ? 'checked' : ''; ?>>
+                                                                   data-addon-id="<?php echo $addon['id']; ?>" <?php echo $addon['status'] == '1' ? 'checked' : ''; ?>>
                                                         </div>
                                                     </td>
                                                     <td class="align-middle">
                                                         <small class="text-muted">
-                                                            <?php echo date('M j, Y', strtotime($category['created_at'])); ?>
+                                                            <?php echo date('M j, Y', strtotime($addon['created_at'])); ?>
                                                         </small>
                                                     </td>
                                                     <td class="align-middle">
                                                         <div class="btn-group" role="group">
-                                                            <a href="blog_category_edit?id=<?php echo $category['id']; ?>"
+                                                            <a href="addons_edit?id=<?php echo $addon['id']; ?>"
                                                                class="btn btn-sm btn-outline-primary" title="Edit">
                                                                 <i class="bi bi-pencil"></i>
                                                             </a>
                                                             <button type="button"
-                                                                    class="btn btn-sm btn-outline-danger js-blog-category-delete-btn"
-                                                                    data-category-id="<?php echo $category['id']; ?>"
-                                                                    data-category-name="<?php echo $category['name']; ?>">
+                                                                    class="btn btn-sm btn-outline-danger js-addon-delete-btn"
+                                                                    data-addon-id="<?php echo $addon['id']; ?>"
+                                                                    data-category-name="<?php echo $addon['name']; ?>">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                         </div>
@@ -173,17 +173,17 @@ headerContainer();
                                     </table>
                                 </div>
                             </div>
-                            <?php if (!empty($categories)) { ?>
+                            <?php if (!empty($addons)) { ?>
                                 <div class="card-footer">
                                     <div class="row align-items-center g-3">
                                         <div class="col-md-4">
                                             <small class="text-muted d-block">
                                                 <?php
                                                 $start = $paginator->offset() + 1;
-                                                $end = $paginator->offset() + count($categories);
+                                                $end = $paginator->offset() + count($addons);
                                                 ?>
-                                                <?php if ($totalCategoriesCount > 0) { ?>
-                                                    Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalCategoriesCount; ?>
+                                                <?php if ($totalAddonsCount > 0) { ?>
+                                                    Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalAddonsCount; ?>
                                                 <?php } else { ?>
                                                     No results
                                                 <?php } ?>
@@ -197,18 +197,18 @@ headerContainer();
                                                 <ul class="pagination pagination-sm mb-0 justify-content-center">
                                                     <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
                                                         <a class="page-link"
-                                                           href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'blog_category_list'); ?>"
+                                                           href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'addons_list'); ?>"
                                                            tabindex="-1">&laquo;</a>
                                                     </li>
                                                     <?php foreach ($paginator->pages() as $pg) { ?>
                                                         <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
                                                             <a class="page-link"
-                                                               href="<?php echo buildPageUrl($pg, 'blog_category_list'); ?>"><?php echo $pg; ?></a>
+                                                               href="<?php echo buildPageUrl($pg, 'addons_list'); ?>"><?php echo $pg; ?></a>
                                                         </li>
                                                     <?php } ?>
                                                     <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
                                                         <a class="page-link"
-                                                           href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'blog_category_list'); ?>">&raquo;</a>
+                                                           href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'addons_list'); ?>">&raquo;</a>
                                                     </li>
                                                 </ul>
                                             </nav>
@@ -294,17 +294,17 @@ headerContainer();
 <!-- AJAX Change Status -->
 <script>
     $(function () {
-        $('.js-blog-category-status-toggle:not(:disabled)').on('change', function () {
+        $('.js-addon-status-toggle:not(:disabled)').on('change', function () {
             const $cb = $(this);
-            const categoryId = $cb.data('category-id');
+            const addonId = $cb.data('addon-id');
             const originalChecked = !$cb.prop('checked');
             $cb.prop('disabled', true);
 
             $.ajax({
-                url: './include/ajax_blog_category_toggle_status.php',
+                url: './include/ajax_addon_toggle_status.php',
                 method: 'POST',
                 data: {
-                    id: categoryId,
+                    id: addonId,
                 },
                 dataType: 'json'
             })
@@ -330,14 +330,14 @@ headerContainer();
         });
 
         // SweetAlert2 delete handler
-        $(document).on('click', '.js-blog-category-delete-btn', async function (e) {
+        $(document).on('click', '.js-addon-delete-btn', async function (e) {
             e.preventDefault();
             const $btn = $(this);
-            const categoryId = $btn.data('category-id');
+            const addonId = $btn.data('addon-id');
             const categoryName = $btn.data('category-name');
 
             const confirmed = await Swal.fire({
-                title: 'Delete Blog Category?',
+                title: 'Delete Addon?',
                 html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(categoryName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
                 icon: 'warning',
                 showCancelButton: true,
@@ -353,16 +353,16 @@ headerContainer();
             $btn.prop('disabled', true).addClass('opacity-50');
 
             $.ajax({
-                url: './include/ajax_blog_category_delete.php',
+                url: './include/ajax_addon_delete.php',
                 method: 'POST',
                 data: {
-                    id: categoryId,
+                    id: addonId,
                 },
                 dataType: 'json'
             })
                 .done(function (resp) {
                     if (resp && resp.success) {
-                        toastr.success('Blog category deleted');
+                        toastr.success('Addon deleted');
                         // Remove row from table
                         const $row = $btn.closest('tr');
                         $row.fadeOut(300, function () {
