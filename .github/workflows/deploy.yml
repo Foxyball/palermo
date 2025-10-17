@@ -46,7 +46,7 @@ jobs:
       - name: Build frontend assets
         run: npm run build 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
-      # 8. Set correct environment configuration files
+      # 8. Set environment configuration files
       - name: Set environment configuration files
         run: |
           echo "Selecting environment files..." | tee -a $GITHUB_WORKSPACE/logs/deploy.log
@@ -61,25 +61,35 @@ jobs:
           switches: -avzr --delete --exclude='.git*' --exclude='.github' --exclude='node_modules'
           path: ./
           remote_path: /var/www/kursova.balikgstudio.eu/
-          remote_host: ${{ secrets.SERVER_HOST_LIVE }}
-          remote_user: ${{ secrets.SERVER_USER_LIVE }}
-          remote_key: ${{ secrets.SERVER_SSH_KEY_LIVE }}
+          remote_host: ${{ secrets.SERVER_HOST }}
+          remote_user: ${{ secrets.SERVER_USER }}
+          remote_key: ${{ secrets.SERVER_SSH_KEY }}
           remote_port: 2222
 
-      # 10. Remote commands (DB migration + permissions + version log)
+      # 10. Remote commands: DB + Permissions + Version log
       - name: DB + Permissions + Version log
+        if: github.event_name == 'release'
         run: |
-          set -e
-          echo "${{ secrets.SERVER_SSH_KEY_LIVE }}" > private_key.pem
+          echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER_LIVE }}@${{ secrets.SERVER_HOST_LIVE }} << 'EOF'
+          ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /var/www/kursova.balikgstudio.eu/
-            echo "Fixing uploads/ permissions..."
+            echo 'Fixing uploads/ permissions...'
             sudo chown -R www-data:www-data uploads/
             sudo chmod -R 775 uploads/
-            echo "Updating .version.txt..."
+            echo 'Updating .version.txt...'
             rm -f .version.txt
-            echo "${{ github.event.release.tag_name }} - $(date \"+%Y-%m-%d %H:%M:%S\")" > .version.txt
+            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
           EOF
-          rm -f private_key.pem
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 11. Optional: Test database connection
+      - name: Test DB connection
+        run: |
+          echo "Testing database connection..."
+          php -r "
+          \$mysqli = new mysqli('${{ secrets.DB_HOST }}', '${{ secrets.DB_USER }}', '${{ secrets.DB_PASSWORD }}', '${{ secrets.DB_NAME }}');
+          if (\$mysqli->connect_errno) { echo 'DB connection failed: '.\$mysqli->connect_error; exit(1); }
+          echo 'DB connection successful';
+          \$mysqli->close();
+          " 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
