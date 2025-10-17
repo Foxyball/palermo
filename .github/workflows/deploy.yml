@@ -67,8 +67,9 @@ jobs:
           remote_port: 2222
 
       
-        # 9.5 Apply SQL migrations from dev/migrations on remote host
+       # 9.5 Apply SQL migrations from dev/migrations on remote host
       - name: Apply SQL migrations from dev/migrations
+        if: github.event_name == 'release'
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
@@ -77,8 +78,10 @@ jobs:
             cd /var/www/kursova.balikgstudio.eu/ || exit 1
 
             MIGDIR="dev/migrations"
-            if [ ! -d "$MIGDIR" ]; then
-              echo "No migrations directory ($MIGDIR) found, skipping."
+
+            # skip if dir missing or empty
+            if [ ! -d "$MIGDIR" ] || [ -z "$(ls -A "$MIGDIR" 2>/dev/null)" ]; then
+              echo "No migrations directory or no .sql files found in ($MIGDIR), skipping."
               exit 0
             fi
 
@@ -87,6 +90,11 @@ jobs:
             DB_PASS="${{ secrets.DB_PASSWORD }}"
             DB_NAME="${{ secrets.DB_NAME }}"
 
+            if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ] || [ -z "$DB_NAME" ]; then
+              echo "DB credentials missing (DB_HOST/DB_USER/DB_NAME). Skipping migrations."
+              exit 0
+            fi
+
             echo "Ensuring migrations_applied table exists..."
             mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "CREATE TABLE IF NOT EXISTS migrations_applied (id INT AUTO_INCREMENT PRIMARY KEY, filename VARCHAR(255) NOT NULL UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 
@@ -94,7 +102,7 @@ jobs:
             for f in "$MIGDIR"/*.sql; do
               [ -e "$f" ] || continue
               fname=$(basename "$f")
-              already=$(mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -sN -e "SELECT filename FROM migrations_applied WHERE filename='${fname}' LIMIT 1;")
+              already=$(mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -sN -e "SELECT filename FROM migrations_applied WHERE filename='${fname}' LIMIT 1;" || true)
               if [ -n "$already" ]; then
                 echo "Skipping ${fname} (already applied)"
                 continue
