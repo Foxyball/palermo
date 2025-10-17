@@ -7,7 +7,7 @@ const DB_PASS = "Hard Through-Dream Many-9";
 const DB_NAME = "palermo_live";
 
 // GENERAL SETTINGS
-const BASE_URL = "kursova.balikgstudio.eu";
+const BASE_URL = "/";
 const SITE_TITLE = "Palermo";
 
 // CURRENCY SETTINGS
