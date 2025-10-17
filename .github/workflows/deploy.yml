@@ -1,0 +1,115 @@
+name: Palermo deploy script
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup log file
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/logs
+          echo "Deployment started at $(date '+%Y-%m-%d %H:%M:%S')" > $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 3. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo, pdo_mysql
+          coverage: none
+        run: echo "PHP setup done" | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 4. Install PHP dependencies
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 5. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+        run: echo "Node setup done" | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 6. Install NPM dependencies
+      - name: Install NPM dependencies
+        run: npm ci 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 7. Build frontend assets
+      - name: Build frontend assets
+        run: npm run build 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 8. Set correct environment configuration files
+      - name: Set correct environment configuration files
+        run: |
+          echo "Selecting environment files..." | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "Live deployment detected"
+            cp .htaccess.live .htaccess
+            cp include/config.live.php include/config.php
+          else
+            echo "Development deployment detected"
+            cp .htaccess.dev .htaccess
+            cp include/config.live.php include/config.php
+          fi
+
+          echo "Environment config applied." | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 9. Deploy code to correct server
+      - name: Deploy code via rsync
+        uses: burnett01/rsync-deployments@5.2
+        with:
+          switches: -avzr --delete --exclude='.git*' --exclude='.github' --exclude='node_modules'
+          path: ./
+          remote_path: ${{ github.event_name == 'release' && '/var/www/kursova.balikgstudio.eu/' }}
+          remote_host: ${{ github.event_name == 'release' && secrets.SERVER_HOST_LIVE }}
+          remote_user: ${{ github.event_name == 'release' && secrets.SERVER_USER_LIVE }}
+          remote_key:  ${{ github.event_name == 'release' && secrets.SERVER_SSH_KEY_LIVE }}
+        run: echo "Code deployed via rsync" | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 10. Remote commands (DB migration + permissions + version log)
+      - name: Remote commands: DB + Permissions + Version log
+        if: github.event_name == 'release'  # only for live
+        run: |
+          echo "${{ secrets.SERVER_SSH_KEY_LIVE }}" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER_LIVE }}@${{ secrets.SERVER_HOST_LIVE }} "
+            cd /var/www/kursova.balikgstudio.eu/ &&
+            echo 'Fixing uploads/ permissions...' &&
+            sudo chown -R www-data:www-data uploads/ &&
+            sudo chmod -R 775 uploads/ &&
+            echo 'Updating .version.txt...' &&
+            rm -f .version.txt &&
+            echo '${{ github.event.release.tag_name }} - $(date '+%Y-%m-%d %H:%M:%S')' > .version.txt
+          " 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 11. Send deployment log via Gmail SMTP
+      # - name: Send deployment log via Gmail SMTP
+      #   run: |
+      #     sudo apt-get update && sudo apt-get install -y msmtp
+      #     echo "defaults" > ~/.msmtprc
+      #     echo "auth           on" >> ~/.msmtprc
+      #     echo "tls            on" >> ~/.msmtprc
+      #     echo "tls_trust_file /etc/ssl/certs/ca-certificates.crt" >> ~/.msmtprc
+      #     echo "logfile        ~/.msmtp.log" >> ~/.msmtprc
+      #     echo "account        gmail" >> ~/.msmtprc
+      #     echo "host           ${{ secrets.SMTP_HOST }}" >> ~/.msmtprc
+      #     echo "port           ${{ secrets.SMTP_PORT }}" >> ~/.msmtprc
+      #     echo "user           ${{ secrets.SMTP_USER }}" >> ~/.msmtprc
+      #     echo "password       ${{ secrets.SMTP_PASS }}" >> ~/.msmtprc
+      #     echo "from           ${{ secrets.SMTP_USER }}" >> ~/.msmtprc
+      #     echo "account default : gmail" >> ~/.msmtprc
+      #     chmod 600 ~/.msmtprc
+
+      #     cat $GITHUB_WORKSPACE/logs/deploy.log | \
+      #     msmtp recipient@example.com -t <<< "Subject: Deployment Log - ${{ github.event.release.tag_name }}"
+
+
