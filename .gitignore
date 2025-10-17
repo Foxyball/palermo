@@ -49,6 +49,7 @@ coverage/
 # SQL dumps
 *.sql
 !install.sql
+!dev/migrations/.gitkeep
 
 # Uploaded files (keep directory, ignore contents)
 uploads/*
