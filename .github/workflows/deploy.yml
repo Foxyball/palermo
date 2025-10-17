@@ -1,0 +1,85 @@
+name: Palermo deploy script
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup log file
+      - name: Setup log file
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/logs
+          echo "Deployment started at $(date '+%Y-%m-%d %H:%M:%S')" > $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 3. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo, pdo_mysql
+          coverage: none
+
+      # 4. Install PHP dependencies
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 5. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 6. Install NPM dependencies
+      - name: Install NPM dependencies
+        run: npm ci 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 7. Build frontend assets
+      - name: Build frontend assets
+        run: npm run build 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 8. Set correct environment configuration files
+      - name: Set environment configuration files
+        run: |
+          echo "Selecting environment files..." | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+          cp .htaccess.live .htaccess
+          cp include/config.live.php include/config.php
+          echo "Environment config applied." | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
+      # 9. Deploy code via rsync
+      - name: Deploy code via rsync
+        uses: burnett01/rsync-deployments@5.2
+        with:
+          switches: -avzr --delete --exclude='.git*' --exclude='.github' --exclude='node_modules'
+          path: ./
+          remote_path: /var/www/kursova.balikgstudio.eu/
+          remote_host: ${{ secrets.SERVER_HOST_LIVE }}
+          remote_user: ${{ secrets.SERVER_USER_LIVE }}
+          remote_key: ${{ secrets.SERVER_SSH_KEY_LIVE }}
+
+      # 10. Remote commands (DB migration + permissions + version log)
+      - name: Remote commands: DB + Permissions + Version log
+        if: github.event_name == 'release'
+        run: |
+          set -e
+          echo "${{ secrets.SERVER_SSH_KEY_LIVE }}" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER_LIVE }}@${{ secrets.SERVER_HOST_LIVE }} << 'EOF'
+            cd /var/www/kursova.balikgstudio.eu/
+            echo "Fixing uploads/ permissions..."
+            sudo chown -R www-data:www-data uploads/
+            sudo chmod -R 775 uploads/
+            echo "Updating .version.txt..."
+            rm -f .version.txt
+            echo "${{ github.event.release.tag_name }} - $(date \"+%Y-%m-%d %H:%M:%S\")" > .version.txt
+          EOF
+          rm -f private_key.pem
+          2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
