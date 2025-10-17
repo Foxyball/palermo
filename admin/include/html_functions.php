@@ -114,8 +114,8 @@ function navbarContainer(): void
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                         <li class="user-footer">
-                            <a href="<?php echo BASE_URL; ?>/admin/account" class="btn btn-default btn-flat">Profile</a>
-                            <a href="<?php echo BASE_URL; ?>/admin/logout?logout" class="btn btn-default btn-flat float-end">Sign
+                            <a href="<?php echo BASE_URL; ?>admin/account" class="btn btn-default btn-flat">Profile</a>
+                            <a href="<?php echo BASE_URL; ?>admin/logout?logout" class="btn btn-default btn-flat float-end">Sign
                                 out</a>
                         </li>
                     </ul>
@@ -197,7 +197,7 @@ function sidebarContainer(): void
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="<?php echo BASE_URL; ?>/admin/user_list"
+                                <a href="<?php echo BASE_URL; ?>admin/user_list"
                                    class="nav-link <?php echo in_array($currentPage, ['user_list', 'user_add', 'user_edit']) ? 'active' : ''; ?>">
                                     <i class="bi bi-people nav-icon"></i>
                                     <p>Customers</p>

@@ -7,7 +7,7 @@ const DB_PASS = "";
 const DB_NAME = "palermo_live";
 
 // GENERAL SETTINGS
-const BASE_URL = "/palermo";
+const BASE_URL = "/palermo/";
 const SITE_TITLE = "Palermo";
 
 // CURRENCY SETTINGS
