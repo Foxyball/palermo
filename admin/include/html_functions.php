@@ -114,8 +114,8 @@ function navbarContainer(): void
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                         <li class="user-footer">
-                            <a href="/palermo/admin/account" class="btn btn-default btn-flat">Profile</a>
-                            <a href="/palermo/admin/logout?logout" class="btn btn-default btn-flat float-end">Sign
+                            <a href="<?php echo BASE_URL; ?>/admin/account" class="btn btn-default btn-flat">Profile</a>
+                            <a href="<?php echo BASE_URL; ?>/admin/logout?logout" class="btn btn-default btn-flat float-end">Sign
                                 out</a>
                         </li>
                     </ul>
@@ -157,7 +157,7 @@ function sidebarContainer(): void
 
     <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" style="position: relative;">
         <div class="sidebar-brand">
-            <a href="/palermo/admin" class="brand-link">
+            <a href="<?php echo BASE_URL; ?>/admin" class="brand-link">
                 <span class="brand-text fw-light">Admin Panel | <?php echo SITE_TITLE; ?></span>
             </a>
         </div>
@@ -171,7 +171,7 @@ function sidebarContainer(): void
                         data-accordion="false"
                         id="navigation">
                     <li class="nav-item">
-                        <a href="/palermo/admin" class="nav-link <?php echo $isDashboard ? 'active' : ''; ?>">
+                        <a href="<?php echo BASE_URL; ?>/admin" class="nav-link <?php echo $isDashboard ? 'active' : ''; ?>">
                             <i class="nav-icon bi bi-speedometer"></i>
                             <p>
                                 Dashboard
@@ -197,7 +197,7 @@ function sidebarContainer(): void
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/palermo/admin/user_list"
+                                <a href="<?php echo BASE_URL; ?>/admin/user_list"
                                    class="nav-link <?php echo in_array($currentPage, ['user_list', 'user_add', 'user_edit']) ? 'active' : ''; ?>">
                                     <i class="bi bi-people nav-icon"></i>
                                     <p>Customers</p>
