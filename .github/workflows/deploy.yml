@@ -64,6 +64,7 @@ jobs:
           remote_host: ${{ secrets.SERVER_HOST_LIVE }}
           remote_user: ${{ secrets.SERVER_USER_LIVE }}
           remote_key: ${{ secrets.SERVER_SSH_KEY_LIVE }}
+          remote_port: 2222
 
       # 10. Remote commands (DB migration + permissions + version log)
       - name: DB + Permissions + Version log
