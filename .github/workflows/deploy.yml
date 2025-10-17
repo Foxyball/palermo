@@ -47,7 +47,7 @@ jobs:
         run: npm run build 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
       # 8. Set correct environment configuration files
-      - name: Set correct environment configuration files
+      - name: Set environment configuration files
         run: |
           echo "Selecting environment files..." | tee -a $GITHUB_WORKSPACE/logs/deploy.log
           cp .htaccess.live .htaccess
@@ -63,7 +63,7 @@ jobs:
           remote_path: /var/www/kursova.balikgstudio.eu/
           remote_host: ${{ secrets.SERVER_HOST_LIVE }}
           remote_user: ${{ secrets.SERVER_USER_LIVE }}
-          remote_key:  ${{ secrets.SERVER_SSH_KEY_LIVE }}
+          remote_key: ${{ secrets.SERVER_SSH_KEY_LIVE }}
 
       # 10. Remote commands (DB migration + permissions + version log)
       - name: Remote commands: DB + Permissions + Version log
@@ -71,12 +71,13 @@ jobs:
         run: |
           echo "${{ secrets.SERVER_SSH_KEY_LIVE }}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER_LIVE }}@${{ secrets.SERVER_HOST_LIVE }} "
-            cd /var/www/kursova.balikgstudio.eu/ &&
-            echo 'Fixing uploads/ permissions...' &&
-            sudo chown -R www-data:www-data uploads/ &&
-            sudo chmod -R 775 uploads/ &&
-            echo 'Updating .version.txt...' &&
-            rm -f .version.txt &&
-            echo '${{ github.event.release.tag_name }} - $(date '+%Y-%m-%d %H:%M:%S')' > .version.txt
-          " 2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER_LIVE }}@${{ secrets.SERVER_HOST_LIVE }} << 'EOF'
+            cd /var/www/kursova.balikgstudio.eu/
+            echo 'Fixing uploads/ permissions...'
+            sudo chown -R www-data:www-data uploads/
+            sudo chmod -R 775 uploads/
+            echo 'Updating .version.txt...'
+            rm -f .version.txt
+            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
+          EOF
+          2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
