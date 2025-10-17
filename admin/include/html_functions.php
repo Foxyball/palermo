@@ -171,7 +171,7 @@ function sidebarContainer(): void
                         data-accordion="false"
                         id="navigation">
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/admin" class="nav-link <?php echo $isDashboard ? 'active' : ''; ?>">
+                        <a href="<?php echo BASE_URL; ?>admin" class="nav-link <?php echo $isDashboard ? 'active' : ''; ?>">
                             <i class="nav-icon bi bi-speedometer"></i>
                             <p>
                                 Dashboard
