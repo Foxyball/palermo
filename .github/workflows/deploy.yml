@@ -66,6 +66,54 @@ jobs:
           remote_key: ${{ secrets.SERVER_SSH_KEY }}
           remote_port: 2222
 
+      
+        # 9.5 Apply SQL migrations from dev/migrations on remote host
+      - name: Apply SQL migrations from dev/migrations
+        run: |
+          echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            set -euo pipefail
+            cd /var/www/kursova.balikgstudio.eu/ || exit 1
+
+            MIGDIR="dev/migrations"
+            if [ ! -d "$MIGDIR" ]; then
+              echo "No migrations directory ($MIGDIR) found, skipping."
+              exit 0
+            fi
+
+            DB_HOST="${{ secrets.DB_HOST }}"
+            DB_USER="${{ secrets.DB_USER }}"
+            DB_PASS="${{ secrets.DB_PASSWORD }}"
+            DB_NAME="${{ secrets.DB_NAME }}"
+
+            echo "Ensuring migrations_applied table exists..."
+            mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "CREATE TABLE IF NOT EXISTS migrations_applied (id INT AUTO_INCREMENT PRIMARY KEY, filename VARCHAR(255) NOT NULL UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+
+            echo "Applying SQL files from $MIGDIR (lexicographic order)..."
+            for f in "$MIGDIR"/*.sql; do
+              [ -e "$f" ] || continue
+              fname=$(basename "$f")
+              already=$(mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -sN -e "SELECT filename FROM migrations_applied WHERE filename='${fname}' LIMIT 1;")
+              if [ -n "$already" ]; then
+                echo "Skipping ${fname} (already applied)"
+                continue
+              fi
+
+              echo "Applying ${fname}..."
+              if mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$f"; then
+                mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "INSERT INTO migrations_applied (filename) VALUES ('${fname}');"
+                echo "Applied ${fname}"
+              else
+                echo "Migration failed: ${fname}"
+                exit 1
+              fi
+            done
+
+            echo "Migrations complete."
+          EOF
+          2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
+
       # 10. Remote commands: DB + Permissions + Version log
       - name: DB + Permissions + Version log
         if: github.event_name == 'release'
