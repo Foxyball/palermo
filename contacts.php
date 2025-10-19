@@ -1,9 +1,82 @@
 <?php
 require_once(__DIR__ . '/include/connect.php');
 include(__DIR__ . '/include/html_functions.php');
+
+function verifyRecaptcha(string $response, string $secret, ?string $remoteIp = null): bool
+{
+    if ($response === '') {
+        return false;
+    }
+
+    $endpoint = 'https://www.google.com/recaptcha/api/siteverify';
+    $payload = http_build_query([
+        'secret'   => $secret,
+        'response' => $response,
+        'remoteip' => $remoteIp,
+    ]);
+
+    $verifyResponse = null;
+
+    if (function_exists('curl_version')) {
+        $ch = curl_init($endpoint);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $verifyResponse = curl_exec($ch);
+        curl_close($ch);
+    } else {
+        $verifyResponse = file_get_contents($endpoint . '?' . $payload);
+    }
+
+    if ($verifyResponse === false || $verifyResponse === null) {
+        return false;
+    }
+
+    $data = json_decode($verifyResponse, true);
+
+    return !empty($data['success']);
+}
+
+if (isset($_POST['submit_contact'])) {
+    $name    = htmlspecialchars(trim($_POST['contact_name'])) ?? '';
+    $email   = trim($_POST['contact_email']) ?? '';
+    $phone   = htmlspecialchars(trim($_POST['contact_phone'])) ?? '';
+    $subject = htmlspecialchars(trim($_POST['contact_subject'])) ?? '';
+    $message = htmlspecialchars(trim($_POST['contact_message'])) ?? '';
+
+    $recaptchaResponse = trim($_POST['g-recaptcha-response']) ?? '';
+    $recaptchaSecret   = GOOGLE_RECAPTCHA_SECRET_KEY;
+    $remoteIp          = $_SERVER['REMOTE_ADDR'] ?? null;
+
+    if (!verifyRecaptcha($recaptchaResponse, $recaptchaSecret, $remoteIp)) {
+        $_SESSION['error'] = 'reCAPTCHA verification failed. Please try again.';
+        header('Location: contacts.php');
+        exit();
+    }
+
+    if ($name === '' || $email === '' || $message === '') {
+        $_SESSION['error'] = 'Please fill in all required fields.';
+        header('Location: contacts.php');
+        exit();
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = 'Please provide a valid email address.';
+        header('Location: contacts.php');
+        exit();
+    }
+
+    $_SESSION['success'] = 'Your message has been sent successfully!';
+    header('Location: contacts.php');
+    exit();
+}
 ?>
 
 <?php headerContainer(); ?>
+
+<!-- GOOGLE RECAPTCHA  -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <title><?php echo SITE_TITLE; ?> | Contacts</title>
 </head>
@@ -65,7 +138,27 @@ include(__DIR__ . '/include/html_functions.php');
                                     <h3 class="mb-0"><i class="fas fa-envelope me-2"></i>Send us a message</h3>
                                 </div>
                                 <div class="card-body p-4">
-                                    <form id="contact-form" name="contact-form" action="contacts.php" method="post">
+
+                                    <?php if (isset($_SESSION['success'])) { ?>
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            <?php
+                                            echo $_SESSION['success'];
+                                            unset($_SESSION['success']);
+                                            ?>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+
+                                    <?php } else if (isset($_SESSION['error'])) { ?>
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <?php
+                                            echo $_SESSION['error'];
+                                            unset($_SESSION['error']);
+                                            ?>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    <?php } ?>
+
+                                    <form id="contact-form" name="contact-form" action="" method="POST">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label for="contact-name" class="form-label text-white">Name *</label>
@@ -97,6 +190,11 @@ include(__DIR__ . '/include/html_functions.php');
                                             <label for="contact-message" class="form-label text-white">Message *</label>
                                             <textarea class="form-control bg-dark text-white border-secondary" id="contact-message" name="contact_message" rows="6" required placeholder="Write your message here..."></textarea>
                                         </div>
+
+                                        <div class="mb-3">
+                                            <div class="g-recaptcha" data-sitekey="<?php echo GOOGLE_RECAPTCHA_SITE_KEY; ?>"></div>
+                                        </div>
+
                                         <div class="mb-3">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="contact-privacy" name="contact_privacy" required>
@@ -111,29 +209,6 @@ include(__DIR__ . '/include/html_functions.php');
                                             </button>
                                         </div>
                                     </form>
-
-                                    <?php
-                                    // Simple form processing
-                                    if (isset($_POST['submit_contact'])) {
-                                        $name = htmlspecialchars($_POST['contact_name'] ?? '');
-                                        $email = htmlspecialchars($_POST['contact_email'] ?? '');
-                                        $phone = htmlspecialchars($_POST['contact_phone'] ?? '');
-                                        $subject = htmlspecialchars($_POST['contact_subject'] ?? '');
-                                        $message = htmlspecialchars($_POST['contact_message'] ?? '');
-
-                                        if (!empty($name) && !empty($email) && !empty($message)) {
-                                            echo '<div class="alert alert-success mt-4" role="alert">
-													<i class="fas fa-check-circle me-2"></i>
-													Thank you! Your message has been sent successfully. We will contact you as soon as possible.
-												  </div>';
-                                        } else {
-                                            echo '<div class="alert alert-danger mt-4" role="alert">
-													<i class="fas fa-exclamation-triangle me-2"></i>
-													Please fill in all required fields.
-												  </div>';
-                                        }
-                                    }
-                                    ?>
                                 </div>
                             </div>
                         </div>
