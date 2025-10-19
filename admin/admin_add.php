@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $passwordHash = md5($password);
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         try {
             $stmt = $pdo->prepare('INSERT INTO admins (admin_name, admin_email, admin_password, active, is_super_admin, created_at, updated_at) VALUES (?, ?, ?, "1", ?, NOW(), NOW())');
             $stmt->execute([$name, $email, $passwordHash, $isSuperAdmin]);
@@ -55,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 headerContainer();
 ?>
-</head>
+    </head>
 
-<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
     <div class="app-wrapper">
         <?php navbarContainer(); ?>
         <?php sidebarContainer(); ?>
@@ -100,11 +100,15 @@ headerContainer();
                                     <form method="post" novalidate>
                                         <div class="mb-3">
                                             <label class="form-label">Name *</label>
-                                            <input type="text" name="admin_name" class="form-control" value="<?php echo htmlspecialchars($_POST['admin_name'] ?? ''); ?>" required>
+                                            <input type="text" name="admin_name" class="form-control"
+                                                   value="<?php echo htmlspecialchars($_POST['admin_name'] ?? ''); ?>"
+                                                   required>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Email *</label>
-                                            <input type="email" name="admin_email" class="form-control" value="<?php echo htmlspecialchars($_POST['admin_email'] ?? ''); ?>" required>
+                                            <input type="email" name="admin_email" class="form-control"
+                                                   value="<?php echo htmlspecialchars($_POST['admin_email'] ?? ''); ?>"
+                                                   required>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Password *</label>
@@ -112,7 +116,8 @@ headerContainer();
                                             <small class="text-muted">Min 6 characters</small>
                                         </div>
                                         <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" id="is_super_admin" name="is_super_admin" <?php echo isset($_POST['is_super_admin']) ? 'checked' : ''; ?>>
+                                            <input class="form-check-input" type="checkbox" id="is_super_admin"
+                                                   name="is_super_admin" <?php echo isset($_POST['is_super_admin']) ? 'checked' : ''; ?>>
                                             <label class="form-check-label" for="is_super_admin">Super Admin</label>
                                         </div>
                                         <div class="d-flex justify-content-between">
@@ -131,7 +136,7 @@ headerContainer();
     </div>
 
 
-</body>
+    </body>
 
-</html>
+    </html>
 <?php
