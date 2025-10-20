@@ -28,7 +28,7 @@ if (isset($_POST['login'])) {
                     $rehashStmt->execute([$newHash, $admin['admin_id']]);
                 }
             } else {
-                $_SESSION['error'] = 'Wrong email or adada.';
+                $_SESSION['error'] = 'Wrong email or password.';
                 header('location: login');
                 exit;
             }
