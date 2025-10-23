@@ -2,7 +2,9 @@
     "name": "foxyball/palermo",
     "description": "Palermo project.",
     "require": {
-        "phpmailer/phpmailer": "^6.11"
+        "phpmailer/phpmailer": "^6.11",
+        "ext-pdo": "*",
+        "ext-fileinfo": "*"
     },
     "license": "proprietary"
 }
