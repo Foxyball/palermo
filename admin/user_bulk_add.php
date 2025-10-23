@@ -57,85 +57,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     foreach ($validEmails as $email) {
                         if ($isTestAccount) {
+                            // Test account with password
                             $password = '12345678';
                             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
                             $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
-                            $stmt->execute(['Test', 'User', $email, $passwordHash]);
+                            $stmt->execute(['New', 'User', $email, $passwordHash]);
                         } else {
-                            // Create account without password (user will set via email)
+                            // Account without password - user will set via email
                             $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
                             $stmt->execute(['New', 'User', $email, '']);
 
-                            // Generate password reset token and send email
+                            // Create reset token
                             $token = bin2hex(random_bytes(32));
-                            $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours')); // 24 hours for bulk users
-                            
-                            // Insert reset token
+                            $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
                             $tokenStmt = $pdo->prepare('INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)');
                             $tokenStmt->execute([$email, $token, $expiresAt]);
-                            
-                            // Send welcome email with password setup link
-                            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/palermo/reset_password.php?token=" . $token;
+
+                            // Send simple welcome email
+                            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . BASE_URL . "reset_password.php?token=" . $token;
                             $emailSubject = 'Welcome to ' . SITE_TITLE . ' - Set Your Password';
-                            $emailBody = "
-                            <html>
-                            <head>
-                                <style>
-                                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                                    .header { background: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                                    .content { padding: 30px; background: #f8f9fa; border-radius: 0 0 8px 8px; }
-                                    .button { 
-                                        display: inline-block; padding: 12px 24px; background: #dc3545; color: white; 
-                                        text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold;
-                                    }
-                                    .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; }
-                                </style>
-                            </head>
-                            <body>
-                                <div class='container'>
-                                    <div class='header'>
-                                        <h2>Welcome to " . SITE_TITLE . "!</h2>
-                                        <p style='margin: 0; opacity: 0.9;'>Your account has been created</p>
-                                    </div>
-                                    <div class='content'>
-                                        <h3>Hello,</h3>
-                                        <p>An account has been created for you at " . SITE_TITLE . ". To get started, please set your password by clicking the button below:</p>
-                                        
-                                        <div style='text-align: center;'>
-                                            <a href='" . $resetLink . "' class='button'>Set My Password</a>
-                                        </div>
-                                        
-                                        <p><strong>Account Details:</strong></p>
-                                        <ul>
-                                            <li>Email: " . htmlspecialchars($email) . "</li>
-                                            <li>This link expires in 24 hours</li>
-                                        </ul>
-                                        
-                                        <p>If the button doesn't work, copy and paste this link:</p>
-                                        <p style='word-break: break-all; background: #e9ecef; padding: 10px; border-radius: 4px; font-family: monospace;'>" . $resetLink . "</p>
-                                    </div>
-                                    <div class='footer'>
-                                        <p>Welcome to " . SITE_TITLE . "!</p>
-                                    </div>
-                                </div>
-                            </body>
-                            </html>";
+                            $emailBody = "<p>Welcome! Your account has been created.</p><p>Click here to set your password: <a href='{$resetLink}'>Set Password</a></p><p>Email: {$email}</p>";
                             
-                            // Send the email (don't stop processing if email fails)
-                            try {
-                                sendEmail($email, 'New User', $emailSubject, $emailBody);
-                            } catch (Exception $e) {
-                                // Log error but continue processing other emails
-                            }
+                            // Simple email send - no retries, no complex logic
+                            sendEmail($email, 'New User', $emailSubject, $emailBody);
                         }
                         $processedCount++;
                     }
 
                     $pdo->commit();
                     $successMessage = "Successfully created {$processedCount} user accounts";
-
                     $_POST = [];
                 } catch (PDOException $e) {
                     $pdo->rollback();
@@ -201,6 +151,9 @@ headerContainer();
                                         <div class="alert alert-success">
                                             <h6 class="alert-heading"><i class="bi bi-check-circle-fill"></i> Success!</h6>
                                             <?php echo htmlspecialchars($successMessage); ?>
+                                            
+
+                                            
                                             <div class="mt-2">
                                                 <a href="user_list" class="btn btn-sm btn-outline-success">View User List</a>
                                             </div>
