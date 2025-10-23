@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $passwordHash = md5($password);
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         try {
             $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, address, city, phone, zip_code, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
             $stmt->execute([$firstName, $lastName, $address, $city, $phone, $zipCode, $email, $passwordHash]);
