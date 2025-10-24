@@ -99,6 +99,9 @@ headerContainer();
                                     </div>
 
                                     <div class="card-tools ms-md-auto">
+                                        <a href="user_bulk_add" class="btn btn-success btn-sm me-2">
+                                            <i class="bi bi-people-fill"></i> Bulk Add Users
+                                        </a>
                                         <a href="user_add" class="btn btn-primary btn-sm">
                                             <i class="bi bi-plus"></i> Add New Customer
                                         </a>
