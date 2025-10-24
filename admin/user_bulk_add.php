@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/../include/smtp_class.php');
+require_once(__DIR__ . '/../include/EmailTemplateGenerator.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -10,6 +11,7 @@ requireAdminLogin();
 $errors = [];
 $successMessage = '';
 $processedCount = 0;
+$emailGenerator = new EmailTemplateGenerator();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $emails = trim($_POST['emails'] ?? '');
@@ -57,35 +59,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     foreach ($validEmails as $email) {
                         if ($isTestAccount) {
-                            // Test account with password
                             $password = '12345678';
                             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
                             $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
                             $stmt->execute(['New', 'User', $email, $passwordHash]);
+
+                            $emailSubject = 'Welcome to ' . SITE_TITLE . ' - Your Test Account';
+                            $emailBody = $emailGenerator->generateTestAccountEmail($email, $password);
+                            sendEmail($email, 'New User', $emailSubject, $emailBody);
                         } else {
-                            // Account without password - user will set via email
                             $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
                             $stmt->execute(['New', 'User', $email, '']);
 
-                            // Create reset token
                             $token = bin2hex(random_bytes(32));
                             $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
                             $tokenStmt = $pdo->prepare('INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)');
                             $tokenStmt->execute([$email, $token, $expiresAt]);
 
-                            // Send simple welcome email
-                            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . BASE_URL . "reset_password.php?token=" . $token;
+                            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . BASE_URL . "reset_password?token=" . $token;
                             $emailSubject = 'Welcome to ' . SITE_TITLE . ' - Set Your Password';
-                            $emailBody = "<p>Welcome! Your account has been created.</p><p>Click here to set your password: <a href='{$resetLink}'>Set Password</a></p><p>Email: {$email}</p>";
-                            
-                            // Simple email send - no retries, no complex logic
+                            $emailBody = $emailGenerator->generateWelcomeEmail($email, $resetLink);
+
                             sendEmail($email, 'New User', $emailSubject, $emailBody);
                         }
                         $processedCount++;
                     }
 
                     $pdo->commit();
-                    $successMessage = "Successfully created {$processedCount} user accounts";
+                    if ($isTestAccount) {
+                        $successMessage = "Successfully created {$processedCount} test user accounts. Welcome emails with login credentials have been sent to all users.";
+                    } else {
+                        $successMessage = "Successfully created {$processedCount} user accounts. Welcome emails with password setup links have been sent to all users.";
+                    }
                     $_POST = [];
                 } catch (PDOException $e) {
                     $pdo->rollback();
@@ -151,9 +156,9 @@ headerContainer();
                                         <div class="alert alert-success">
                                             <h6 class="alert-heading"><i class="bi bi-check-circle-fill"></i> Success!</h6>
                                             <?php echo htmlspecialchars($successMessage); ?>
-                                            
 
-                                            
+
+
                                             <div class="mt-2">
                                                 <a href="user_list" class="btn btn-sm btn-outline-success">View User List</a>
                                             </div>
@@ -193,8 +198,8 @@ headerContainer();
                                             </div>
                                             <small class="text-muted ms-4">
                                                 <i class="bi bi-question-circle me-1"></i>
-                                                When checked, accounts will be created with a default password ('12345678'),
-                                                otherwise, users will receive an email with a link to set their own password
+                                                When checked, accounts will be created with a default password ('12345678') and users will receive an email with their credentials.
+                                                Otherwise, users will receive an email with a secure link to set their own password.
                                             </small>
                                         </div>
 
