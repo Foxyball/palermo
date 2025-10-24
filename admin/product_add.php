@@ -206,8 +206,15 @@ headerContainer();
                                             <div class="col-md-4">
                                                 <div class="mb-3">
                                                     <label class="form-label fw-bold">Product Image</label>
-                                                    <input type="file" name="image" class="form-control" accept="image/*">
+                                                    <input type="file" id="image" name="image" class="form-control" accept="image/*">
                                                     <small class="text-muted">JPG, PNG, or SVG (max 2MB)</small>
+                                                    
+                                                    <!-- Image Preview -->
+                                                    <div class="mt-2">
+                                                        <label class="form-label">Preview</label><br>
+                                                        <img class="js-image-preview" src="#" alt="Image preview" 
+                                                             style="max-width:200px; max-height:150px; display:none; border:1px solid #ccc; background:#fafafa; border-radius: 4px;"/>
+                                                    </div>
                                                 </div>
 
                                                 <?php if (!empty($addons)) { ?>
@@ -287,6 +294,44 @@ headerContainer();
 
             $('input, select').on('input change', function() {
                 $(this).removeClass('is-invalid');
+            });
+
+            // Image preview functionality
+            function showPreview(src) {
+                if (src) {
+                    $('.js-image-preview').attr('src', src).show();
+                } else {
+                    $('.js-image-preview').hide();
+                }
+            }
+
+            $('#image').change(function(e) {
+                var file = e.target.files[0];
+                if (file) {
+                    // Check file size (2MB limit)
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('File size must be less than 2MB');
+                        $(this).val('');
+                        showPreview(null);
+                        return;
+                    }
+                    
+                    // Check file type
+                    if (!file.type.match('image.*')) {
+                        alert('Please select a valid image file');
+                        $(this).val('');
+                        showPreview(null);
+                        return;
+                    }
+                    
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        showPreview(e.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    showPreview(null);
+                }
             });
         });
     </script>
