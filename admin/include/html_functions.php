@@ -133,15 +133,11 @@ function sidebarContainer(): void
 
     $adminPages = ['admin_list', 'admin_add', 'admin_edit', 'user_list', 'user_add', 'user_edit'];
     $articlePages = ['category_list', 'category_add', 'category_edit'];
-
     $galleryPages = ['gallery_list', 'gallery_add', 'gallery_edit', 'gallery_images'];
-
     $blogPages = ['blog_list', 'blog_add', 'blog_edit'];
-
     $blogCategoriesPages = ['blog_category_list', 'blog_category_add', 'blog_category_edit'];
-
     $addonsPages = ['addons_list', 'addons_add', 'addons_edit'];
-
+    $productPages = ['product_list', 'product_add', 'product_edit'];
     $dashboardPages = ['index'];
 
     $isAdminSection = in_array($currentPage, $adminPages);
@@ -151,6 +147,7 @@ function sidebarContainer(): void
     $isBlogCategorySection = in_array($currentPage, $blogCategoriesPages);
     $isDashboard = in_array($currentPage, $dashboardPages) || $currentPage === 'index';
     $isAddonsSection = in_array($currentPage, $addonsPages);
+    $isProductSection = in_array($currentPage, $productPages);
 
     ?>
 
@@ -207,14 +204,25 @@ function sidebarContainer(): void
                     </li>
 
 
-                    <li class="nav-item <?php echo $isArticleSection ? 'menu-open' : ''; ?>">
-                        <a href="#" class="nav-link <?php echo $isArticleSection ? 'active' : ''; ?>">
+                    <li class="nav-item <?php echo $isArticleSection || $isAddonsSection || $isProductSection ? 'menu-open' : ''; ?>">
+                        <a href="#" class="nav-link <?php echo $isArticleSection || $isAddonsSection || $isProductSection ? 'active' : ''; ?>">
                             <i class="nav-icon bi bi-cart-plus-fill"></i>
                             <p>
                                 Products
                                 <i class="bi bi-chevron-down right"></i>
                             </p>
                         </a>
+
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="product_list"
+                                   class="nav-link <?php echo in_array($currentPage, ['product_list', 'products_add', 'products_edit']) ? 'active' : ''; ?>">
+                                    <i class="bi bi-basket2-fill nav-icon"></i>
+                                    <p>Products</p>
+                                </a>
+                            </li>
+                        </ul>
+
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a href="category_list"
@@ -234,6 +242,7 @@ function sidebarContainer(): void
                                 </a>
                             </li>
                         </ul>
+
                     </li>
 
                     <li class="nav-item <?php echo $isGallerySection ? 'menu-open' : ''; ?>">
@@ -255,8 +264,8 @@ function sidebarContainer(): void
                         </ul>
                     </li>
 
-                    <li class="nav-item <?php echo $isBlogSection ? 'menu-open' : ''; ?>">
-                        <a href="#" class="nav-link <?php echo $isBlogSection ? 'active' : ''; ?>">
+                    <li class="nav-item <?php echo $isBlogSection || $isBlogCategorySection ? 'menu-open' : ''; ?>">
+                        <a href="#" class="nav-link <?php echo $isBlogSection || $isBlogCategorySection ? 'active' : ''; ?>">
                             <i class="nav-icon bi bi-file-earmark-text"></i>
                             <p>
                                 Blog

@@ -14,12 +14,12 @@ $perPage = 10;
 $whereSql = '';
 $params = [];
 if ($search !== '') {
-    $whereSql = ' WHERE (title LIKE :keyword OR id = :id)';
+    $whereSql = ' WHERE (b.title LIKE :keyword OR b.id = :id)';
     $params[':keyword'] = '%' . $search . '%';
     $params[':id'] = $search;
 }
 
-$countSql = 'SELECT COUNT(*) FROM blogs' . $whereSql;
+$countSql = 'SELECT COUNT(*) FROM blogs b' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
 $totalBlogsCount = $stmtCount->fetchColumn();
@@ -44,7 +44,7 @@ $dataSql = 'SELECT
         LEFT JOIN blog_categories c ON b.category_id = c.id
         LEFT JOIN admins a ON b.user_id = a.admin_id
         LEFT JOIN galleries g ON b.gallery_id = g.id    
-        ' . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
+        ' . $whereSql . ' ORDER BY b.id DESC LIMIT :lim OFFSET :off';
 
 $stmt = $pdo->prepare($dataSql);
 

@@ -244,7 +244,7 @@ headerContainer();
                                         <div class="col-12">
                                             <label class="form-label" for="image">Current Featured Image</label>
                                             <?php if (!empty($imagePath)) { ?>
-                                                <img src="<?php echo '/palermo/' . htmlspecialchars($imagePath); ?>"
+                                                <img src="<?php echo BASE_URL . htmlspecialchars($imagePath); ?>"
                                                      alt="Current image"
                                                      style="max-width:200px; max-height:160px; object-fit:cover;"/>
                                             <?php } else { ?>
