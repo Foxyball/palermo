@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         if ($hasFile) {
-            $upload = uploadImage('image',true);
+            $upload = uploadImage('image', true);
             if (!empty($upload['path'])) {
                 $imagePath = $upload['path'];
             } elseif (!empty($upload['error'])) {
@@ -208,12 +208,12 @@ headerContainer();
                                                     <label class="form-label fw-bold">Product Image</label>
                                                     <input type="file" id="image" name="image" class="form-control" accept="image/*">
                                                     <small class="text-muted">JPG, PNG, or SVG (max 2MB)</small>
-                                                    
+
                                                     <!-- Image Preview -->
                                                     <div class="mt-2">
                                                         <label class="form-label">Preview</label><br>
-                                                        <img class="js-image-preview" src="#" alt="Image preview" 
-                                                             style="max-width:200px; max-height:150px; display:none; border:1px solid #ccc; background:#fafafa; border-radius: 4px;"/>
+                                                        <img class="js-image-preview" src="#" alt="Image preview"
+                                                            style="max-width:200px; max-height:150px; display:none; border:1px solid #ccc; background:#fafafa; border-radius: 4px;" />
                                                     </div>
                                                 </div>
 
@@ -296,7 +296,7 @@ headerContainer();
                 $(this).removeClass('is-invalid');
             });
 
-            // Image preview functionality
+            // Image preview
             function showPreview(src) {
                 if (src) {
                     $('.js-image-preview').attr('src', src).show();
@@ -308,14 +308,14 @@ headerContainer();
             $('#image').change(function(e) {
                 var file = e.target.files[0];
                 if (file) {
-                    // Check file size (2MB limit)
+                    // Check file size
                     if (file.size > 2 * 1024 * 1024) {
                         alert('File size must be less than 2MB');
                         $(this).val('');
                         showPreview(null);
                         return;
                     }
-                    
+
                     // Check file type
                     if (!file.type.match('image.*')) {
                         alert('Please select a valid image file');
@@ -323,7 +323,7 @@ headerContainer();
                         showPreview(null);
                         return;
                     }
-                    
+
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         showPreview(e.target.result);
