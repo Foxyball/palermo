@@ -215,8 +215,8 @@ function sidebarContainer(): void
 
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="products_list"
-                                   class="nav-link <?php echo in_array($currentPage, ['products_list', 'products_add', 'products_edit']) ? 'active' : ''; ?>">
+                                <a href="product_list"
+                                   class="nav-link <?php echo in_array($currentPage, ['product_list', 'products_add', 'products_edit']) ? 'active' : ''; ?>">
                                     <i class="bi bi-basket2-fill nav-icon"></i>
                                     <p>Products</p>
                                 </a>

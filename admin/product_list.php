@@ -14,12 +14,12 @@ $perPage = 10;
 $whereSql = '';
 $params = [];
 if ($search !== '') {
-    $whereSql = ' WHERE (name LIKE :keyword OR id = :id)';
+    $whereSql = ' WHERE (p.name LIKE :keyword OR p.id = :id)';
     $params[':keyword'] = '%' . $search . '%';
     $params[':id'] = $search;
 }
 
-$countSql = 'SELECT COUNT(*) FROM products' . $whereSql;
+$countSql = 'SELECT COUNT(*) FROM products p' . $whereSql;
 $stmtCount = $pdo->prepare($countSql);
 $stmtCount->execute($params);
 $totalProductsCount = $stmtCount->fetchColumn();
@@ -37,7 +37,7 @@ $dataSql = 'SELECT
             p.created_at
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id '
-             . $whereSql . ' ORDER BY id DESC LIMIT :lim OFFSET :off';
+             . $whereSql . ' ORDER BY p.id DESC LIMIT :lim OFFSET :off';
 
 $stmt = $pdo->prepare($dataSql);
 
