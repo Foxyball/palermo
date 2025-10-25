@@ -26,6 +26,20 @@ try {
         sendJsonError('Order status not found', 404);
     }
 
+    // TODO: When orders table is created, add safety check to prevent deletion of statuses in use:
+    // 
+    // $ordersUsingStatus = checkOrderStatusInUse($pdo, $statusId);
+    // if ($ordersUsingStatus > 0) {
+    //     sendJsonError('Cannot delete order status that is being used by ' . $ordersUsingStatus . ' order(s)', 400);
+    // }
+    //
+    // function checkOrderStatusInUse(PDO $pdo, int $statusId): int
+    // {
+    //     $stmt = $pdo->prepare('SELECT COUNT(*) FROM orders WHERE status_id = ?');
+    //     $stmt->execute([$statusId]);
+    //     return (int)$stmt->fetchColumn();
+    // }
+
     deleteOrderStatus($pdo, $statusId);
 
     sendJsonResponse([
