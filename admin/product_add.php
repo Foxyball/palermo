@@ -105,6 +105,12 @@ headerContainer();
 <title>Add Product | <?php echo SITE_TITLE; ?></title>
 </head>
 
+<style>
+    .ck-editor__editable_inline {
+        min-height: 300px;
+    }
+</style>
+
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
     <div class="app-wrapper">
         <?php navbarContainer(); ?>
@@ -198,7 +204,7 @@ headerContainer();
 
                                                 <div class="mb-3">
                                                     <label class="form-label fw-bold">Long Description</label>
-                                                    <textarea name="long_description" class="form-control" rows="5"
+                                                    <textarea name="long_description" class="form-control ckeditor-textarea" rows="5"
                                                         placeholder="Detailed product description"><?php echo htmlspecialchars($_POST['long_description'] ?? ''); ?></textarea>
                                                 </div>
                                             </div>
@@ -264,6 +270,7 @@ headerContainer();
         <?php footerContainer(); ?>
     </div>
 
+    <script src="./js/bundle.js"></script>
     <script>
         $(function() {
             $('form').on('submit', function(e) {

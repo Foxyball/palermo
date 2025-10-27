@@ -224,7 +224,7 @@ headerContainer();
 
                                                 <div class="mb-3">
                                                     <label class="form-label fw-bold">Long Description</label>
-                                                    <textarea name="long_description" class="form-control" rows="5"
+                                                    <textarea name="long_description" class="form-control ckeditor-textarea" rows="5"
                                                         placeholder="Detailed product description"><?php echo htmlspecialchars($_POST['long_description'] ?? $productToEdit['long_description']); ?></textarea>
                                                 </div>
                                             </div>
@@ -291,6 +291,7 @@ headerContainer();
         <?php footerContainer(); ?>
     </div>
 
+    <script src="./js/bundle.js"></script>
     <script>
         $(function() {
             $('form').on('submit', function(e) {
