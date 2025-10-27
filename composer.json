@@ -6,7 +6,8 @@
         "mpdf/mpdf": "^8.2",
         "dompdf/dompdf": "^2.0",
         "ext-pdo": "*",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "phpoffice/phpspreadsheet": "^5.2"
     },
     "license": "proprietary"
 }
