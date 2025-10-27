@@ -356,3 +356,33 @@ function deleteImageFile(string $relativePath): bool
 
     return false;
 }
+
+
+
+
+function getStatusBadge(string $statusName): string
+{
+    $statusLower = strtolower($statusName ?? 'Unknown');
+
+    $statusMapping = [
+        'pending' => 'bg-warning',
+        'confirmed' => 'bg-info',
+        'preparing' => 'bg-info',
+        'ready' => 'bg-primary',
+        'out for delivery' => 'bg-primary',
+        'delivered' => 'bg-success',
+        'completed' => 'bg-success',
+        'cancelled' => 'bg-danger',
+        'canceled' => 'bg-danger'
+    ];
+
+    $statusClass = 'bg-secondary';
+    foreach ($statusMapping as $keyword => $class) {
+        if (strpos($statusLower, $keyword) !== false) {
+            $statusClass = $class;
+            break;
+        }
+    }
+
+    return '<span class="badge ' . $statusClass . ' text-white">' . htmlspecialchars($statusName ?? 'Unknown') . '</span>';
+}

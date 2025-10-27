@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/../include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/OrderRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -16,74 +17,17 @@ if ($id <= 0) {
     exit;
 }
 
-$orderStmt = $pdo->prepare('
-    SELECT 
-        o.id,
-        o.user_id,
-        o.amount,
-        o.message,
-        o.order_address,
-        o.created_at,
-        u.first_name,
-        u.last_name,
-        u.email,
-        u.phone,
-        u.address,
-        u.city,
-        u.zip_code,
-        os.name AS status_name
-    FROM orders o
-    LEFT JOIN users u ON o.user_id = u.id
-    LEFT JOIN order_statuses os ON o.status_id = os.id
-    WHERE o.id = ? LIMIT 1
-');
-$orderStmt->execute([$id]);
-$order = $orderStmt->fetch(PDO::FETCH_ASSOC);
+$orderRepository = new OrderRepository($pdo);
+$orderData = $orderRepository->getOrderWithItemsAndAddons($id);
 
-if (!$order) {
+if (!$orderData) {
     $_SESSION['error'] = 'Order not found';
     header('Location: order_list');
     exit;
 }
 
-$itemsStmt = $pdo->prepare('
-    SELECT 
-        oi.id as order_item_id,
-        oi.unit_price,
-        oi.qty,
-        oi.subtotal,
-        p.name as product_name
-    FROM order_items oi
-    LEFT JOIN products p ON oi.product_id = p.id
-    WHERE oi.order_id = ?
-    ORDER BY oi.id ASC
-');
-$itemsStmt->execute([$id]);
-$orderItems = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
-
-$addonsData = [];
-if (!empty($orderItems)) {
-    $orderItemIds = array_column($orderItems, 'order_item_id');
-    $placeholders = str_repeat('?,', count($orderItemIds) - 1) . '?';
-
-    $addonsStmt = $pdo->prepare("
-        SELECT 
-            oia.order_item_id,
-            oia.price as addon_price,
-            a.name as addon_name
-        FROM order_item_addons oia
-        LEFT JOIN addons a ON oia.addon_id = a.id
-        WHERE oia.order_item_id IN ($placeholders)
-        ORDER BY oia.order_item_id, a.name
-    ");
-    $addonsStmt->execute($orderItemIds);
-    $addons = $addonsStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Group addons by order_item_id
-    foreach ($addons as $addon) {
-        $addonsData[$addon['order_item_id']][] = $addon;
-    }
-}
+$order = $orderData;
+$orderItems = $orderData['items'] ?? [];
 
 ?>
 
@@ -130,22 +74,8 @@ headerContainer();
                                     <h4 class="card-title mb-0">Order #<?php echo $order['id']; ?></h4>
                                     <div class="d-flex gap-2">
                                         <?php
-                                        $statusClass = '';
+                                        $statusClass = getStatusClass($order['status_name'] ?? 'Unknown');
                                         $statusName = $order['status_name'] ?? 'Unknown';
-                                        $statusLower = strtolower($statusName);
-                                        if (strpos($statusLower, 'pending') !== false) {
-                                            $statusClass = 'bg-warning';
-                                        } elseif (strpos($statusLower, 'confirmed') !== false || strpos($statusLower, 'preparing') !== false) {
-                                            $statusClass = 'bg-info';
-                                        } elseif (strpos($statusLower, 'ready') !== false || strpos($statusLower, 'out for delivery') !== false) {
-                                            $statusClass = 'bg-primary';
-                                        } elseif (strpos($statusLower, 'delivered') !== false || strpos($statusLower, 'completed') !== false) {
-                                            $statusClass = 'bg-success';
-                                        } elseif (strpos($statusLower, 'cancelled') !== false || strpos($statusLower, 'canceled') !== false) {
-                                            $statusClass = 'bg-danger';
-                                        } else {
-                                            $statusClass = 'bg-secondary';
-                                        }
                                         ?>
                                         <span class="badge <?php echo $statusClass; ?> text-white fs-6 px-3 py-2">
                                             <?php echo htmlspecialchars($statusName); ?>
@@ -188,19 +118,7 @@ headerContainer();
                                                 <div class="mb-0">
                                                     <strong>Address:</strong>
                                                     <div class="mt-1">
-                                                        <?php if ($order['order_address']) { ?>
-                                                            <?php echo nl2br(htmlspecialchars($order['order_address'])); ?>
-                                                        <?php } elseif ($order['address'] || $order['city'] || $order['zip_code']) { ?>
-                                                            <?php echo htmlspecialchars($order['address']); ?>
-                                                            <?php if ($order['city']) { ?>
-                                                                <br><?php echo htmlspecialchars($order['city']); ?>
-                                                            <?php } ?>
-                                                            <?php if ($order['zip_code']) { ?>
-                                                                <?php echo htmlspecialchars($order['zip_code']); ?>
-                                                            <?php } ?>
-                                                        <?php } else { ?>
-                                                            <span class="text-muted">No address provided</span>
-                                                        <?php } ?>
+                                                        <?php echo renderAddress($order); ?>
                                                     </div>
                                                 </div>
                                             <?php } else { ?>
@@ -223,6 +141,10 @@ headerContainer();
                                         <div class="card-body">
                                             <div class="mb-2">
                                                 <strong>Status:</strong>
+                                                <?php
+                                                $statusClass = getStatusClass($order['status_name'] ?? 'Unknown');
+                                                $statusName = $order['status_name'] ?? 'Unknown';
+                                                ?>
                                                 <span class="badge <?php echo $statusClass; ?> text-white">
                                                     <?php echo htmlspecialchars($statusName); ?>
                                                 </span>
@@ -280,14 +202,14 @@ headerContainer();
                                                     <?php $grandTotal = 0; ?>
                                                     <?php foreach ($orderItems as $item) { ?>
                                                         <?php
-                                                        $itemAddons = $addonsData[$item['order_item_id']] ?? [];
-                                                        
+                                                        $itemAddons = $item['addons'] ?? [];
+
                                                         $addonTotal = calculateAddonTotal($itemAddons);
                                                         $effectiveUnitPrice = calculateEffectiveUnitPrice($item['unit_price'], $itemAddons);
                                                         $calculatedSubtotal = calculateLineTotal($effectiveUnitPrice, $item['qty']);
-                                                        
+
                                                         $lineTotal = $item['subtotal'] ?: $calculatedSubtotal;
-                                                        
+
                                                         // Check for mismatches
                                                         $hasMismatch = hasPriceDiscrepancy($calculatedSubtotal, $lineTotal);
                                                         ?>
@@ -299,7 +221,7 @@ headerContainer();
                                                                 <?php if (!empty($itemAddons)) { ?>
                                                                     <div class="small">
                                                                         <?php foreach ($itemAddons as $addon) { ?>
-                                                                            <span class="badge bg-light text-dark me-1 mb-1">
+                                                                            <span class="badge bg-secondary me-1 mb-1">
                                                                                 <?php echo htmlspecialchars($addon['addon_name']); ?>
                                                                                 <?php if ($addon['addon_price'] > 0) { ?>
                                                                                     (+<?php echo formatOrderPrice($addon['addon_price'], false); ?>)
@@ -385,8 +307,6 @@ headerContainer();
             background-color: #e9ecef !important;
             border-color: #dee2e6 !important;
         }
-
-
     </style>
 
 </body>
