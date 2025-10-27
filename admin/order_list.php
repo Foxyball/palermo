@@ -4,58 +4,22 @@ require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/Paginator.php');
 require_once(__DIR__ . '/../include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/OrderRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$orderRepo = new OrderRepository($pdo);
 
 $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
 
-$whereSql = '';
-$params = [];
-if ($search !== '') {
-    $whereSql = ' WHERE (o.id = :id OR u.email LIKE :keyword OR u.first_name LIKE :keyword OR u.last_name LIKE :keyword)';
-    $params[':keyword'] = '%' . $search . '%';
-    $params[':id'] = $search;
-}
-
-$countSql = 'SELECT COUNT(*) FROM orders o LEFT JOIN users u ON o.user_id = u.id' . $whereSql;
-$stmtCount = $pdo->prepare($countSql);
-$stmtCount->execute($params);
-$totalOrdersCount = $stmtCount->fetchColumn();
-
+$totalOrdersCount = $orderRepo->countAll($search);
 $paginator = new Paginator($totalOrdersCount, $page, $perPage);
+$orders = $orderRepo->findAll($search, $paginator->limit(), $paginator->offset());
 
-$dataSql = 'SELECT 
-            o.id, 
-            o.user_id,
-            o.amount,
-            o.status_id,
-            o.created_at,
-            CONCAT(u.first_name, " ", u.last_name) AS customer_name,
-            u.email AS customer_email,
-            os.name AS status_name
-            FROM orders o
-            LEFT JOIN users u ON o.user_id = u.id
-            LEFT JOIN order_statuses os ON o.status_id = os.id '
-    . $whereSql . ' ORDER BY o.id DESC LIMIT :lim OFFSET :off';
-
-$stmt = $pdo->prepare($dataSql);
-
-foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v);
-}
-
-$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
-$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
-$stmt->execute();
-$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$statusesStmt = $pdo->prepare('SELECT id, name FROM order_statuses WHERE active = "1" ORDER BY id ASC');
-$statusesStmt->execute();
-$availableStatuses = $statusesStmt->fetchAll(PDO::FETCH_ASSOC);
-
+$availableStatuses = $orderRepo->getActiveStatuses();
 ?>
 
 <?php
@@ -119,9 +83,9 @@ headerContainer();
 
                                     <div class="card-tools ms-md-auto">
                                         <div class="btn-group" role="group">
-                                            <a href="order_export_generate.php<?php echo $search !== '' ? '?q=' . urlencode($search) : ''; ?>" 
-                                               class="btn btn-success btn-sm" 
-                                               title="Export to Excel">
+                                            <a href="order_export_generate.php<?php echo $search !== '' ? '?q=' . urlencode($search) : ''; ?>"
+                                                class="btn btn-success btn-sm"
+                                                title="Export to Excel">
                                                 <i class="bi bi-file-earmark-excel"></i> Export
                                             </a>
                                         </div>

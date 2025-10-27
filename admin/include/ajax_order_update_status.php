@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$orderId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-$statusId = isset($_POST['status_id']) ? (int)$_POST['status_id'] : 0;
+$orderId = $_POST['id'] ?? 0;
+$statusId = $_POST['status_id'] ?? 0;
 
 if ($orderId <= 0) {
     sendJsonError('Invalid order ID', 400);
@@ -25,52 +25,23 @@ if ($statusId <= 0) {
 }
 
 try {
-    $order = fetchOrderById($pdo, $orderId);
+    $orderRepo = new OrderRepository($pdo);
+    $order = $orderRepo->findById($orderId);
 
     if (!$order) {
         sendJsonError('Order not found', 404);
     }
 
-    // Verify the status exists and is active
-    $status = fetchOrderStatusById($pdo, $statusId);
-    if (!$status || $status['active'] != '1') {
-        sendJsonError('Invalid or inactive status', 400);
+    if ($orderRepo->updateStatus($orderId, $statusId)) {
+        sendJsonResponse([
+            'success' => true,
+            'message' => 'Status updated successfully',
+        ]);
+    } else {
+        sendJsonError('Failed to update status', 500);
     }
-
-    updateOrderStatus($pdo, $orderId, $statusId);
-
-    sendJsonResponse([
-        'success' => true,
-        'message' => 'Order status updated successfully',
-    ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchOrderById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, status_id FROM orders WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $order = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $order ?: null;
-}
-
-function fetchOrderStatusById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, name, active FROM order_statuses WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $status = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $status ?: null;
-}
-
-function updateOrderStatus(PDO $pdo, int $orderId, int $statusId): void
-{
-    $stmt = $pdo->prepare(
-        'UPDATE orders SET status_id = ?, updated_at = NOW() WHERE id = ? LIMIT 1'
-    );
-    $stmt->execute([$statusId, $orderId]);
 }
 
 function sendJsonError(string $message, int $status = 400): void
