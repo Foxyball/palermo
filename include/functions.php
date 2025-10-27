@@ -6,12 +6,6 @@ function convertToEuro(float $priceBgn): float
 }
 
 
-/**
- * Formats and displays a price in Bulgarian Lev (BGN) and its equivalent in Euro (EUR).
- *
- * @param float $priceBgn The price in Bulgarian Lev.
- * @return string The formatted price string in BGN and EUR.
- */
 function displayPrice(float $priceBgn): string
 {
     $priceEur = convertToEuro($priceBgn);
@@ -26,31 +20,61 @@ function displayPrice(float $priceBgn): string
  */
 function verifyUserPassword(string $inputPassword, string $storedHash): bool
 {
-    // Handle empty stored hash
     if (empty($storedHash)) {
         return false;
     }
-    
-    // Check if it's a modern password_hash
+
     if (password_verify($inputPassword, $storedHash)) {
         return true;
     }
-    
-    // Fallback to md5 for legacy passwords
+
     if (md5($inputPassword) === $storedHash) {
         return true;
     }
-    
+
     return false;
 }
 
-/**
- * Check if a password hash needs to be rehashed (for upgrading from md5 to password_hash)
- * @param string $storedHash The stored password hash from database
- * @return bool True if needs rehashing, false otherwise
- */
+
 function passwordNeedsRehash(string $storedHash): bool
 {
     // If it's not a password_hash format, it needs rehashing
     return !password_get_info($storedHash)['algo'];
+}
+
+
+function calculateAddonTotal(array $addons): float
+{
+    $total = 0;
+    foreach ($addons as $addon) {
+        $total += (float)($addon['addon_price'] ?? 0);
+    }
+    return $total;
+}
+
+
+function calculateEffectiveUnitPrice(float $basePrice, array $addons): float
+{
+    return $basePrice + calculateAddonTotal($addons);
+}
+
+
+function calculateLineTotal(float $effectiveUnitPrice, int $quantity): float
+{
+    return $effectiveUnitPrice * $quantity;
+}
+
+
+function formatOrderPrice(float $priceBgn, bool $showBoth = true): string
+{
+    if (!$showBoth) {
+        return sprintf('%.2f лв', $priceBgn);
+    }
+    return displayPrice($priceBgn);
+}
+
+
+function hasPriceDiscrepancy(float $calculated, float $stored, float $tolerance = 0.01): bool
+{
+    return abs($calculated - $stored) > $tolerance;
 }
