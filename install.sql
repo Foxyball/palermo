@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2025 at 07:27 PM
+-- Generation Time: Oct 27, 2025 at 10:20 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,6 +36,13 @@ CREATE TABLE `addons` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `addons`
+--
+
+INSERT INTO `addons` (`id`, `name`, `price`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Extra Cheese', 2.00, '1', '2025-10-27 07:32:50', '2025-10-27 07:32:50');
+
 -- --------------------------------------------------------
 
 --
@@ -60,7 +67,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`admin_id`, `admin_name`, `admin_email`, `admin_password`, `last_log_ip`, `last_log_date`, `active`, `is_super_admin`, `created_at`, `updated_at`) VALUES
-(1, 'HSabev', 'hsabev@sprintax.com', 'e10adc3949ba59abbe56e057f20f883e', '127.0.0.1', '2025-10-09 19:39:55', '1', 1, '2025-09-23 17:40:04', '2025-10-09 16:39:55'),
+(1, 'HSabev', 'hsabev@sprintax.com', '$2y$10$ipdoUtTKq54RM3uahyxwmuaDZCvc0UbSq7zViLl8eZyAB1sIjFGvS', '127.0.0.1', '2025-10-09 19:39:55', '1', 1, '2025-09-23 17:40:04', '2025-10-20 07:35:31'),
 (2, 'ue', 'ue@palermo.com', '5f4dcc3b5aa765d61d8327deb882cf99', '127.0.0.1', '2025-09-27 12:43:18', '1', 0, '2025-09-23 17:40:04', '2025-09-27 13:22:15'),
 (3, 'Ivan Dimitrov', 'idimitrov@palermo.com', '482c811da5d5b4bc6d497ffa98491e38', NULL, NULL, '1', 0, '2025-09-27 12:18:51', '2025-09-27 12:18:51'),
 (4, 'Stanislav Malchev', 'smalchev@palermo.com', 'ca35d11d4a538755c0b7be89255fdb56', NULL, NULL, '1', 1, '2025-09-27 12:29:16', '2025-10-09 16:40:04'),
@@ -253,11 +260,21 @@ CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
   `message` text DEFAULT NULL,
+  `order_address` text DEFAULT NULL,
   `status` enum('pending','processing','completed','canceled') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `amount`, `status_id`, `message`, `order_address`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 23.98, 1, 'sfsf', 'Varna, BK', 'pending', '2025-10-27 07:13:19', '2025-10-27 07:58:31'),
+(2, 47, 23.98, 2, 'sfsf', 'Varna, BK', 'pending', '2025-10-27 07:13:19', '2025-10-27 08:26:57');
 
 -- --------------------------------------------------------
 
@@ -274,6 +291,14 @@ CREATE TABLE `order_items` (
   `subtotal` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `unit_price`, `qty`, `subtotal`) VALUES
+(1, 1, 15, 14.99, 1, 16.99),
+(2, 1, 25, 6.99, 1, 6.99);
+
 -- --------------------------------------------------------
 
 --
@@ -285,6 +310,88 @@ CREATE TABLE `order_item_addons` (
   `addon_id` int(11) NOT NULL,
   `price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_item_addons`
+--
+
+INSERT INTO `order_item_addons` (`order_item_id`, `addon_id`, `price`) VALUES
+(1, 1, 2.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_statuses`
+--
+
+CREATE TABLE `order_statuses` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `active` enum('0','1') NOT NULL DEFAULT '1',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `order_statuses`
+--
+
+INSERT INTO `order_statuses` (`id`, `name`, `active`, `created_at`, `updated_at`) VALUES
+(1, 'Pending', '1', '2025-10-27 07:23:26', '2025-10-27 07:27:59'),
+(2, 'Confirmed', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:09'),
+(3, 'Preparing', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:14'),
+(4, 'Ready', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:06'),
+(5, 'Out for Delivery', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:18'),
+(6, 'Delivered', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:21'),
+(7, 'Cancelled', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `password_reset_tokens`
+--
+
+INSERT INTO `password_reset_tokens` (`id`, `email`, `token`, `expires_at`, `used_at`, `created_at`) VALUES
+(1, 'john.doe@example.com', '2eab34d699fc23437e7a651c1e4eaabc1ccb7c239e832c55a15a4f69d28ab047', '2025-10-23 17:11:17', '2025-10-23 16:14:10', '2025-10-23 16:11:17'),
+(2, 'test123@abv.bg', 'b8bf68fd32af506323e7c5dc7a36e799cf4913bd1e273558fde9c8b85f540bfc', '2025-10-24 16:17:48', NULL, '2025-10-23 16:17:48'),
+(3, 'test22@abv.bg', 'bea56f69f69dde12256211533b734b519978188063715a93fa13f149f7a4b0cf', '2025-10-24 16:17:50', NULL, '2025-10-23 16:17:50'),
+(4, 'testA@abv.bg', 'a3c486914181af860b088331f9768060a21680825752e9051daeefd5e3a3c728', '2025-10-24 16:19:16', NULL, '2025-10-23 16:19:16'),
+(5, 'testB@abv.bg', 'd082394ef6741e16b539f7096d196878db2c2de0927b1d7635fb9443aabfdf11', '2025-10-24 16:19:18', NULL, '2025-10-23 16:19:18'),
+(6, 'test4@abv.bg', '4b8c8bd1cfe1d2d0f65b03f6c5aa08f8fafbecad7c29f059996faed0603dc549', '2025-10-24 16:21:14', NULL, '2025-10-23 16:21:14'),
+(7, 'test5@abv.bg', '7373fe9bfa0d3999c661cae9fdf5916208803793f947a53796d1ebeaf233f758', '2025-10-24 16:21:17', NULL, '2025-10-23 16:21:17'),
+(8, 'test6@abv.bg', '53c061061fc47e22522bccb559c14559ea87f99ef5c59c3d87e10e90295c0a36', '2025-10-24 16:21:19', NULL, '2025-10-23 16:21:19'),
+(9, 'ivan@abv.bg', '8a5105fe21021b8780de7de95eeb340da630cf3ce15020744499a2cacb027325', '2025-10-24 16:32:55', NULL, '2025-10-23 16:32:55'),
+(10, 'dimitar@abv.bg', '2329b06fc685a7784045cfc6e3b9d75843c7d82f7ac84d9c31b259349c57200d', '2025-10-24 16:32:57', NULL, '2025-10-23 16:32:57'),
+(11, 'ivan2@abv.bg', '42c8cc665bafa34f24e32032c875c9c34b410d469fd19cb61089bfd8bc434ef2', '2025-10-24 16:32:59', NULL, '2025-10-23 16:32:59'),
+(12, 'asdff@abv.bg', 'a8c3a4604d0ea998f1e600b08c6c5e7f807feca8e2b0a7ef2d6329ef8175d397', '2025-10-24 16:37:47', NULL, '2025-10-23 16:37:47'),
+(13, 'asd2@abv.bg', '5b249f2329ce89b71c8e0ba124a75c26ae23cba4aab95828ae7dcba92492d6fe', '2025-10-24 16:37:49', NULL, '2025-10-23 16:37:49'),
+(14, 'asd4@abv.bg', 'f7ee3231bc7621a4d0787a1960746f5df29c6aad9937ea83d7b02266a84ebfb1', '2025-10-24 16:37:56', NULL, '2025-10-23 16:37:56'),
+(15, 'stefan@abv.bg', '204faefee782bec64a15bbef239351985ef61085afcff08fcf8e62ce46de3e37', '2025-10-24 16:38:54', NULL, '2025-10-23 16:38:54'),
+(16, 'dimcho@abv.bg', '28f6d16a13d8a2f049ad0dee5ef80532d3c638b88f2f82d82376b0b45a2c7049', '2025-10-24 16:38:56', NULL, '2025-10-23 16:38:56'),
+(17, 'stoicho@abv.bg', '64c6e20ae7180941fe863ba41c94f8091177fbfc96af810898516c3fb7662e24', '2025-10-24 16:39:03', NULL, '2025-10-23 16:39:03'),
+(18, 'dimi@gmail.com', '3402a2f51cf41a76fecbf987400519d58ef8d01ee9c98bf76a719af7582dacef', '2025-10-24 16:39:09', NULL, '2025-10-23 16:39:09'),
+(19, 'work@gmail.com', '997ad291e3d17470777020c2398b3bc3ef7193dd89c39c6ea5abdc6a466777f0', '2025-10-24 16:42:55', NULL, '2025-10-23 16:42:55'),
+(20, 'working@abv.bg', 'dbc81a422ded8dbf1d44899a0be59d33302cc371d32cf7e702c781c538c8cd93', '2025-10-24 16:42:57', NULL, '2025-10-23 16:42:57'),
+(21, 'vvvvv@example.com', 'e1d0215d262e2c88f11b44ff97cc85e5f90da19e2f3f1f285594d74844a81bfc', '2025-10-24 16:42:59', NULL, '2025-10-23 16:42:59'),
+(22, 'aaaaaaaaa@abv.bg', '7c7d70bce83b367aa9761b913c37ebd5f907fbc1f750680200fef9408e4d20f1', '2025-10-24 16:45:53', NULL, '2025-10-23 16:45:53'),
+(23, 'bbbbbbb@gmail.com', '9b0abab683eea1fcf17d6d658dc11a1fca9692ad767e53e2f9e0dc8c14405a0d', '2025-10-24 16:45:55', NULL, '2025-10-23 16:45:55'),
+(24, 'vcdsgfdg@abv.bg', 'fbb3720a9e6570cbb32deeabc32e2a504b69cd107e4a28ec678b181c39b5974f', '2025-10-24 16:45:57', NULL, '2025-10-23 16:45:57'),
+(25, 'kgkgk@abv.bg', 'f3c4df7e75cd5dfe19d9b744a8c3a15202635df7257124cfa629a48f92882eed', '2025-10-24 16:50:58', NULL, '2025-10-23 16:50:58'),
+(26, 'fgbnvnnvn@test.com', 'dcc804dde59924b40267197edfc765d131b3fa266d2f5e3afbebc936ea71014c', '2025-10-24 16:51:00', NULL, '2025-10-23 16:51:00'),
+(27, 'ytjt@abv.bg', '4627d685cba2e396383e5b0a114da5009440144511756e697ecb7be949f32d7f', '2025-10-24 16:51:01', NULL, '2025-10-23 16:51:01');
 
 -- --------------------------------------------------------
 
@@ -299,7 +406,7 @@ CREATE TABLE `products` (
   `slug` varchar(160) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
-  `status` enum('0','1') DEFAULT '1',
+  `active` enum('0','1') NOT NULL DEFAULT '1',
   `short_description` varchar(255) DEFAULT NULL,
   `long_description` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -310,7 +417,7 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `category_id`, `name`, `slug`, `image`, `price`, `status`, `short_description`, `long_description`, `created_at`, `updated_at`) VALUES
+INSERT INTO `products` (`id`, `category_id`, `name`, `slug`, `image`, `price`, `active`, `short_description`, `long_description`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Margherita Pizza', 'margherita-pizza', 'margherita.jpg', 18.99, '1', 'Classic pizza with fresh mozzarella and basil', 'Traditional Italian pizza with San Marzano tomatoes, fresh mozzarella di bufala, fresh basil, and extra virgin olive oil on our wood-fired pizza base.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (2, 1, 'Pepperoni Pizza', 'pepperoni-pizza', 'pepperoni.jpg', 21.99, '1', 'America\'s favorite with spicy pepperoni', 'Generous portions of premium pepperoni, mozzarella cheese, and our signature tomato sauce on a perfectly crispy crust.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (3, 1, 'Quattro Stagioni', 'quattro-stagioni', 'quattro.jpg', 24.99, '1', 'Four seasons pizza with varied toppings', 'Divided into four sections: mushrooms, ham, artichokes, and olives, representing the four seasons of the year.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
@@ -349,6 +456,13 @@ CREATE TABLE `product_addons` (
   `addon_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `product_addons`
+--
+
+INSERT INTO `product_addons` (`product_id`, `addon_id`) VALUES
+(15, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -375,7 +489,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `address`, `city`, `phone`, `zip_code`, `active`, `created_at`, `updated_at`) VALUES
-(1, 'John', 'Doe', 'john.doe@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '123 Main Street', 'New York', '+1-555-0101', '10001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(1, 'John', 'Doe', 'john.doe@example.com', '$2y$10$gr1SJuUCJ1phmenHrQnOEeuraGwmbUFyWdrzEhJCzh3GD2ZW1DJ/e', '123 Main Street', 'New York', '+1-555-0101', '10001', '1', '2025-09-27 14:55:05', '2025-10-23 13:14:10'),
 (2, 'Jane', 'Smith', 'jane.smith@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '456 Oak Avenue', 'Los Angeles', '+1-555-0102', '90210', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
 (4, 'Emily', 'Davis', 'emily.davis@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '321 Elm Street', 'Houston', '+1-555-0104', '77001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
 (5, 'David', 'Wilson', 'david.wilson@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '654 Maple Drive', 'Phoenix', '+1-555-0105', '85001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
@@ -409,7 +523,39 @@ INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `addr
 (33, 'Admin', 'Test', 'admin.test@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '300 Admin Road', 'Admin City', '+1-555-9997', '99997', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
 (34, 'Tony', 'Kostadinov', 'tkostadinov@sprintax.com', '5f4dcc3b5aa765d61d8327deb882cf99', 'Varna', '', '', '', '1', '2025-09-30 05:57:51', '2025-09-30 05:57:56'),
 (35, 'Rostislav', 'Demirov', 'rdemirov@abv.bg', '5f4dcc3b5aa765d61d8327deb882cf99', '', '', '', '', '1', '2025-09-30 05:59:43', '2025-09-30 05:59:43'),
-(36, 'Test', 'Tst', '124767@students.ue-varna.bg', '5f4dcc3b5aa765d61d8327deb882cf99', 'ADADA', '', '1231', '123', '1', '2025-10-09 16:44:28', '2025-10-09 16:44:28');
+(36, 'Test', 'Tst', '124767@students.ue-varna.bg', '5f4dcc3b5aa765d61d8327deb882cf99', 'ADADA', '', '1231', '123', '1', '2025-10-09 16:44:28', '2025-10-09 16:44:28'),
+(37, 'Test', 'User', 'testuser@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
+(38, 'Test', 'User', 'test1user@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
+(39, 'Test', 'User', 'test2user@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
+(40, NULL, NULL, 'test123@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:17:48', '2025-10-23 13:17:48'),
+(41, NULL, NULL, 'test22@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:17:50', '2025-10-23 13:17:50'),
+(42, 'Test4b9efb', 'User030bf9', 'testA@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:19:16', '2025-10-23 13:19:16'),
+(43, 'Test4b9efb', 'User030bf9', 'testB@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:19:18', '2025-10-23 13:19:18'),
+(44, 'Test917317', 'User89d3d8', 'asd@abv.bg', '$2y$10$F8OG.svpQ/zo8T6ZMurOGOEEhu9eISswPt/vQLkIL9fCi0nXFkO.2', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
+(45, 'Test917317', 'User89d3d8', 'asd1@abv.bg', '$2y$10$jePQcweco4TzuOYFFqZynefu5bU4tEv84.OsMPK9/kojXIeUSUc4i', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
+(46, 'Test917317', 'User89d3d8', 'asd3@abv.bg', '$2y$10$XsKH3MFZqfif2.M/ns4XeOBVGFMCrqOE7/9l553Sx/T4CmU0Q4086', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
+(47, 'Test4c6ad1', 'User49b724', 'test4@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:14', '2025-10-23 13:21:14'),
+(48, 'Test4c6ad1', 'User49b724', 'test5@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:17', '2025-10-23 13:21:17'),
+(49, 'Test4c6ad1', 'User49b724', 'test6@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:19', '2025-10-23 13:21:19'),
+(50, 'Testc48ba7', 'User9082c1', 'ivan@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:55', '2025-10-23 13:32:55'),
+(51, 'Testc48ba7', 'User9082c1', 'dimitar@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:57', '2025-10-23 13:32:57'),
+(52, 'Testc48ba7', 'User9082c1', 'ivan2@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:59', '2025-10-23 13:32:59'),
+(53, 'Test760816', 'Userb16faf', 'asdff@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:47', '2025-10-23 13:37:47'),
+(54, 'Test760816', 'Userb16faf', 'asd2@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:49', '2025-10-23 13:37:49'),
+(55, 'Test760816', 'Userb16faf', 'asd4@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:56', '2025-10-23 13:37:56'),
+(56, 'Testaa8bb0', 'User6bc45c', 'stefan@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:38:54', '2025-10-23 13:38:54'),
+(57, 'Testaa8bb0', 'User6bc45c', 'dimcho@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:38:56', '2025-10-23 13:38:56'),
+(58, 'Testaa8bb0', 'User6bc45c', 'stoicho@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:39:03', '2025-10-23 13:39:03'),
+(59, 'Testaa8bb0', 'User6bc45c', 'dimi@gmail.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:39:09', '2025-10-23 13:39:09'),
+(60, 'New', 'User', 'work@gmail.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:55', '2025-10-23 13:42:55'),
+(61, 'New', 'User', 'working@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:57', '2025-10-23 13:42:57'),
+(62, 'New', 'User', 'vvvvv@example.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:59', '2025-10-23 13:42:59'),
+(63, 'New', 'User', 'aaaaaaaaa@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:53', '2025-10-23 13:45:53'),
+(64, 'New', 'User', 'bbbbbbb@gmail.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:55', '2025-10-23 13:45:55'),
+(65, 'New', 'User', 'vcdsgfdg@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:57', '2025-10-23 13:45:57'),
+(66, 'New', 'User', 'kgkgk@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:50:58', '2025-10-23 13:50:58'),
+(67, 'New', 'User', 'fgbnvnnvn@test.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:51:00', '2025-10-23 13:51:00'),
+(68, 'New', 'User', 'ytjt@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:51:01', '2025-10-23 13:51:01');
 
 --
 -- Indexes for dumped tables
@@ -495,6 +641,22 @@ ALTER TABLE `order_item_addons`
   ADD KEY `addon_id` (`addon_id`);
 
 --
+-- Indexes for table `order_statuses`
+--
+ALTER TABLE `order_statuses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_active` (`active`);
+
+--
+-- Indexes for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_token` (`token`),
+  ADD KEY `idx_email` (`email`),
+  ADD KEY `idx_expires` (`expires_at`);
+
+--
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -524,7 +686,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `addons`
 --
 ALTER TABLE `addons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admins`
@@ -572,13 +734,25 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `order_statuses`
+--
+ALTER TABLE `order_statuses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -590,7 +764,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- Constraints for dumped tables
