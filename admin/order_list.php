@@ -116,6 +116,17 @@ headerContainer();
                                         </form>
                                     </div>
 
+
+                                    <div class="card-tools ms-md-auto">
+                                        <div class="btn-group" role="group">
+                                            <a href="order_export_generate.php<?php echo $search !== '' ? '?q=' . urlencode($search) : ''; ?>" 
+                                               class="btn btn-success btn-sm" 
+                                               title="Export to Excel">
+                                                <i class="bi bi-file-earmark-excel"></i> Export
+                                            </a>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
@@ -241,6 +252,7 @@ headerContainer();
                                                     <small class="text-muted">Filtered by "<?php echo htmlspecialchars($search); ?>"</small>
                                                 <?php } ?>
                                             </div>
+
                                             <div class="col-md-4 text-md-center">
                                                 <nav aria-label="Pagination">
                                                     <ul class="pagination pagination-sm mb-0 justify-content-center">
@@ -413,7 +425,7 @@ headerContainer();
             });
 
             // SweetAlert2 delete handler
-            $(document).on('click', '.js-order-delete-btn', async function (e) {
+            $(document).on('click', '.js-order-delete-btn', async function(e) {
                 e.preventDefault();
                 const $btn = $(this);
                 const orderId = $btn.data('order-id');
@@ -436,35 +448,35 @@ headerContainer();
                 $btn.prop('disabled', true).addClass('opacity-50');
 
                 $.ajax({
-                    url: './include/ajax_order_delete.php',
-                    method: 'POST',
-                    data: {
-                        id: orderId,
-                    },
-                    dataType: 'json'
-                })
-                .done(function (resp) {
-                    if (resp && resp.success) {
-                        toastr.success('Order deleted');
-                        // Remove row from table
-                        const $row = $btn.closest('tr');
-                        $row.fadeOut(300, function () {
-                            $(this).remove();
-                        });
-                    } else {
-                        toastr.error(resp && resp.message ? resp.message : 'Delete failed');
-                    }
-                })
-                .fail(function (xhr) {
-                    let msg = 'Server error';
-                    if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    toastr.error(msg);
-                })
-                .always(function () {
-                    $btn.prop('disabled', false).removeClass('opacity-50');
-                });
+                        url: './include/ajax_order_delete.php',
+                        method: 'POST',
+                        data: {
+                            id: orderId,
+                        },
+                        dataType: 'json'
+                    })
+                    .done(function(resp) {
+                        if (resp && resp.success) {
+                            toastr.success('Order deleted');
+                            // Remove row from table
+                            const $row = $btn.closest('tr');
+                            $row.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            toastr.error(resp && resp.message ? resp.message : 'Delete failed');
+                        }
+                    })
+                    .fail(function(xhr) {
+                        let msg = 'Server error';
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        toastr.error(msg);
+                    })
+                    .always(function() {
+                        $btn.prop('disabled', false).removeClass('opacity-50');
+                    });
             });
         });
     </script>
