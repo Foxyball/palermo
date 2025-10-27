@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/OrderRepository.php';
 
 requireAdminLogin();
 
@@ -13,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$orderId = $_POST['id'] ?? 0;
-$statusId = $_POST['status_id'] ?? 0;
+$orderId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+$statusId = isset($_POST['status_id']) ? (int)$_POST['status_id'] : 0;
 
 if ($orderId <= 0) {
     sendJsonError('Invalid order ID', 400);
@@ -41,7 +42,9 @@ try {
         sendJsonError('Failed to update status', 500);
     }
 } catch (Throwable $e) {
-    sendJsonError('Server error', 500);
+    error_log('Order status update error: ' . $e->getMessage());
+    error_log('Stack trace: ' . $e->getTraceAsString());
+    sendJsonError('Server error: ' . $e->getMessage(), 500);
 }
 
 function sendJsonError(string $message, int $status = 400): void

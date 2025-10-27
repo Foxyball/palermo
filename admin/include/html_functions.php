@@ -52,6 +52,8 @@ function headerContainer(): void
             integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
             crossorigin="anonymous"/>
 
+    <link rel="stylesheet" href="./css/palermo-admin.css"/>
+
 
     <link rel="stylesheet" href="../node_modules/toastr/build/toastr.min.css"/>
     <script src="./js/jquery.js"></script>
@@ -564,3 +566,62 @@ unset($_SESSION['success'], $_SESSION['error']);
 ?>
 
 <?php }
+
+/**
+ * Render pagination footer with item count and page navigation
+ * 
+ * @param Paginator $paginator The paginator instance
+ * @param int $totalItems Total number of items
+ * @param int $currentCount Number of items on current page
+ * @param string $baseUrl Base URL for pagination links (e.g., 'order_list', 'user_list')
+ * @param string $search Search query if applicable
+ */
+function renderPagination(Paginator $paginator, int $totalItems, int $currentCount, string $baseUrl, string $search = ''): void
+{
+    ?>
+    <div class="card-footer">
+        <div class="row align-items-center g-3">
+            <div class="col-md-4">
+                <small class="text-muted d-block">
+                    <?php
+                    $start = $paginator->offset() + 1;
+                    $end = $paginator->offset() + $currentCount;
+                    ?>
+                    <?php if ($totalItems > 0) { ?>
+                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalItems; ?>
+                    <?php } else { ?>
+                        No results
+                    <?php } ?>
+                </small>
+                <?php if ($search !== '') { ?>
+                    <small class="text-muted">Filtered by "<?php echo htmlspecialchars($search); ?>"</small>
+                <?php } ?>
+            </div>
+
+            <div class="col-md-4 text-md-center">
+                <nav aria-label="Pagination">
+                    <ul class="pagination pagination-sm mb-0 justify-content-center">
+                        <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
+                            <a class="page-link"
+                                href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), $baseUrl); ?>"
+                                tabindex="-1">&laquo;</a>
+                        </li>
+                        <?php foreach ($paginator->pages() as $pg) { ?>
+                            <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
+                                <a class="page-link"
+                                    href="<?php echo buildPageUrl($pg, $baseUrl); ?>"><?php echo $pg; ?></a>
+                            </li>
+                        <?php } ?>
+                        <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
+                            <a class="page-link"
+                                href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), $baseUrl); ?>">&raquo;</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+        </div>
+    </div>
+    <?php
+}
+
