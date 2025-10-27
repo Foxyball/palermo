@@ -150,6 +150,9 @@ headerContainer();
                                         <span class="badge <?php echo $statusClass; ?> text-white fs-6 px-3 py-2">
                                             <?php echo htmlspecialchars($statusName); ?>
                                         </span>
+                                        <a href="order_pdf_generate.php?id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-danger">
+                                            <i class="bi bi-file-earmark-pdf"></i> Generate PDF Invoice
+                                        </a>
                                         <a href="order_list" class="btn btn-outline-secondary">
                                             <i class="bi bi-arrow-left"></i> Back to Orders
                                         </a>
@@ -382,6 +385,8 @@ headerContainer();
             background-color: #e9ecef !important;
             border-color: #dee2e6 !important;
         }
+
+
     </style>
 
 </body>
