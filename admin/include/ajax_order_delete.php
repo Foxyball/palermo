@@ -14,14 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $orderId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-$statusId = isset($_POST['status_id']) ? (int)$_POST['status_id'] : 0;
 
 if ($orderId <= 0) {
     sendJsonError('Invalid order ID', 400);
-}
-
-if ($statusId <= 0) {
-    sendJsonError('Invalid status ID', 400);
 }
 
 try {
@@ -31,17 +26,15 @@ try {
         sendJsonError('Order not found', 404);
     }
 
-    // Verify the status exists and is active
-    $status = fetchOrderStatusById($pdo, $statusId);
-    if (!$status || $status['active'] != '1') {
-        sendJsonError('Invalid or inactive status', 400);
-    }
-
-    updateOrderStatus($pdo, $orderId, $statusId);
+    // Check if order has associated order items and delete them first
+    deleteOrderItems($pdo, $orderId);
+    
+    // Delete the order
+    deleteOrder($pdo, $orderId);
 
     sendJsonResponse([
         'success' => true,
-        'message' => 'Order status updated successfully',
+        'message' => 'Order deleted successfully',
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
@@ -49,28 +42,30 @@ try {
 
 function fetchOrderById(PDO $pdo, int $id): ?array
 {
-    $stmt = $pdo->prepare('SELECT id, status_id FROM orders WHERE id = ? LIMIT 1');
+    $stmt = $pdo->prepare('SELECT id FROM orders WHERE id = ? LIMIT 1');
     $stmt->execute([$id]);
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
     return $order ?: null;
 }
 
-function fetchOrderStatusById(PDO $pdo, int $id): ?array
+function deleteOrderItems(PDO $pdo, int $orderId): void
 {
-    $stmt = $pdo->prepare('SELECT id, name, active FROM order_statuses WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $status = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $status ?: null;
+    // First delete order item addons
+    $stmt = $pdo->prepare('DELETE oia FROM order_item_addons oia 
+                          INNER JOIN order_items oi ON oia.order_item_id = oi.id 
+                          WHERE oi.order_id = ?');
+    $stmt->execute([$orderId]);
+    
+    // Then delete order items
+    $stmt = $pdo->prepare('DELETE FROM order_items WHERE order_id = ?');
+    $stmt->execute([$orderId]);
 }
 
-function updateOrderStatus(PDO $pdo, int $orderId, int $statusId): void
+function deleteOrder(PDO $pdo, int $id): void
 {
-    $stmt = $pdo->prepare(
-        'UPDATE orders SET status_id = ?, updated_at = NOW() WHERE id = ? LIMIT 1'
-    );
-    $stmt->execute([$statusId, $orderId]);
+    $stmt = $pdo->prepare('DELETE FROM orders WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void

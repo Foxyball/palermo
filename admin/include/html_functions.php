@@ -139,6 +139,7 @@ function sidebarContainer(): void
     $addonsPages = ['addons_list', 'addons_add', 'addons_edit'];
     $productPages = ['product_list', 'product_add', 'product_edit'];
     $orderStatuses = ['order_status_list', 'order_status_add', 'order_status_edit'];
+    $orderPages = ['order_pending', 'order_add', 'order_edit','order_show', 'order_list'];
     $dashboardPages = ['index'];
 
     $isAdminSection = in_array($currentPage, $adminPages);
@@ -150,7 +151,7 @@ function sidebarContainer(): void
     $isAddonsSection = in_array($currentPage, $addonsPages);
     $isProductSection = in_array($currentPage, $productPages);
     $isOrderStatusSection = in_array($currentPage, $orderStatuses);
-
+    $isOrderSection = in_array($currentPage, $orderPages);
     ?>
 
 
@@ -248,14 +249,36 @@ function sidebarContainer(): void
                     </li>
 
 
-                      <li class="nav-item <?php echo $isOrderStatusSection || $isOrderStatusSection ? 'menu-open' : ''; ?>">
-                        <a href="#" class="nav-link <?php echo $isOrderStatusSection || $isOrderStatusSection ? 'active' : ''; ?>">
+                      <li class="nav-item <?php echo $isOrderStatusSection || $isOrderStatusSection || $isOrderSection ? 'menu-open' : ''; ?>">
+                        <a href="#" class="nav-link <?php echo $isOrderStatusSection || $isOrderStatusSection || $isOrderSection ? 'active' : ''; ?>">
                             <i class="nav-icon bi bi-file-earmark-text"></i>
                             <p>
                                 Orders
                                 <i class="bi bi-chevron-down right"></i>
                             </p>
                         </a>
+
+                         <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="order_list"
+                                   class="nav-link <?php echo in_array($currentPage, ['order_list', 'order_add', 'order_edit']) ? 'active' : ''; ?>">
+                                    <i class="bi bi-tag-fill nav-icon"></i>
+                                    <p>Orders</p>
+                                </a>
+                            </li>
+                        </ul>
+
+
+                         <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="order_pending"
+                                   class="nav-link <?php echo in_array($currentPage, ['order_pending']) ? 'active' : ''; ?>">
+                                    <i class="bi bi-tag-fill nav-icon"></i>
+                                    <p>Pending Orders</p>
+                                </a>
+                            </li>
+                        </ul>
+
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a href="order_status_list"
@@ -266,15 +289,6 @@ function sidebarContainer(): void
                             </li>
                         </ul>
 
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="#"
-                                   class="nav-link <?php echo in_array($currentPage, ['#', '#', '#']) ? 'active' : ''; ?>">
-                                    <i class="bi bi-tag-fill nav-icon"></i>
-                                    <p>Orders</p>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
 
 
