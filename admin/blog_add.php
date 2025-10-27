@@ -98,8 +98,6 @@ $galleries = $galleryStmt->fetchAll(PDO::FETCH_ASSOC);
 headerContainer();
 ?>
 
-<link
-
 </head>
 <style>
     .ck-editor__editable_inline {
@@ -183,7 +181,7 @@ headerContainer();
 
                                         <div class="col-12">
                                             <label class="form-label" for="description">Content *</label>
-                                            <textarea id="description" name="description" class="form-control" rows="8"
+                                            <textarea id="description" name="description" class="form-control ckeditor-textarea" rows="8"
                                                       placeholder="Write your post content here..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                                         </div>
 
