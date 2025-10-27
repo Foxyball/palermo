@@ -134,7 +134,7 @@ headerContainer();
 
                                     <div class="card-tools ms-md-auto">
                                         <div class="btn-group" role="group">
-                                            <a href="order_export.php?status=pending<?php echo $search !== '' ? '&q=' . urlencode($search) : ''; ?>" 
+                                            <a href="order_export_generate.php?status=pending<?php echo $search !== '' ? '&q=' . urlencode($search) : ''; ?>" 
                                                class="btn btn-success btn-sm" 
                                                title="Export Pending Orders to Excel">
                                                 <i class="bi bi-file-earmark-excel"></i> Export

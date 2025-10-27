@@ -13,13 +13,11 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 requireAdminLogin();
 
-// Get filter parameters
 $search = $_GET['q'] ?? '';
 $statusFilter = $_GET['status'] ?? '';
 $whereSql = '';
 $params = [];
 
-// Handle pending status filter
 if ($statusFilter === 'pending') {
     $pendingStatusStmt = $pdo->prepare('SELECT id FROM order_statuses WHERE LOWER(name) = "pending" LIMIT 1');
     $pendingStatusStmt->execute();
@@ -31,7 +29,6 @@ if ($statusFilter === 'pending') {
     }
 }
 
-// Handle search filter
 if ($search !== '') {
     if ($whereSql !== '') {
         $whereSql .= ' AND (o.id = :id OR u.email LIKE :keyword OR u.first_name LIKE :keyword OR u.last_name LIKE :keyword)';
@@ -42,7 +39,6 @@ if ($search !== '') {
     $params[':id'] = $search;
 }
 
-// Get all orders (no pagination for export)
 $dataSql = 'SELECT 
             o.id, 
             o.user_id,
@@ -67,22 +63,18 @@ foreach ($params as $k => $v) {
 $stmt->execute();
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Create new Spreadsheet
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
-// Set document properties
 $spreadsheet->getProperties()
     ->setCreator('Palermo Restaurant')
     ->setTitle('Orders Export')
     ->setSubject('Orders List')
     ->setDescription('Exported orders from Palermo Restaurant');
 
-// Set column headers
 $headers = ['Order ID', 'Customer Name', 'Email', 'Phone', 'Amount (BGN)', 'Amount (EUR)', 'Status', 'Order Date', 'Order Time'];
 $sheet->fromArray($headers, NULL, 'A1');
 
-// Style header row
 $headerStyle = [
     'font' => [
         'bold' => true,
@@ -107,7 +99,6 @@ $headerStyle = [
 
 $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
 
-// Set column widths
 $sheet->getColumnDimension('A')->setWidth(10);
 $sheet->getColumnDimension('B')->setWidth(25);
 $sheet->getColumnDimension('C')->setWidth(30);
@@ -145,7 +136,6 @@ foreach ($orders as $order) {
         ]
     ]);
 
-    // Alternate row colors
     if ($row % 2 == 0) {
         $sheet->getStyle('A' . $row . ':I' . $row)->applyFromArray([
             'fill' => [
@@ -194,19 +184,15 @@ $sheet->getStyle('A' . $summaryRow . ':I' . $summaryRow)->applyFromArray([
 
 $sheet->getStyle('E' . $summaryRow . ':F' . $summaryRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-// Set sheet name
 $sheet->setTitle('Orders');
 
-// Create Excel file
 $writer = new Xlsx($spreadsheet);
 
-// Set headers for download
 $filenamePrefix = $statusFilter === 'pending' ? 'pending_orders' : 'orders';
 $filename = $filenamePrefix . '_export_' . date('Y-m-d_His') . '.xlsx';
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header('Content-Disposition: attachment;filename="' . $filename . '"');
 header('Cache-Control: max-age=0');
 
-// Save to output
 $writer->save('php://output');
 exit;
