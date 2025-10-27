@@ -7,7 +7,7 @@
         "dompdf/dompdf": "^2.0",
         "ext-pdo": "*",
         "ext-fileinfo": "*",
-        "phpoffice/phpspreadsheet": "^5.2"
+        "phpoffice/phpspreadsheet": "^1.23"
     },
     "license": "proprietary"
 }
