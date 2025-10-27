@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/Paginator.php');
+require_once(__DIR__ . '/../repositories/admin/OrderStatusRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -11,34 +12,12 @@ $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
 
-$whereSql = '';
-$params = [];
-if ($search !== '') {
-    $whereSql = ' WHERE (name LIKE :keyword OR id = :id)';
-    $params[':keyword'] = '%' . $search . '%';
-    $params[':id'] = $search;
-}
 
-$countSql = 'SELECT COUNT(*) FROM order_statuses' . $whereSql;
-$stmtCount = $pdo->prepare($countSql);
-$stmtCount->execute($params);
-$totalStatusesCount = $stmtCount->fetchColumn();
+$orderStatusRepository = new OrderStatusRepository($pdo);
+$totalStatusesCount = $orderStatusRepository->countAll($search);
 
 $paginator = new Paginator($totalStatusesCount, $page, $perPage);
-
-$dataSql = 'SELECT id, name, active, created_at
-            FROM order_statuses' . $whereSql . ' ORDER BY id ASC LIMIT :lim OFFSET :off';
-
-$stmt = $pdo->prepare($dataSql);
-
-foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v);
-}
-
-$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
-$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
-$stmt->execute();
-$orderStatuses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$orderStatuses = $orderStatusRepository->findAll($search, $paginator->limit(), $paginator->offset());
 
 ?>
 

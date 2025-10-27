@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/OrderStatusRepository.php';
 
 requireAdminLogin();
 
@@ -20,27 +21,20 @@ if ($statusId <= 0) {
 }
 
 try {
-    $status = fetchOrderStatusById($pdo, $statusId);
+    $orderStatusRepository = new OrderStatusRepository($pdo);
+    $status = $orderStatusRepository->findById($statusId);
 
     if (!$status) {
         sendJsonError('Order status not found', 404);
     }
 
-    // TODO: When orders table is created, add safety check to prevent deletion of statuses in use:
-    // 
-    // $ordersUsingStatus = checkOrderStatusInUse($pdo, $statusId);
-    // if ($ordersUsingStatus > 0) {
-    //     sendJsonError('Cannot delete order status that is being used by ' . $ordersUsingStatus . ' order(s)', 400);
-    // }
-    //
-    // function checkOrderStatusInUse(PDO $pdo, int $statusId): int
-    // {
-    //     $stmt = $pdo->prepare('SELECT COUNT(*) FROM orders WHERE status_id = ?');
-    //     $stmt->execute([$statusId]);
-    //     return (int)$stmt->fetchColumn();
-    // }
+    // Check if status is being used by any orders
+    $ordersUsingStatus = $orderStatusRepository->isInUse($statusId);
+    if ($ordersUsingStatus > 0) {
+        sendJsonError('Cannot delete order status that is being used by ' . $ordersUsingStatus . ' order(s)', 400);
+    }
 
-    deleteOrderStatus($pdo, $statusId);
+    $orderStatusRepository->delete($statusId);
 
     sendJsonResponse([
         'success' => true,
@@ -48,21 +42,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchOrderStatusById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, name FROM order_statuses WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $status = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $status ?: null;
-}
-
-function deleteOrderStatus(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM order_statuses WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void

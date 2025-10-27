@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/OrderStatusRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -13,9 +14,8 @@ if ($statusId <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, name, active, created_at, updated_at FROM order_statuses WHERE id = ? LIMIT 1');
-$stmt->execute([$statusId]);
-$statusToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+$orderStatusRepository = new OrderStatusRepository($pdo);
+$statusToEdit = $orderStatusRepository->findById($statusId);
 
 if (!$statusToEdit) {
     $_SESSION['error'] = 'Order status not found.';
@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
+        // Check if name already exists for a different status
         $stmt = $pdo->prepare('SELECT id FROM order_statuses WHERE name = ? AND id != ? LIMIT 1');
         $stmt->execute([$name, $statusId]);
         if ($stmt->fetch()) {
@@ -43,8 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('UPDATE order_statuses SET name = ?, updated_at = NOW() WHERE id = ? LIMIT 1');
-            $stmt->execute([$name, $statusId]);
+            $orderStatusRepository->update($statusId, $name, $statusToEdit['active']);
             $_SESSION['success'] = 'Order status updated successfully';
             header('Location: order_status_list');
             exit;

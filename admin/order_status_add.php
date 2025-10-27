@@ -2,11 +2,13 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/OrderStatusRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
 $errors = [];
+$orderStatusRepository = new OrderStatusRepository($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
@@ -17,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
+        // Check if name already exists
         $stmt = $pdo->prepare('SELECT id FROM order_statuses WHERE name = ? LIMIT 1');
         $stmt->execute([$name]);
         if ($stmt->fetch()) {
@@ -26,8 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('INSERT INTO order_statuses (name, active, created_at, updated_at) VALUES (?, "1", NOW(), NOW())');
-            $stmt->execute([$name]);
+            $orderStatusRepository->create($name, '1');
             $_SESSION['success'] = 'Order status created successfully';
             header('Location: order_status_list');
             exit;
