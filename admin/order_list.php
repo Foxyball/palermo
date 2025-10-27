@@ -55,7 +55,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $statusesStmt = $pdo->prepare('SELECT id, name FROM order_statuses WHERE active = "1" ORDER BY id ASC');
 $statusesStmt->execute();
 $availableStatuses = $statusesStmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 <?php
@@ -119,9 +118,9 @@ headerContainer();
 
                                     <div class="card-tools ms-md-auto">
                                         <div class="btn-group" role="group">
-                                            <a href="order_export_generate.php<?php echo $search !== '' ? '?q=' . urlencode($search) : ''; ?>" 
-                                               class="btn btn-success btn-sm" 
-                                               title="Export to Excel">
+                                            <a href="order_export_generate.php<?php echo $search !== '' ? '?q=' . urlencode($search) : ''; ?>"
+                                                class="btn btn-success btn-sm"
+                                                title="Export to Excel">
                                                 <i class="bi bi-file-earmark-excel"></i> Export
                                             </a>
                                         </div>
@@ -159,14 +158,8 @@ headerContainer();
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div>
-                                                                    <?php if (!empty($order['customer_name']) && trim($order['customer_name']) !== '') { ?>
-                                                                        <strong><?php echo htmlspecialchars($order['customer_name']); ?></strong>
-                                                                    <?php } else { ?>
-                                                                        <span class="text-muted">Guest Customer</span>
-                                                                    <?php } ?>
-                                                                    <?php if (!empty($order['customer_email'])) { ?>
-                                                                        <br><small class="text-muted"><?php echo htmlspecialchars($order['customer_email']); ?></small>
-                                                                    <?php } ?>
+                                                                    <strong><?php echo htmlspecialchars($order['customer_name']); ?></strong>
+                                                                    <br><small class="text-muted"><?php echo htmlspecialchars($order['customer_email']); ?></small>
                                                                 </div>
                                                             </td>
                                                             <td class="align-middle">
@@ -175,27 +168,7 @@ headerContainer();
                                                                 </div>
                                                             </td>
                                                             <td class="align-middle">
-                                                                <?php
-                                                                $statusClass = '';
-                                                                $statusName = $order['status_name'] ?? 'Unknown';
-                                                                $statusLower = strtolower($statusName);
-                                                                if (strpos($statusLower, 'pending') !== false) {
-                                                                    $statusClass = 'bg-warning';
-                                                                } elseif (strpos($statusLower, 'confirmed') !== false || strpos($statusLower, 'preparing') !== false) {
-                                                                    $statusClass = 'bg-info';
-                                                                } elseif (strpos($statusLower, 'ready') !== false || strpos($statusLower, 'out for delivery') !== false) {
-                                                                    $statusClass = 'bg-primary';
-                                                                } elseif (strpos($statusLower, 'delivered') !== false || strpos($statusLower, 'completed') !== false) {
-                                                                    $statusClass = 'bg-success';
-                                                                } elseif (strpos($statusLower, 'cancelled') !== false || strpos($statusLower, 'canceled') !== false) {
-                                                                    $statusClass = 'bg-danger';
-                                                                } else {
-                                                                    $statusClass = 'bg-secondary';
-                                                                }
-                                                                ?>
-                                                                <span class="badge <?php echo $statusClass; ?> text-white">
-                                                                    <?php echo htmlspecialchars($statusName); ?>
-                                                                </span>
+                                                                <?php echo getStatusBadge($order['status_name']); ?>
                                                             </td>
                                                             <td class="align-middle">
                                                                 <small class="text-muted">
@@ -220,7 +193,7 @@ headerContainer();
                                                                     <button type="button"
                                                                         class="btn btn-sm btn-outline-danger js-order-delete-btn"
                                                                         data-order-id="<?php echo $order['id']; ?>"
-                                                                        data-order-customer="<?php echo htmlspecialchars($order['customer_name'] ?: 'Guest Customer'); ?>"
+                                                                        data-order-customer="<?php echo htmlspecialchars($order['customer_name']); ?>"
                                                                         title="Delete Order">
                                                                         <i class="bi bi-trash"></i>
                                                                     </button>
@@ -333,35 +306,7 @@ headerContainer();
         }
     </style>
 
-    <!-- Status Update Modal -->
-    <div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-labelledby="statusUpdateModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="statusUpdateModalLabel">Update Order Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="statusUpdateForm">
-                        <input type="hidden" id="order_id" name="order_id">
-                        <div class="mb-3">
-                            <label for="new_status" class="form-label">New Status</label>
-                            <select class="form-select" id="new_status" name="new_status" required>
-                                <option value="">-- Select Status --</option>
-                                <?php foreach ($availableStatuses as $status) { ?>
-                                    <option value="<?php echo $status['id']; ?>"><?php echo htmlspecialchars($status['name']); ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmStatusUpdate">Update Status</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include(__DIR__ . '/partials/order_status_modal.php'); ?>
 
     <!-- AJAX Status Update and Delete -->
     <script>
