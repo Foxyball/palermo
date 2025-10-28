@@ -18,12 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Order status name is required';
     }
 
+
     if (empty($errors)) {
-        // Check if name already exists
-        $stmt = $pdo->prepare('SELECT id FROM order_statuses WHERE name = ? LIMIT 1');
-        $stmt->execute([$name]);
-        if ($stmt->fetch()) {
-            $errors[] = 'Order status name already exists.';
+        try {
+            if (!$orderStatusRepository->isNameUnique($name)) {
+                $errors[] = 'Order status name already exists. Please choose a different name.';
+            }
+        } catch (PDOException $e) {
+            $errors[] = 'Unable to verify order status name. Please try again.';
         }
     }
 

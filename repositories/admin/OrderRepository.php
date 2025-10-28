@@ -156,6 +156,7 @@ class OrderRepository
     {
         $sql = 'UPDATE orders SET status_id = :status_id WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
+
         return $stmt->execute([
             ':id' => $orderId,
             ':status_id' => $statusId
@@ -186,10 +187,12 @@ class OrderRepository
             $stmt->execute([':id' => $orderId]);
 
             $this->pdo->commit();
+
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
             error_log('Order deletion failed: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -198,6 +201,7 @@ class OrderRepository
     {
         $sql = 'SELECT id, name FROM order_statuses WHERE active = "1" ORDER BY id ASC';
         $stmt = $this->pdo->query($sql);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
