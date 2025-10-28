@@ -189,7 +189,7 @@ headerContainer();
 
     <?php include(__DIR__ . '/partials/order_status_modal.php'); ?>
 
-    <script src="js/order-list.js"></script>
+    <script src="js/palermoAdminCrud.js"></script>
 </body>
 
 </html>

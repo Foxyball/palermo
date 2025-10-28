@@ -73,14 +73,7 @@ headerContainer();
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="card-title mb-0">Order #<?php echo $order['id']; ?></h4>
                                     <div class="d-flex gap-2">
-                                        <?php
-                                        $statusClass = getStatusClass($order['status_name'] ?? 'Unknown');
-                                        $statusName = $order['status_name'] ?? 'Unknown';
-                                        ?>
-                                        <span class="badge <?php echo $statusClass; ?> text-white fs-6 px-3 py-2">
-                                            <?php echo htmlspecialchars($statusName); ?>
-                                        </span>
-                                        <a href="order_pdf_generate.php?id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-danger">
+                                        <a href="order_pdf_generate.php?id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-outline-primary">
                                             <i class="bi bi-file-earmark-pdf"></i> Generate PDF Invoice
                                         </a>
                                         <a href="order_list" class="btn btn-outline-secondary">
@@ -243,7 +236,7 @@ headerContainer();
                                                                 <?php } ?>
                                                             </td>
                                                             <td class="text-center align-middle">
-                                                                <span class="badge bg-primary"><?php echo $item['qty']; ?></span>
+                                                                <span><?php echo $item['qty']; ?></span>
                                                             </td>
                                                             <td class="text-end align-middle">
                                                                 <strong><?php echo formatOrderPrice($lineTotal); ?></strong>
@@ -289,25 +282,6 @@ headerContainer();
 
     </div>
 
-    <style>
-        .table th {
-            border-top: none;
-            font-weight: 600;
-        }
-
-        .card-title {
-            color: #495057;
-        }
-
-        .badge {
-            font-size: 0.75rem;
-        }
-
-        .table-secondary th {
-            background-color: #e9ecef !important;
-            border-color: #dee2e6 !important;
-        }
-    </style>
 
 </body>
 
