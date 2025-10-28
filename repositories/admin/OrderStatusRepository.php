@@ -70,6 +70,7 @@ class OrderStatusRepository
     {
         $sql = 'SELECT id, name FROM order_statuses WHERE active = "1" ORDER BY id ASC';
         $stmt = $this->pdo->query($sql);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -95,6 +96,7 @@ class OrderStatusRepository
             return true;
         } catch (Exception $e) {
             error_log('Order status deletion failed: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -104,7 +106,21 @@ class OrderStatusRepository
     {
         $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM orders WHERE status_id = ?');
         $stmt->execute([$statusId]);
+
         return (int) $stmt->fetchColumn();
+    }
+
+    public function isNameUnique(string $name, int $excludeId = 0): bool
+    {
+        if ($excludeId > 0) {
+            $stmt = $this->pdo->prepare('SELECT id FROM order_statuses WHERE name = ? AND id != ? LIMIT 1');
+            $stmt->execute([$name, $excludeId]);
+        } else {
+            $stmt = $this->pdo->prepare('SELECT id FROM order_statuses WHERE name = ? LIMIT 1');
+            $stmt->execute([$name]);
+        }
+
+        return !$stmt->fetch();
     }
 
 
@@ -113,6 +129,7 @@ class OrderStatusRepository
         $sql = 'INSERT INTO order_statuses (name, active, created_at) VALUES (?, ?, NOW())';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$name, $active]);
+
         return (int) $this->pdo->lastInsertId();
     }
 
@@ -123,9 +140,11 @@ class OrderStatusRepository
             $sql = 'UPDATE order_statuses SET name = ?, active = ?, updated_at = NOW() WHERE id = ? LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$name, $active, $id]);
+
             return true;
         } catch (Exception $e) {
             error_log('Order status update failed: ' . $e->getMessage());
+
             return false;
         }
     }
