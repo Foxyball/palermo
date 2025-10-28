@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/OrderRepository.php';
 
 requireAdminLogin();
 
@@ -13,59 +14,31 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$orderId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+$orderId = $_POST['id'] ?? 0;
 
 if ($orderId <= 0) {
     sendJsonError('Invalid order ID', 400);
 }
 
 try {
-    $order = fetchOrderById($pdo, $orderId);
+    $orderRepo = new OrderRepository($pdo);
+    $order = $orderRepo->findById($orderId);
 
     if (!$order) {
         sendJsonError('Order not found', 404);
     }
 
-    // Check if order has associated order items and delete them first
-    deleteOrderItems($pdo, $orderId);
-    
-    // Delete the order
-    deleteOrder($pdo, $orderId);
 
-    sendJsonResponse([
-        'success' => true,
-        'message' => 'Order deleted successfully',
-    ]);
+    if ($orderRepo->delete($orderId)) {
+        sendJsonResponse([
+            'success' => true,
+            'message' => 'Order deleted successfully',
+        ]);
+    } else {
+        sendJsonError('Failed to delete order', 500);
+    }
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchOrderById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id FROM orders WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $order = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $order ?: null;
-}
-
-function deleteOrderItems(PDO $pdo, int $orderId): void
-{
-    // First delete order item addons
-    $stmt = $pdo->prepare('DELETE oia FROM order_item_addons oia 
-                          INNER JOIN order_items oi ON oia.order_item_id = oi.id 
-                          WHERE oi.order_id = ?');
-    $stmt->execute([$orderId]);
-    
-    // Then delete order items
-    $stmt = $pdo->prepare('DELETE FROM order_items WHERE order_id = ?');
-    $stmt->execute([$orderId]);
-}
-
-function deleteOrder(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM orders WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void

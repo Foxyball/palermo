@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/Paginator.php');
+require_once(__DIR__ . '/../repositories/admin/OrderStatusRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -11,34 +12,12 @@ $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
 
-$whereSql = '';
-$params = [];
-if ($search !== '') {
-    $whereSql = ' WHERE (name LIKE :keyword OR id = :id)';
-    $params[':keyword'] = '%' . $search . '%';
-    $params[':id'] = $search;
-}
 
-$countSql = 'SELECT COUNT(*) FROM order_statuses' . $whereSql;
-$stmtCount = $pdo->prepare($countSql);
-$stmtCount->execute($params);
-$totalStatusesCount = $stmtCount->fetchColumn();
+$orderStatusRepository = new OrderStatusRepository($pdo);
+$totalStatusesCount = $orderStatusRepository->countAll($search);
 
 $paginator = new Paginator($totalStatusesCount, $page, $perPage);
-
-$dataSql = 'SELECT id, name, active, created_at
-            FROM order_statuses' . $whereSql . ' ORDER BY id ASC LIMIT :lim OFFSET :off';
-
-$stmt = $pdo->prepare($dataSql);
-
-foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v);
-}
-
-$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
-$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
-$stmt->execute();
-$orderStatuses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$orderStatuses = $orderStatusRepository->findAll($search, $paginator->limit(), $paginator->offset());
 
 ?>
 
@@ -173,46 +152,7 @@ headerContainer();
                                     </div>
                                 </div>
                                 <?php if (!empty($orderStatuses)) { ?>
-                                    <div class="card-footer">
-                                        <div class="row align-items-center g-3">
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">
-                                                    <?php
-                                                    $start = $paginator->offset() + 1;
-                                                    $end = $paginator->offset() + count($orderStatuses);
-                                                    ?>
-                                                    <?php if ($totalStatusesCount > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalStatusesCount; ?>
-                                                    <?php } else { ?>
-                                                        No results
-                                                    <?php } ?>
-                                                </small>
-                                                <?php if ($search !== '') { ?>
-                                                    <small class="text-muted">Filtered by "<?php echo $search; ?>"</small>
-                                                <?php } ?>
-                                            </div>
-                                            <div class="col-md-4 text-md-center">
-                                                <nav aria-label="Pagination">
-                                                    <ul class="pagination pagination-sm mb-0 justify-content-center">
-                                                        <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'order_status_list'); ?>" tabindex="-1">&laquo;</a>
-                                                        </li>
-                                                        <?php foreach ($paginator->pages() as $pg) { ?>
-                                                            <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
-                                                                <a class="page-link" href="<?php echo buildPageUrl($pg, 'order_status_list'); ?>"><?php echo $pg; ?></a>
-                                                            </li>
-                                                        <?php } ?>
-                                                        <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'order_status_list'); ?>">&raquo;</a>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <small class="text-muted d-block">Last updated: <?php echo date('M j, Y g:i A'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php renderPagination($paginator, $totalStatusesCount, count($orderStatuses), 'order_status_list', $search); ?>
                                 <?php } ?>
                             </div>
                         </div>
@@ -226,23 +166,6 @@ headerContainer();
         <?php footerContainer(); ?>
 
     </div>
-
-    <style>
-        .table th {
-            border-top: none;
-            font-weight: 600;
-        }
-
-        .form-switch .form-check-input {
-            cursor: pointer;
-        }
-
-        .form-switch .form-check-input:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-    </style>
-
 
     <!-- AJAX Change Status -->
     <script>

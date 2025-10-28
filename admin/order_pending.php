@@ -4,71 +4,30 @@ require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/Paginator.php');
 require_once(__DIR__ . '/../include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/OrderRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$orderRepo = new OrderRepository($pdo);
 
 $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
 
-$pendingStatusStmt = $pdo->prepare('SELECT id FROM order_statuses WHERE LOWER(name) = "pending" LIMIT 1');
-$pendingStatusStmt->execute();
-$pendingStatus = $pendingStatusStmt->fetch(PDO::FETCH_ASSOC);
+$pendingStatusId = $orderRepo->getStatusIdByName('pending');
 
-if (!$pendingStatus) {
+if (!$pendingStatusId) {
     $_SESSION['error'] = 'Pending status not found in order_statuses table';
     header('Location: order_list');
     exit;
 }
 
-$pendingStatusId = $pendingStatus['id'];
-
-$whereSql = ' WHERE o.status_id = :pending_status_id';
-$params = [':pending_status_id' => $pendingStatusId];
-
-if ($search !== '') {
-    $whereSql .= ' AND (o.id = :id OR u.email LIKE :keyword OR u.first_name LIKE :keyword OR u.last_name LIKE :keyword)';
-    $params[':keyword'] = '%' . $search . '%';
-    $params[':id'] = $search;
-}
-
-$countSql = 'SELECT COUNT(*) FROM orders o LEFT JOIN users u ON o.user_id = u.id' . $whereSql;
-$stmtCount = $pdo->prepare($countSql);
-$stmtCount->execute($params);
-$totalPendingOrdersCount = $stmtCount->fetchColumn();
-
+$totalPendingOrdersCount = $orderRepo->countByStatus($pendingStatusId, $search);
 $paginator = new Paginator($totalPendingOrdersCount, $page, $perPage);
+$orders = $orderRepo->findByStatus($pendingStatusId, $search, $paginator->limit(), $paginator->offset());
 
-$dataSql = 'SELECT 
-            o.id, 
-            o.user_id,
-            o.amount,
-            o.status_id,
-            o.created_at,
-            CONCAT(u.first_name, " ", u.last_name) AS customer_name,
-            u.email AS customer_email,
-            os.name AS status_name
-            FROM orders o
-            LEFT JOIN users u ON o.user_id = u.id
-            LEFT JOIN order_statuses os ON o.status_id = os.id '
-    . $whereSql . ' ORDER BY o.created_at DESC LIMIT :lim OFFSET :off';
-
-$stmt = $pdo->prepare($dataSql);
-
-foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v);
-}
-
-$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
-$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
-$stmt->execute();
-$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$statusesStmt = $pdo->prepare('SELECT id, name FROM order_statuses WHERE active = "1" ORDER BY id ASC');
-$statusesStmt->execute();
-$availableStatuses = $statusesStmt->fetchAll(PDO::FETCH_ASSOC);
-
+$availableStatuses = $orderRepo->getActiveStatuses();
 ?>
 
 <?php
@@ -232,51 +191,7 @@ headerContainer();
                                     </div>
                                 </div>
                                 <?php if (!empty($orders)) { ?>
-                                    <div class="card-footer">
-                                        <div class="row align-items-center g-3">
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">
-                                                    <?php
-                                                    $start = $paginator->offset() + 1;
-                                                    $end = $paginator->offset() + count($orders);
-                                                    ?>
-                                                    <?php if ($totalPendingOrdersCount > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalPendingOrdersCount; ?>
-                                                    <?php } else { ?>
-                                                        No results
-                                                    <?php } ?>
-                                                </small>
-                                                <?php if ($search !== '') { ?>
-                                                    <small class="text-muted">Filtered by "<?php echo htmlspecialchars($search); ?>"</small>
-                                                <?php } ?>
-                                            </div>
-                                            <div class="col-md-4 text-md-center">
-                                                <nav aria-label="Pagination">
-                                                    <ul class="pagination pagination-sm mb-0 justify-content-center">
-                                                        <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link"
-                                                                href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'order_pending'); ?>"
-                                                                tabindex="-1">&laquo;</a>
-                                                        </li>
-                                                        <?php foreach ($paginator->pages() as $pg) { ?>
-                                                            <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
-                                                                <a class="page-link"
-                                                                    href="<?php echo buildPageUrl($pg, 'order_pending'); ?>"><?php echo $pg; ?></a>
-                                                            </li>
-                                                        <?php } ?>
-                                                        <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link"
-                                                                href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'order_pending'); ?>">&raquo;</a>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <small class="text-muted d-block">Last
-                                                    updated: <?php echo date('M j, Y g:i A'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php renderPagination($paginator, $totalPendingOrdersCount, count($orders), 'order_pending', $search); ?>
                                 <?php } ?>
                             </div>
                         </div>
@@ -291,130 +206,7 @@ headerContainer();
 
     <?php include(__DIR__ . '/partials/order_status_modal.php'); ?>
 
-    <style>
-        .table th {
-            border-top: none;
-            font-weight: 600;
-        }
-    </style>
-
-    <!-- AJAX Status Update -->
-    <script>
-        $(function() {
-            // Status update handler
-            $(document).on('click', '.js-order-status-update-btn', function(e) {
-                e.preventDefault();
-                const $btn = $(this);
-                const orderId = $btn.data('order-id');
-                const currentStatusId = $btn.data('current-status-id');
-
-                $('#order_id').val(orderId);
-                $('#new_status').val(currentStatusId);
-                $('#statusUpdateModal').modal('show');
-            });
-
-            // Confirm status update
-            $('#confirmStatusUpdate').on('click', function() {
-                const $btn = $(this);
-                const orderId = $('#order_id').val();
-                const newStatusId = $('#new_status').val();
-
-                if (!orderId || !newStatusId) {
-                    toastr.error('Please select a status');
-                    return;
-                }
-
-                $btn.prop('disabled', true).text('Updating...');
-
-                $.ajax({
-                        url: './include/ajax_order_update_status.php',
-                        method: 'POST',
-                        data: {
-                            id: orderId,
-                            status_id: newStatusId
-                        },
-                        dataType: 'json'
-                    })
-                    .done(function(resp) {
-                        if (resp && resp.success) {
-                            toastr.success('Order status updated successfully');
-                            $('#statusUpdateModal').modal('hide');
-                            // Reload the page to show updated status
-                            setTimeout(function() {
-                                location.reload();
-                            }, 1000);
-                        } else {
-                            toastr.error(resp && resp.message ? resp.message : 'Update failed');
-                        }
-                    })
-                    .fail(function(xhr) {
-                        let msg = 'Server error';
-                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
-                        toastr.error(msg);
-                    })
-                    .always(function() {
-                        $btn.prop('disabled', false).text('Update Status');
-                    });
-            });
-
-            // SweetAlert2 delete handler
-            $(document).on('click', '.js-order-delete-btn', async function(e) {
-                e.preventDefault();
-                const $btn = $(this);
-                const orderId = $btn.data('order-id');
-                const customerName = $btn.data('order-customer');
-
-                const confirmed = await Swal.fire({
-                    title: 'Delete Order?',
-                    html: `<p class="mb-1">You are about to delete order #${orderId} for <strong>${$('<div>').text(customerName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete',
-                    cancelButtonText: 'Cancel',
-                    confirmButtonColor: '#d33',
-                    reverseButtons: true,
-                    focusCancel: true,
-                }).then(r => r.isConfirmed);
-
-                if (!confirmed) return;
-
-                $btn.prop('disabled', true).addClass('opacity-50');
-
-                $.ajax({
-                        url: './include/ajax_order_delete.php',
-                        method: 'POST',
-                        data: {
-                            id: orderId,
-                        },
-                        dataType: 'json'
-                    })
-                    .done(function(resp) {
-                        if (resp && resp.success) {
-                            toastr.success('Order deleted');
-                            // Remove row from table
-                            const $row = $btn.closest('tr');
-                            $row.fadeOut(300, function() {
-                                $(this).remove();
-                            });
-                        } else {
-                            toastr.error(resp && resp.message ? resp.message : 'Delete failed');
-                        }
-                    })
-                    .fail(function(xhr) {
-                        let msg = 'Server error';
-                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
-                        toastr.error(msg);
-                    })
-                    .always(function() {
-                        $btn.prop('disabled', false).removeClass('opacity-50');
-                    });
-            });
-        });
-    </script>
+    <script src="js/palermoAdminCrud.js"></script>
 </body>
 
 </html>

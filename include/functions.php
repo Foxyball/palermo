@@ -78,3 +78,35 @@ function hasPriceDiscrepancy(float $calculated, float $stored, float $tolerance 
 {
     return abs($calculated - $stored) > $tolerance;
 }
+
+
+function getStatusClass(string $statusName): string
+{
+    $statusLower = strtolower($statusName);
+
+    if (strpos($statusLower, 'pending') !== false) return 'bg-warning';
+    if (strpos($statusLower, 'confirmed') !== false || strpos($statusLower, 'preparing') !== false) return 'bg-info';
+    if (strpos($statusLower, 'ready') !== false || strpos($statusLower, 'out for delivery') !== false) return 'bg-primary';
+    if (strpos($statusLower, 'delivered') !== false || strpos($statusLower, 'completed') !== false) return 'bg-success';
+    if (strpos($statusLower, 'cancelled') !== false || strpos($statusLower, 'canceled') !== false) return 'bg-danger';
+
+    return 'bg-secondary';
+}
+
+
+function renderAddress(array $order): string
+{
+    if ($order['order_address']) {
+        return nl2br(htmlspecialchars($order['order_address']));
+    }
+
+    if ($order['address'] || $order['city'] || $order['zip_code']) {
+        $parts = [];
+        if ($order['address']) $parts[] = htmlspecialchars($order['address']);
+        if ($order['city']) $parts[] = htmlspecialchars($order['city']);
+        if ($order['zip_code']) $parts[] = htmlspecialchars($order['zip_code']);
+        return implode('<br>', $parts);
+    }
+
+    return '<span class="text-muted">No address provided</span>';
+}

@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/OrderStatusRepository.php';
 
 requireAdminLogin();
 
@@ -20,13 +21,14 @@ if ($statusID <= 0) {
 }
 
 try {
-    $status = fetchOrderStatusById($pdo, $statusID);
+    $orderStatusRepository = new OrderStatusRepository($pdo);
+    $status = $orderStatusRepository->findById($statusID);
 
     if (!$status) {
         sendJsonError('Order status not found', 404);
     }
 
-    $newStatus = toggleOrderStatusActive($pdo, $statusID, $status['active']);
+    $newStatus = $orderStatusRepository->toggleActive($statusID, $status['active']);
 
     sendJsonResponse([
         'success' => true,
@@ -35,27 +37,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchOrderStatusById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, active FROM order_statuses WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $status = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $status ?: null;
-}
-
-function toggleOrderStatusActive(PDO $pdo, int $id, string $currentStatus): string
-{
-    $newStatus = $currentStatus === '1' ? '0' : '1';
-
-    $stmt = $pdo->prepare(
-        'UPDATE order_statuses SET active = ?, updated_at = NOW() WHERE id = ? LIMIT 1'
-    );
-    $stmt->execute([$newStatus, $id]);
-
-    return $newStatus;
 }
 
 function sendJsonError(string $message, int $status = 400): void
