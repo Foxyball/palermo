@@ -2,20 +2,20 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/CategoryRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-$categoryId = $_GET['id'] ?? 0;
+$categoryId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($categoryId <= 0) {
     $_SESSION['error'] = 'Invalid category selected.';
     header('Location: category_list');
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, name, slug, active, created_at, updated_at FROM categories WHERE id = ? LIMIT 1');
-$stmt->execute([$categoryId]);
-$categoryToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+$categoryRepository = new CategoryRepository($pdo);
+$categoryToEdit = $categoryRepository->findById($categoryId);
 
 if (!$categoryToEdit) {
     $_SESSION['error'] = 'Category not found.';
@@ -27,6 +27,7 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
+    $slug = generateSlug($name);
 
     // Validation
     if ($name === '') {
@@ -34,17 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT id FROM categories WHERE name = ? AND id != ? LIMIT 1');
-        $stmt->execute([$name, $categoryId]);
-        if ($stmt->fetch()) {
+        if ($categoryRepository->nameExists($name, $categoryId)) {
             $errors[] = 'Category name already exists. Please choose a different name.';
         }
     }
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('UPDATE categories SET name = ?, updated_at = NOW() WHERE id = ? LIMIT 1');
-            $stmt->execute([$name, $categoryId]);
+            $categoryRepository->update($categoryId, $name, $slug);
             $_SESSION['success'] = 'Category updated successfully';
             header('Location: category_list');
             exit;

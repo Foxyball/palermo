@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/CategoryRepository.php';
 
 requireAdminLogin();
 
@@ -20,13 +21,14 @@ if ($categoryId <= 0) {
 }
 
 try {
-    $category = fetchCategoryById($pdo, $categoryId);
+    $categoryRepository = new CategoryRepository($pdo);
+    $category = $categoryRepository->findById($categoryId);
 
     if (!$category) {
         sendJsonError('Category not found', 404);
     }
 
-    $newStatus = toggleCategoryStatus($pdo, $categoryId, $category['active']);
+    $newStatus = $categoryRepository->toggleActive($categoryId, $category['active']);
 
     sendJsonResponse([
         'success' => true,
@@ -35,28 +37,7 @@ try {
         'active' => $newStatus,
     ]);
 } catch (Throwable $e) {
-    sendJsonError('Server error', 500);
-}
-
-function fetchCategoryById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, active FROM categories WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $category ?: null;
-}
-
-function toggleCategoryStatus(PDO $pdo, int $id, string $currentStatus): string
-{
-    $newStatus = $currentStatus === '1' ? '0' : '1';
-
-    $stmt = $pdo->prepare(
-        'UPDATE categories SET active = ?, updated_at = NOW() WHERE id = ? LIMIT 1'
-    );
-    $stmt->execute([$newStatus, $id]);
-
-    return $newStatus;
+    sendJsonError('Server error: ' . $e->getMessage(), 500);
 }
 
 function sendJsonError(string $message, int $status = 400): void
