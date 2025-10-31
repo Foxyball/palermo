@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/CategoryRepository.php';
 
 requireAdminLogin();
 
@@ -20,13 +21,20 @@ if ($categoryId <= 0) {
 }
 
 try {
-    $category = fetchCategoryById($pdo, $categoryId);
+    $categoryRepository = new CategoryRepository($pdo);
+    $category = $categoryRepository->findById($categoryId);
 
     if (!$category) {
         sendJsonError('Category not found', 404);
     }
 
-    deleteCategory($pdo, $categoryId);
+    // Check if category is being used by any products
+    $productsUsingCategory = $categoryRepository->isInUse($categoryId);
+    if ($productsUsingCategory > 0) {
+        sendJsonError('Cannot delete category that is being used by ' . $productsUsingCategory . ' product(s)', 400);
+    }
+
+    $categoryRepository->delete($categoryId);
 
     sendJsonResponse([
         'success' => true,
@@ -34,22 +42,7 @@ try {
         'category_id' => $categoryId,
     ]);
 } catch (Throwable $e) {
-    sendJsonError('Server error', 500);
-}
-
-function fetchCategoryById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id FROM categories WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $category ?: null;
-}
-
-function deleteCategory(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM categories WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
+    sendJsonError('Server error: ' . $e->getMessage(), 500);
 }
 
 function sendJsonError(string $message, int $status = 400): void

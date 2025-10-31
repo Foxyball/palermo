@@ -1,206 +1,308 @@
 $(function () {
-    // Status update handler
-    $(document).on('click', '.js-order-status-update-btn', function (e) {
-        e.preventDefault();
-        const $btn = $(this);
-        const orderId = $btn.data('order-id');
-        const currentStatusId = $btn.data('current-status-id');
+  // Status update handler
+  $(document).on("click", ".js-order-status-update-btn", function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const orderId = $btn.data("order-id");
+    const currentStatusId = $btn.data("current-status-id");
 
-        $('#order_id').val(orderId);
-        $('#new_status').val(currentStatusId);
-        $('#statusUpdateModal').modal('show');
-    });
+    $("#order_id").val(orderId);
+    $("#new_status").val(currentStatusId);
+    $("#statusUpdateModal").modal("show");
+  });
 
-    // Confirm status update
-    $('#confirmStatusUpdate').on('click', function () {
-        const $btn = $(this);
-        const orderId = $('#order_id').val();
-        const newStatusId = $('#new_status').val();
+  // Confirm status update
+  $("#confirmStatusUpdate").on("click", function () {
+    const $btn = $(this);
+    const orderId = $("#order_id").val();
+    const newStatusId = $("#new_status").val();
 
-        if (!orderId || !newStatusId) {
-            toastr.error('Please select a status');
-            return;
+    if (!orderId || !newStatusId) {
+      toastr.error("Please select a status");
+      return;
+    }
+
+    $btn.prop("disabled", true).text("Updating...");
+
+    $.ajax({
+      url: "./include/ajax_order_update_status.php",
+      method: "POST",
+      data: {
+        id: orderId,
+        status_id: newStatusId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (resp && resp.success) {
+          toastr.success("Order status updated successfully");
+          $("#statusUpdateModal").modal("hide");
+          // Reload the page to show updated status
+          setTimeout(function () {
+            location.reload();
+          }, 1000);
+        } else {
+          toastr.error(resp && resp.message ? resp.message : "Update failed");
         }
+      })
+      .fail(function (xhr) {
+        let msg = "Server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $btn.prop("disabled", false).text("Update Status");
+      });
+  });
 
-        $btn.prop('disabled', true).text('Updating...');
+  // SweetAlert2 delete handler
+  $(document).on("click", ".js-order-delete-btn", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const orderId = $btn.data("order-id");
+    const customerName = $btn.data("order-customer");
 
-        $.ajax({
-            url: './include/ajax_order_update_status.php',
-            method: 'POST',
-            data: {
-                id: orderId,
-                status_id: newStatusId
-            },
-            dataType: 'json'
-        })
-            .done(function (resp) {
-                if (resp && resp.success) {
-                    toastr.success('Order status updated successfully');
-                    $('#statusUpdateModal').modal('hide');
-                    // Reload the page to show updated status
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    toastr.error(resp && resp.message ? resp.message : 'Update failed');
-                }
-            })
-            .fail(function (xhr) {
-                let msg = 'Server error';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
-                }
-                toastr.error(msg);
-            })
-            .always(function () {
-                $btn.prop('disabled', false).text('Update Status');
-            });
-    });
+    const confirmed = await Swal.fire({
+      title: "Delete Order?",
+      html: `<p class="mb-1">You are about to delete order #${orderId} for <strong>${$(
+        "<div>"
+      )
+        .text(customerName)
+        .html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((r) => r.isConfirmed);
 
-    // SweetAlert2 delete handler
-    $(document).on('click', '.js-order-delete-btn', async function (e) {
-        e.preventDefault();
-        const $btn = $(this);
-        const orderId = $btn.data('order-id');
-        const customerName = $btn.data('order-customer');
+    if (!confirmed) return;
 
-        const confirmed = await Swal.fire({
-            title: 'Delete Order?',
-            html: `<p class="mb-1">You are about to delete order #${orderId} for <strong>${$('<div>').text(customerName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#d33',
-            reverseButtons: true,
-            focusCancel: true,
-        }).then(r => r.isConfirmed);
+    $btn.prop("disabled", true).addClass("opacity-50");
 
-        if (!confirmed) return;
+    $.ajax({
+      url: "./include/ajax_order_delete.php",
+      method: "POST",
+      data: {
+        id: orderId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (resp && resp.success) {
+          toastr.success("Order deleted");
+          // Remove row from table
+          const $row = $btn.closest("tr");
+          $row.fadeOut(300, function () {
+            $(this).remove();
+          });
+        } else {
+          toastr.error(resp && resp.message ? resp.message : "Delete failed");
+        }
+      })
+      .fail(function (xhr) {
+        let msg = "Server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $btn.prop("disabled", false).removeClass("opacity-50");
+      });
+  });
 
-        $btn.prop('disabled', true).addClass('opacity-50');
+  $(".js-order-status-toggle:not(:disabled)").on("change", function () {
+    const $cb = $(this);
+    const statusId = $cb.data("status-id");
+    const originalChecked = !$cb.prop("checked");
+    $cb.prop("disabled", true);
 
-        $.ajax({
-            url: './include/ajax_order_delete.php',
-            method: 'POST',
-            data: {
-                id: orderId,
-            },
-            dataType: 'json'
-        })
-            .done(function (resp) {
-                if (resp && resp.success) {
-                    toastr.success('Order deleted');
-                    // Remove row from table
-                    const $row = $btn.closest('tr');
-                    $row.fadeOut(300, function () {
-                        $(this).remove();
-                    });
-                } else {
-                    toastr.error(resp && resp.message ? resp.message : 'Delete failed');
-                }
-            })
-            .fail(function (xhr) {
-                let msg = 'Server error';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
-                }
-                toastr.error(msg);
-            })
-            .always(function () {
-                $btn.prop('disabled', false).removeClass('opacity-50');
-            });
-    });
+    $.ajax({
+      url: "./include/ajax_order_toggle_status.php",
+      method: "POST",
+      data: {
+        id: statusId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (!resp || resp.success !== true) {
+          $cb.prop("checked", originalChecked);
+          toastr.error(
+            resp && resp.message ? resp.message : "Failed to update status"
+          );
+        } else {
+          toastr.success("Status updated");
+        }
+      })
+      .fail(function (xhr) {
+        $cb.prop("checked", originalChecked);
+        let msg = "Network / server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $cb.prop("disabled", false);
+      });
+  });
 
+  // SweetAlert2 delete handler
+  $(document).on("click", ".js-order-status-delete-btn", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const statusId = $btn.data("status-id");
+    const statusName = $btn.data("status-name");
 
-    $('.js-order-status-toggle:not(:disabled)').on('change', function () {
-        const $cb = $(this);
-        const statusId = $cb.data('status-id');
-        const originalChecked = !$cb.prop('checked');
-        $cb.prop('disabled', true);
+    const confirmed = await Swal.fire({
+      title: "Delete Order Status?",
+      html: `<p class="mb-1">You are about to delete <strong>${$("<div>")
+        .text(statusName)
+        .html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((r) => r.isConfirmed);
 
-        $.ajax({
-            url: './include/ajax_order_toggle_status.php',
-            method: 'POST',
-            data: {
-                id: statusId,
-            },
-            dataType: 'json'
-        })
-            .done(function (resp) {
-                if (!resp || resp.success !== true) {
-                    $cb.prop('checked', originalChecked);
-                    toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
-                } else {
-                    toastr.success('Status updated');
-                }
-            })
-            .fail(function (xhr) {
-                $cb.prop('checked', originalChecked);
-                let msg = 'Network / server error';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
-                }
-                toastr.error(msg);
-            })
-            .always(function () {
-                $cb.prop('disabled', false);
-            });
-    });
+    if (!confirmed) return;
 
-    // SweetAlert2 delete handler
-    $(document).on('click', '.js-order-status-delete-btn', async function (e) {
-        e.preventDefault();
-        const $btn = $(this);
-        const statusId = $btn.data('status-id');
-        const statusName = $btn.data('status-name');
+    $btn.prop("disabled", true).addClass("opacity-50");
 
-        const confirmed = await Swal.fire({
-            title: 'Delete Order Status?',
-            html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(statusName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#d33',
-            reverseButtons: true,
-            focusCancel: true,
-        }).then(r => r.isConfirmed);
+    $.ajax({
+      url: "./include/ajax_order_status_delete.php",
+      method: "POST",
+      data: {
+        id: statusId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (resp && resp.success) {
+          toastr.success("Order status deleted");
+          // Remove row from table
+          const $row = $btn.closest("tr");
+          $row.fadeOut(300, function () {
+            $(this).remove();
+          });
+        } else {
+          toastr.error(resp && resp.message ? resp.message : "Delete failed");
+        }
+      })
+      .fail(function (xhr) {
+        let msg = "Server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $btn.prop("disabled", false).removeClass("opacity-50");
+      });
+  });
 
-        if (!confirmed) return;
+  $(".js-category-status-toggle:not(:disabled)").on("change", function () {
+    const $cb = $(this);
+    const categoryId = $cb.data("category-id");
+    const originalChecked = !$cb.prop("checked");
+    $cb.prop("disabled", true);
 
-        $btn.prop('disabled', true).addClass('opacity-50');
+    $.ajax({
+      url: "./include/ajax_category_toggle_status.php",
+      method: "POST",
+      data: {
+        id: categoryId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (!resp || resp.success !== true) {
+          $cb.prop("checked", originalChecked);
+          toastr.error(
+            resp && resp.message ? resp.message : "Failed to update status"
+          );
+        } else {
+          toastr.success("Status updated");
+        }
+      })
+      .fail(function (xhr) {
+        $cb.prop("checked", originalChecked);
+        let msg = "Network / server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $cb.prop("disabled", false);
+      });
+  });
 
-        $.ajax({
-            url: './include/ajax_order_status_delete.php',
-            method: 'POST',
-            data: {
-                id: statusId,
-            },
-            dataType: 'json'
-        })
-            .done(function (resp) {
-                if (resp && resp.success) {
-                    toastr.success('Order status deleted');
-                    // Remove row from table
-                    const $row = $btn.closest('tr');
-                    $row.fadeOut(300, function () {
-                        $(this).remove();
-                    });
-                } else {
-                    toastr.error(resp && resp.message ? resp.message : 'Delete failed');
-                }
-            })
-            .fail(function (xhr) {
-                let msg = 'Server error';
-                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
-                }
-                toastr.error(msg);
-            })
-            .always(function () {
-                $btn.prop('disabled', false).removeClass('opacity-50');
-            });
-    });
+  // SweetAlert2 delete handler
+  $(document).on("click", ".js-category-delete-btn", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const categoryId = $btn.data("category-id");
+    const categoryName = $btn.data("category-name");
 
+    const confirmed = await Swal.fire({
+      title: "Delete Category?",
+      html: `<p class="mb-1">You are about to delete <strong>${$("<div>")
+        .text(categoryName)
+        .html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((r) => r.isConfirmed);
+
+    if (!confirmed) return;
+
+    $btn.prop("disabled", true).addClass("opacity-50");
+
+    $.ajax({
+      url: "./include/ajax_category_delete.php",
+      method: "POST",
+      data: {
+        id: categoryId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (resp && resp.success) {
+          toastr.success("Category deleted");
+          // Remove row from table
+          const $row = $btn.closest("tr");
+          $row.fadeOut(300, function () {
+            $(this).remove();
+          });
+        } else {
+          toastr.error(resp && resp.message ? resp.message : "Delete failed");
+        }
+      })
+      .fail(function (xhr) {
+        let msg = "Server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $btn.prop("disabled", false).removeClass("opacity-50");
+      });
+  });
+
+  
 }); // end of document ready
