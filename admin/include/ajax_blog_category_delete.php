@@ -5,6 +5,7 @@ declare(strict_types=1);
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/../../repositories/admin/BlogCategoryRepository.php';
 require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
@@ -20,32 +21,32 @@ if ($categoryId <= 0) {
 }
 
 try {
-    $category = fetchBlogCategoryById($pdo, $categoryId);
+    $blogCategoryRepo = new BlogCategoryRepository($pdo);
+    $category = $blogCategoryRepo->findById($categoryId);
 
     if (!$category) {
         sendJsonError('Blog category not found', 404);
     }
 
-    deleteBlogCategory($pdo, $categoryId);
+    // Check if category is being used by blog posts
+    $blogCount = $blogCategoryRepo->isInUse($categoryId);
+    if ($blogCount > 0) {
+        sendJsonError("Cannot delete: $blogCount blog post(s) are using this category", 409);
+    }
 
-    sendJsonResponse(['success' => true, 'message' => 'Blog category deleted successfully', 'category_id' => $categoryId,]);
+    $deleted = $blogCategoryRepo->delete($categoryId);
+
+    if (!$deleted) {
+        sendJsonError('Failed to delete blog category', 500);
+    }
+
+    sendJsonResponse([
+        'success' => true,
+        'message' => 'Blog category deleted successfully',
+        'category_id' => $categoryId,
+    ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchBlogCategoryById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id FROM blog_categories WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $category ?: null;
-}
-
-function deleteBlogCategory(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM blog_categories WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void
