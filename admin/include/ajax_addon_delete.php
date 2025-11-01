@@ -5,6 +5,7 @@ declare(strict_types=1);
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/../../repositories/admin/AddonRepository.php';
 require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
@@ -20,13 +21,24 @@ if ($addonId <= 0) {
 }
 
 try {
-    $addon = fetchAddonById($pdo, $addonId);
+    $addonRepo = new AddonRepository($pdo);
+    $addon = $addonRepo->findById($addonId);
 
     if (!$addon) {
         sendJsonError('Addon not found', 404);
     }
 
-    deleteAddon($pdo, $addonId);
+    // Check if addon is being used by orders or products
+    $usageCount = $addonRepo->isInUse($addonId);
+    if ($usageCount > 0) {
+        sendJsonError("Cannot delete: This addon is used by $usageCount order(s) or product(s)", 409);
+    }
+
+    $deleted = $addonRepo->delete($addonId);
+
+    if (!$deleted) {
+        sendJsonError('Failed to delete addon', 500);
+    }
 
     sendJsonResponse([
         'success' => true,
@@ -34,21 +46,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchAddonById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id FROM addons WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $addon = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $addon ?: null;
-}
-
-function deleteAddon(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM addons WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void
