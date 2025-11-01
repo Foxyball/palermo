@@ -5,6 +5,7 @@ declare(strict_types=1);
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
+require_once __DIR__ . '/../../repositories/admin/AddonRepository.php';
 require_once __DIR__ . '/functions.php';
 
 requireAdminLogin();
@@ -20,36 +21,22 @@ if ($addonId <= 0) {
 }
 
 try {
-    $addon = fetchAddonById($pdo, $addonId);
+    $addonRepo = new AddonRepository($pdo);
+    $addon = $addonRepo->findById($addonId);
 
     if (!$addon) {
         sendJsonError('Addon not found', 404);
     }
 
-    $newStatus = toggleAddonStatus($pdo, $addonId, $addon['status']);
+    $newStatus = $addonRepo->toggleStatus($addonId, $addon['status']);
 
-    sendJsonResponse(['success' => true, 'message' => 'Status updated', 'status' => $newStatus,]);
+    sendJsonResponse([
+        'success' => true,
+        'message' => 'Status updated',
+        'status' => $newStatus,
+    ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchAddonById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, status FROM addons WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $addon = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $addon ?: null;
-}
-
-function toggleAddonStatus(PDO $pdo, int $id, string $currentStatus): string
-{
-    $newStatus = $currentStatus === '1' ? '0' : '1';
-
-    $stmt = $pdo->prepare('UPDATE addons SET status = ?, updated_at = NOW() WHERE id = ? LIMIT 1');
-    $stmt->execute([$newStatus, $id]);
-
-    return $newStatus;
 }
 
 function sendJsonError(string $message, int $status = 400): void
