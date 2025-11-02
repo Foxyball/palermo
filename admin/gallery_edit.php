@@ -2,9 +2,12 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/GalleryRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$galleryRepo = new GalleryRepository($pdo);
 
 $galleryId = $_GET['id'] ?? 0;
 if ($galleryId <= 0) {
@@ -13,9 +16,7 @@ if ($galleryId <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, title, active, created_at, updated_at FROM galleries WHERE id = ? LIMIT 1');
-$stmt->execute([$galleryId]);
-$gallery_to_edit = $stmt->fetch(PDO::FETCH_ASSOC);
+$gallery_to_edit = $galleryRepo->findById($galleryId);
 
 if (!$gallery_to_edit) {
     $_SESSION['error'] = 'Gallery not found.';
@@ -34,17 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT id FROM galleries WHERE title = ? AND id != ? LIMIT 1');
-        $stmt->execute([$title, $galleryId]);
-        if ($stmt->fetch()) {
+        if ($galleryRepo->titleExists($title, $galleryId)) {
             $errors[] = 'Gallery name already exists. Please choose a different name.';
         }
     }
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('UPDATE galleries SET title = ?, updated_at = NOW() WHERE id = ? LIMIT 1');
-            $stmt->execute([$title, $galleryId]);
+            $galleryRepo->update($galleryId, $title);
             $_SESSION['success'] = 'Gallery updated successfully';
             header('Location: gallery_list');
             exit;

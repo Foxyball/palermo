@@ -2,9 +2,12 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/GalleryRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$galleryRepo = new GalleryRepository($pdo);
 
 $errors = [];
 
@@ -17,17 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT id FROM galleries WHERE title = ? LIMIT 1');
-        $stmt->execute([$title]);
-        if ($stmt->fetch()) {
+        if ($galleryRepo->titleExists($title)) {
             $errors[] = 'Gallery title already exists.';
         }
     }
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('INSERT INTO galleries (title, active, created_at, updated_at) VALUES (?, "1", NOW(), NOW())');
-            $stmt->execute([$title]);
+            $galleryRepo->create($title);
             $_SESSION['success'] = 'Gallery created successfully';
             header('Location: gallery_list');
             exit;

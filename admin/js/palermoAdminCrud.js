@@ -491,4 +491,98 @@ $(function () {
         $btn.prop("disabled", false).removeClass("opacity-50");
       });
   });
+
+  $(".js-gallery-status-toggle:not(:disabled)").on("change", function () {
+    const $cb = $(this);
+    const galleryId = $cb.data("gallery-id");
+    const originalChecked = !$cb.prop("checked");
+    $cb.prop("disabled", true);
+
+    $.ajax({
+      url: "./include/ajax_gallery_toggle_status.php",
+      method: "POST",
+      data: {
+        id: galleryId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (!resp || resp.success !== true) {
+          $cb.prop("checked", originalChecked);
+          toastr.error(
+            resp && resp.message ? resp.message : "Failed to update status"
+          );
+        } else {
+          toastr.success("Status updated");
+        }
+      })
+      .fail(function (xhr) {
+        $cb.prop("checked", originalChecked);
+        let msg = "Network / server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $cb.prop("disabled", false);
+      });
+  });
+
+  // SweetAlert2 delete handler
+  $(document).on("click", ".js-gallery-delete-btn", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const galleryId = $btn.data("gallery-id");
+    const galleryTitle = $btn.data("gallery-name");
+
+    const confirmed = await Swal.fire({
+      title: "Delete Gallery?",
+      html: `<p class="mb-1">You are about to delete <strong>${$("<div>")
+        .text(galleryTitle)
+        .html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((r) => r.isConfirmed);
+
+    if (!confirmed) return;
+
+    $btn.prop("disabled", true).addClass("opacity-50");
+
+    $.ajax({
+      url: "./include/ajax_gallery_delete.php",
+      method: "POST",
+      data: {
+        id: galleryId,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (resp && resp.success) {
+          toastr.success("Gallery deleted");
+          // Remove row from table
+          const $row = $btn.closest("tr");
+          $row.fadeOut(300, function () {
+            $(this).remove();
+          });
+        } else {
+          toastr.error(resp && resp.message ? resp.message : "Delete failed");
+        }
+      })
+      .fail(function (xhr) {
+        let msg = "Server error";
+        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        toastr.error(msg);
+      })
+      .always(function () {
+        $btn.prop("disabled", false).removeClass("opacity-50");
+      });
+  });
 }); // end of document ready
