@@ -1,5 +1,5 @@
 <?php
-
+namespace Repositories\Admin;
 class AddonRepository
 {
     private PDO $pdo;
