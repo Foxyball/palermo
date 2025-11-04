@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/BlogRepository.php';
 
 requireAdminLogin();
 
@@ -20,13 +21,14 @@ if ($blogID <= 0) {
 }
 
 try {
-    $blog = fetchBlogById($pdo, $blogID);
+    $blogRepo = new BlogRepository($pdo);
+    $blog = $blogRepo->findById($blogID);
 
     if (!$blog) {
         sendJsonError('Blog post not found', 404);
     }
 
-    $newStatus = toggleBlogPostStatus($pdo, $blogID, $blog['status']);
+    $newStatus = $blogRepo->toggleStatus($blogID, $blog['status']);
 
     sendJsonResponse([
         'success' => true,
@@ -35,27 +37,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchBlogById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, status FROM blogs WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $blog = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $blog ?: null;
-}
-
-function toggleBlogPostStatus(PDO $pdo, int $id, string $currentStatus): string
-{
-    $newStatus = $currentStatus === '1' ? '0' : '1';
-
-    $stmt = $pdo->prepare(
-        'UPDATE blogs SET status = ?, updated_at = NOW() WHERE id = ? LIMIT 1'
-    );
-    $stmt->execute([$newStatus, $id]);
-
-    return $newStatus;
 }
 
 function sendJsonError(string $message, int $status = 400): void

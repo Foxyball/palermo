@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/BlogRepository.php';
 
 requireAdminLogin();
 
@@ -20,7 +21,8 @@ if ($blogId <= 0) {
 }
 
 try {
-    $blog = fetchBlogById($pdo, $blogId);
+    $blogRepo = new BlogRepository($pdo);
+    $blog = $blogRepo->findById($blogId);
 
     if (!$blog) {
         sendJsonError('Blog not found', 404);
@@ -30,7 +32,7 @@ try {
         deleteImageFile($blog['image']);
     }
 
-    deleteBlog($pdo, $blogId);
+    $blogRepo->delete($blogId);
 
     sendJsonResponse([
         'success' => true,
@@ -39,21 +41,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchBlogById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, image FROM blogs WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $blog = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $blog ?: null;
-}
-
-function deleteBlog(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM blogs WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void

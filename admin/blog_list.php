@@ -3,59 +3,22 @@
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/Paginator.php');
+require_once(__DIR__ . '/../repositories/admin/BlogRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$blogRepo = new BlogRepository($pdo);
 
 $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
 
-$whereSql = '';
-$params = [];
-if ($search !== '') {
-    $whereSql = ' WHERE (b.title LIKE :keyword OR b.id = :id)';
-    $params[':keyword'] = '%' . $search . '%';
-    $params[':id'] = $search;
-}
-
-$countSql = 'SELECT COUNT(*) FROM blogs b' . $whereSql;
-$stmtCount = $pdo->prepare($countSql);
-$stmtCount->execute($params);
-$totalBlogsCount = $stmtCount->fetchColumn();
+$totalBlogsCount = $blogRepo->countAll($search);
 
 $paginator = new Paginator($totalBlogsCount, $page, $perPage);
 
-$dataSql = 'SELECT 
-       b.id,
-       b.user_id,
-       b.category_id,
-       c.name AS category_name,
-       a.admin_name AS admin_name,
-       g.title AS gallery_title,
-       b.gallery_id,
-       b.image,
-        b.description, 
-        b.title, 
-        b.status, 
-        b.created_at,
-        b.updated_at
-        FROM blogs b
-        LEFT JOIN blog_categories c ON b.category_id = c.id
-        LEFT JOIN admins a ON b.user_id = a.admin_id
-        LEFT JOIN galleries g ON b.gallery_id = g.id    
-        ' . $whereSql . ' ORDER BY b.id DESC LIMIT :lim OFFSET :off';
-
-$stmt = $pdo->prepare($dataSql);
-
-foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v);
-}
-
-$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
-$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
-$stmt->execute();
-$blogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$blogs = $blogRepo->findAll($search, $paginator->limit(), $paginator->offset());
 
 ?>
 
@@ -207,46 +170,7 @@ headerContainer();
                                     </div>
                                 </div>
                                 <?php if (!empty($blogs)) { ?>
-                                    <div class="card-footer">
-                                        <div class="row align-items-center g-3">
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">
-                                                    <?php
-                                                    $start = $paginator->offset() + 1;
-                                                    $end = $paginator->offset() + count($blogs);
-                                                    ?>
-                                                    <?php if ($totalBlogsCount > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalBlogsCount; ?>
-                                                    <?php } else { ?>
-                                                        No results
-                                                    <?php } ?>
-                                                </small>
-                                                <?php if ($search !== '') { ?>
-                                                    <small class="text-muted">Filtered by "<?php echo $search; ?>"</small>
-                                                <?php } ?>
-                                            </div>
-                                            <div class="col-md-4 text-md-center">
-                                                <nav aria-label="Pagination">
-                                                    <ul class="pagination pagination-sm mb-0 justify-content-center">
-                                                        <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1), 'blog_list'); ?>" tabindex="-1">&laquo;</a>
-                                                        </li>
-                                                        <?php foreach ($paginator->pages() as $pg) { ?>
-                                                            <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
-                                                                <a class="page-link" href="<?php echo buildPageUrl($pg, 'blog_list'); ?>"><?php echo $pg; ?></a>
-                                                            </li>
-                                                        <?php } ?>
-                                                        <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1), 'blog_list'); ?>">&raquo;</a>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <small class="text-muted d-block">Last updated: <?php echo date('M j, Y g:i A'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php renderPagination($paginator, $totalBlogsCount, count($blogs), 'blog_list', $search); ?>
                                 <?php } ?>
                             </div>
                         </div>
@@ -261,158 +185,7 @@ headerContainer();
 
     </div>
 
-    <style>
-        .table th {
-            border-top: none;
-            font-weight: 600;
-        }
-
-        .small-box {
-            border-radius: 0.375rem;
-            padding: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .small-box .inner {
-            position: relative;
-            z-index: 2;
-        }
-
-        .small-box .inner h3 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .small-box .inner p {
-            margin-bottom: 0;
-            opacity: 0.8;
-        }
-
-        .small-box-icon {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            font-size: 3rem;
-            opacity: 0.3;
-        }
-
-        .form-switch .form-check-input {
-            cursor: pointer;
-        }
-
-        .form-switch .form-check-input:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .form-switch .form-check-input {
-            cursor: pointer;
-        }
-
-        .form-switch .form-check-input:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-    </style>
-
-
-    <!-- AJAX Change Status -->
-    <script>
-        $(function() {
-            $('.js-blog-status-toggle:not(:disabled)').on('change', function() {
-                const $cb = $(this);
-                const blogId = $cb.data('blog-id');
-                const originalChecked = !$cb.prop('checked');
-                $cb.prop('disabled', true);
-
-                $.ajax({
-                        url: './include/ajax_blog_toggle_status.php',
-                        method: 'POST',
-                        data: {
-                            id: blogId,
-                        },
-                        dataType: 'json'
-                    })
-                    .done(function(resp) {
-                        if (!resp || resp.success !== true) {
-                            $cb.prop('checked', originalChecked);
-                            toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
-                        } else {
-                            toastr.success('Status updated');
-                        }
-                    })
-                    .fail(function(xhr) {
-                        $cb.prop('checked', originalChecked);
-                        let msg = 'Network / server error';
-                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
-                        toastr.error(msg);
-                    })
-                    .always(function() {
-                        $cb.prop('disabled', false);
-                    });
-            });
-
-            // SweetAlert2 delete handler
-            $(document).on('click', '.js-blog-delete-btn', async function(e) {
-                e.preventDefault();
-                const $btn = $(this);
-                const blogId = $btn.data('blog-id');
-                const blogTitle = $btn.data('blog-name');
-
-                const confirmed = await Swal.fire({
-                    title: 'Delete Post?',
-                    html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(blogTitle).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete',
-                    cancelButtonText: 'Cancel',
-                    confirmButtonColor: '#d33',
-                    reverseButtons: true,
-                    focusCancel: true,
-                }).then(r => r.isConfirmed);
-
-                if (!confirmed) return;
-
-                $btn.prop('disabled', true).addClass('opacity-50');
-
-                $.ajax({
-                        url: './include/ajax_blog_delete.php',
-                        method: 'POST',
-                        data: {
-                            id: blogId,
-                        },
-                        dataType: 'json'
-                    })
-                    .done(function(resp) {
-                        if (resp && resp.success) {
-                            toastr.success('Post deleted');
-                            // Remove row from table
-                            const $row = $btn.closest('tr');
-                            $row.fadeOut(300, function() {
-                                $(this).remove();
-                            });
-                        } else {
-                            toastr.error(resp && resp.message ? resp.message : 'Delete failed');
-                        }
-                    })
-                    .fail(function(xhr) {
-                        let msg = 'Server error';
-                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
-                        toastr.error(msg);
-                    })
-                    .always(function() {
-                        $btn.prop('disabled', false).removeClass('opacity-50');
-                    });
-            });
-        });
-    </script>
+    <script src="js/palermoAdminCrud.js"></script>
 </body>
 
 </html>
