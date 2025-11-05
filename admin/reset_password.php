@@ -2,12 +2,15 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/AdminRepository.php');
 require_once(__DIR__ . '/../include/smtp_class.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
+$adminRepo = new AdminRepository($pdo);
 $currentAdmin = getCurrentAdmin($pdo);
+
 if (!$currentAdmin) {
     $_SESSION['error'] = 'Unable to load account information.';
     header('Location: index');
@@ -37,10 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Verify the current password
+    $adminPassword = null;
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT admin_password FROM admins WHERE admin_id = ? LIMIT 1');
-        $stmt->execute([$currentAdmin['admin_id']]);
-        $adminPassword = $stmt->fetchColumn();
+        $adminPassword = $adminRepo->getPasswordHash($currentAdmin['admin_id']);
 
         if (!$adminPassword || md5($currentPassword) !== $adminPassword) {
             $errors[] = 'Current password is incorrect';
@@ -58,12 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $newPasswordHash = md5($newPassword);
         try {
-            $stmt = $pdo->prepare('UPDATE admins SET admin_password = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
-            $stmt->execute([$newPasswordHash, $currentAdmin['admin_id']]);
+            $updated = $adminRepo->updatePassword($currentAdmin['admin_id'], $newPasswordHash);
 
-            // Send email notification about password change
-            $emailSubject = 'Password Changed - ' . SITE_TITLE;
-            $emailBody = "
+            if (!$updated) {
+                $errors[] = 'Failed to update password. Please try again.';
+            } else {
+                // Send email notification about password change
+                $emailSubject = 'Password Changed - ' . SITE_TITLE;
+                $emailBody = "
             <html>
             <head>
                 <style>
@@ -110,21 +114,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </body>
             </html>";
 
-            try {
-                $emailSent = sendEmail(
-                    $currentAdmin['admin_email'],
-                    $currentAdmin['admin_name'],
-                    $emailSubject,
-                    $emailBody
-                );
-            } catch (Exception $e) {
-                $emailSent = false;
+                try {
+                    $emailSent = sendEmail(
+                        $currentAdmin['admin_email'],
+                        $currentAdmin['admin_name'],
+                        $emailSubject,
+                        $emailBody
+                    );
+                } catch (Exception $e) {
+                    $emailSent = false;
+                }
+
+                $_SESSION['success'] = 'Password updated successfully.';
+
+                header('Location: reset_password');
+                exit;
             }
-
-            $_SESSION['success'] = 'Password updated successfully.';
-
-            header('Location: reset_password');
-            exit;
         } catch (PDOException $e) {
             $errors[] = 'There was an error updating your password. Please try again.';
         }
@@ -212,16 +217,7 @@ headerContainer();
                                         </div>
                                     </form>
                                 </div>
-                                <div class="card-footer">
-                                    <div class="row text-center">
-                                        <div class="col">
-                                            <small class="text-muted">
-                                                <i class="bi bi-shield-check"></i>
-                                                Your password is encrypted and secure
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -231,43 +227,6 @@ headerContainer();
         <?php footerContainer(); ?>
     </div>
 
-    <script>
-        // strength indicator
-        document.querySelector('input[name="new_password"]').addEventListener('input', function() {
-            const password = this.value;
-            const strength = getPasswordStrength(password);
-            updatePasswordStrengthIndicator(strength);
-        });
-
-        function getPasswordStrength(password) {
-            let score = 0;
-            if (password.length >= 6) score++;
-            if (password.length >= 8) score++;
-            if (/[A-Z]/.test(password)) score++;
-            if (/[0-9]/.test(password)) score++;
-            if (/[^A-Za-z0-9]/.test(password)) score++;
-            return score;
-        }
-
-        function updatePasswordStrengthIndicator(strength) {
-            const colors = ['danger', 'warning', 'info', 'success', 'success'];
-            const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
-
-            let indicator = document.querySelector('.password-strength');
-            if (!indicator) {
-                indicator = document.createElement('small');
-                indicator.className = 'password-strength d-block mt-1';
-                document.querySelector('input[name="new_password"]').parentNode.appendChild(indicator);
-            }
-
-            if (strength > 0) {
-                indicator.className = `password-strength d-block mt-1 text-${colors[strength - 1]}`;
-                indicator.textContent = `Password strength: ${texts[strength - 1]}`;
-            } else {
-                indicator.textContent = '';
-            }
-        }
-    </script>
 </body>
 
 </html>

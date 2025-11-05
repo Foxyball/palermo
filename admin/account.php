@@ -2,11 +2,14 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/AdminRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
+$adminRepo = new AdminRepository($pdo);
 $currentAdmin = getCurrentAdmin($pdo);
+
 if (!$currentAdmin) {
     $_SESSION['error'] = 'Unable to load account information.';
     header('Location: index');
@@ -28,21 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors) && $email !== $currentAdmin['admin_email']) {
-        $stmt = $pdo->prepare('SELECT admin_id FROM admins WHERE admin_email = ? AND admin_id != ? LIMIT 1');
-        $stmt->execute([$email, $currentAdmin['admin_id']]);
-        if ($stmt->fetch()) {
+        if ($adminRepo->emailExists($email, $currentAdmin['admin_id'])) {
             $errors[] = 'Email already in use by another admin';
         }
     }
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('UPDATE admins SET admin_name = ?, admin_email = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1');
-            $stmt->execute([$name, $email, $currentAdmin['admin_id']]);
-
-            $_SESSION['success'] = 'Profile updated successfully';
-            header('Location: account');
-            exit;
+            $updated = $adminRepo->updateProfile($currentAdmin['admin_id'], $name, $email);
+            
+            if ($updated) {
+                $_SESSION['success'] = 'Profile updated successfully';
+                header('Location: account');
+                exit;
+            } else {
+                $errors[] = 'Failed to update profile. Please try again.';
+            }
         } catch (PDOException $e) {
             $errors[] = 'There was an error updating your profile. Please try again.';
         }
