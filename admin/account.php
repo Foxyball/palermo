@@ -137,12 +137,6 @@ headerContainer();
                                 <div class="card-footer">
                                     <div class="row text-center">
                                         <div class="col">
-                                            <small class="text-muted">
-                                                <i class="bi bi-shield-check"></i>
-                                                Your information is encrypted and secure
-                                            </small>
-                                        </div>
-                                        <div class="col">
                                             <a href="reset_password" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-key"></i> Change Password
                                             </a>
