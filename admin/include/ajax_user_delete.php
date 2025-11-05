@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/UserRepository.php';
 
 requireAdminLogin();
 
@@ -20,13 +21,14 @@ if ($userId <= 0) {
 }
 
 try {
-    $user = fetchUserById($pdo, $userId);
+    $userRepository = new UserRepository($pdo);
+    $user = $userRepository->findById($userId);
 
     if (!$user) {
         sendJsonError('User not found', 404);
     }
 
-    deleteUser($pdo, $userId);
+    $userRepository->delete($userId);
 
     sendJsonResponse([
         'success' => true,
@@ -35,21 +37,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchUserById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id FROM users WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $user ?: null;
-}
-
-function deleteUser(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM users WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void

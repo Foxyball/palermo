@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/UserRepository.php';
 
 requireAdminLogin();
 
@@ -20,13 +21,14 @@ if ($userId <= 0) {
 }
 
 try {
-    $user = fetchUserById($pdo, $userId);
+    $userRepository = new UserRepository($pdo);
+    $user = $userRepository->findById($userId);
 
     if (!$user) {
         sendJsonError('User not found', 404);
     }
 
-    $newStatus = toggleUserStatus($pdo, $userId, $user['active']);
+    $newStatus = $userRepository->toggleActive($userId, $user['active']);
 
     sendJsonResponse([
         'success' => true,
@@ -36,27 +38,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchUserById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, active FROM users WHERE id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $user ?: null;
-}
-
-function toggleUserStatus(PDO $pdo, int $id, string $currentStatus): string
-{
-    $newStatus = $currentStatus === '1' ? '0' : '1';
-
-    $stmt = $pdo->prepare(
-        'UPDATE users SET active = ?, updated_at = NOW() WHERE id = ? LIMIT 1'
-    );
-    $stmt->execute([$newStatus, $id]);
-
-    return $newStatus;
 }
 
 function sendJsonError(string $message, int $status = 400): void

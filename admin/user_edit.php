@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/UserRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -13,9 +14,8 @@ if ($userId <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, first_name, last_name, email, active, address, city, phone, zip_code, created_at, updated_at FROM users WHERE id = ? LIMIT 1');
-$stmt->execute([$userId]);
-$userToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+$userRepository = new UserRepository($pdo);
+$userToEdit = $userRepository->findById($userId);
 
 if (!$userToEdit) {
     $_SESSION['error'] = 'User not found.';
@@ -48,9 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($email !== $userToEdit['email']) {
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1');
-        $stmt->execute([$email, $userId]);
-        if ($stmt->fetch()) {
+        if ($userRepository->emailExists($email, $userId)) {
             $errors[] = 'Email already in use by another user';
         }
     }
@@ -64,21 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-
     if (empty($errors)) {
-        $fields = ['first_name = ?', 'last_name = ?', 'email = ?', 'address = ?', 'city = ?', 'phone = ?', 'zip_code = ?'];
-        $params = [$firstName, $lastName, $email, $address, $city, $phone, $zipCode];
-        if ($passwordHash !== null) {
-            $fields[] = 'password = ?';
-            $params[] = $passwordHash;
-        }
-        $fields[] = 'updated_at = NOW()';
-        $params[] = $userId;
-
-        $sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = ? LIMIT 1';
         try {
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
+            $userRepository->update($userId, $firstName, $lastName, $email, $passwordHash, $address, $city, $phone, $zipCode);
             $_SESSION['success'] = 'User updated successfully';
             header('Location: user_list');
             exit;
