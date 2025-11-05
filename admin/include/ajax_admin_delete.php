@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/AdminRepository.php';
 
 requireAdminLogin();
 
@@ -30,17 +31,18 @@ if ($adminId === (int) $currentAdmin['admin_id']) {
 }
 
 try {
-    $admin = fetchAdminById($pdo, $adminId);
+    $adminRepository = new AdminRepository($pdo);
+    $admin = $adminRepository->findById($adminId);
 
     if (!$admin) {
         sendJsonError('Admin not found', 404);
     }
 
-    if (isSuperAdmin($admin) && isLastSuperAdmin($pdo)) {
+    if ($adminRepository->isSuperAdmin($admin) && $adminRepository->isLastSuperAdmin()) {
         sendJsonError('Cannot delete the last super administrator', 400);
     }
 
-    deleteAdmin($pdo, $adminId);
+    $adminRepository->delete($adminId);
 
     sendJsonResponse([
         'success' => true,
@@ -49,32 +51,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchAdminById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT admin_id, is_super_admin FROM admins WHERE admin_id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $admin ?: null;
-}
-
-function isSuperAdmin(array $admin): bool
-{
-    return (int) ($admin['is_super_admin'] ?? 0) === 1;
-}
-
-function isLastSuperAdmin(PDO $pdo): bool
-{
-    $stmt = $pdo->query('SELECT COUNT(*) FROM admins WHERE is_super_admin = 1');
-    return ((int) $stmt->fetchColumn()) <= 1;
-}
-
-function deleteAdmin(PDO $pdo, int $id): void
-{
-    $stmt = $pdo->prepare('DELETE FROM admins WHERE admin_id = ? LIMIT 1');
-    $stmt->execute([$id]);
 }
 
 function sendJsonError(string $message, int $status = 400): void

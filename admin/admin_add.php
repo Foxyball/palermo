@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/AdminRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -13,6 +14,7 @@ if (!isCurrentSuperAdmin($currentAdmin)) {
     exit;
 }
 
+$adminRepository = new AdminRepository($pdo);
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,9 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT admin_id FROM admins WHERE admin_email = ? LIMIT 1');
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) {
+        if ($adminRepository->emailExists($email)) {
             $errors[] = 'Email already in use';
         }
     }
@@ -42,8 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         try {
-            $stmt = $pdo->prepare('INSERT INTO admins (admin_name, admin_email, admin_password, active, is_super_admin, created_at, updated_at) VALUES (?, ?, ?, "1", ?, NOW(), NOW())');
-            $stmt->execute([$name, $email, $passwordHash, $isSuperAdmin]);
+            $adminRepository->create($name, $email, $passwordHash, $isSuperAdmin);
             $_SESSION['success'] = 'Administrator created successfully';
             header('Location: admin_list');
             exit;

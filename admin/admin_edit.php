@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/AdminRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -17,9 +18,8 @@ if ($adminID <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT admin_id, admin_name, admin_email, active, is_super_admin, created_at, updated_at FROM admins WHERE admin_id = ? LIMIT 1');
-$stmt->execute([$adminID]);
-$adminToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+$adminRepository = new AdminRepository($pdo);
+$adminToEdit = $adminRepository->findById($adminID);
 
 if (!$adminToEdit) {
     $_SESSION['error'] = 'Administrator not found.';
@@ -50,9 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($email !== $adminToEdit['admin_email']) {
-        $stmt = $pdo->prepare('SELECT admin_id FROM admins WHERE admin_email = ? AND admin_id != ? LIMIT 1');
-        $stmt->execute([$email, $adminID]);
-        if ($stmt->fetch()) {
+        if ($adminRepository->emailExists($email, $adminID)) {
             $errors[] = 'Email already in use by another administrator';
         }
     }
@@ -66,25 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-
     if (empty($errors)) {
-        $fields = ['admin_name = ?', 'admin_email = ?'];
-        $params = [$name, $email];
-        if ($passwordHash !== null) {
-            $fields[] = 'admin_password = ?';
-            $params[] = $passwordHash;
-        }
-        if ($isCurrentSuperAdmin) {
-            $fields[] = 'is_super_admin = ?';
-            $params[] = $isSuperAdmin;
-        }
-        $fields[] = 'updated_at = NOW()';
-        $params[] = $adminID;
-
-        $sql = 'UPDATE admins SET ' . implode(', ', $fields) . ' WHERE admin_id = ? LIMIT 1';
+        $superAdminValue = $isCurrentSuperAdmin ? $isSuperAdmin : null;
+        
         try {
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
+            $adminRepository->update($adminID, $name, $email, $passwordHash, $superAdminValue);
             $_SESSION['success'] = 'Administrator updated successfully';
             header('Location: admin_list');
             exit;
