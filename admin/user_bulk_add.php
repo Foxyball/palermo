@@ -2,12 +2,14 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/UserRepository.php');
 require_once(__DIR__ . '/../include/smtp_class.php');
 require_once(__DIR__ . '/../include/EmailTemplateGenerator.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
+$userRepository = new UserRepository($pdo);
 $errors = [];
 $successMessage = '';
 $processedCount = 0;
@@ -27,50 +29,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($emailList)) {
             $errors[] = 'No valid email addresses found';
         } else {
-            $validEmails = [];
-            $invalidEmails = [];
-            $existingEmails = [];
-
-            foreach ($emailList as $email) {
-                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    // Check if email already exists
-                    $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
-                    $stmt->execute([$email]);
-                    if ($stmt->fetch()) {
-                        $existingEmails[] = $email;
-                    } else {
-                        $validEmails[] = $email;
-                    }
-                } else {
-                    $invalidEmails[] = $email;
+            try {
+                $result = $userRepository->bulkCreate($emailList, $isTestAccount);
+                
+                if (!empty($result['invalid'])) {
+                    $errors[] = 'Invalid email addresses: ' . implode(', ', $result['invalid']);
                 }
-            }
+                if (!empty($result['existing'])) {
+                    $errors[] = 'Email addresses already in use: ' . implode(', ', $result['existing']);
+                }
 
-            if (!empty($invalidEmails)) {
-                $errors[] = 'Invalid email addresses: ' . implode(', ', $invalidEmails);
-            }
-            if (!empty($existingEmails)) {
-                $errors[] = 'Email addresses already in use: ' . implode(', ', $existingEmails);
-            }
-
-            if (!empty($validEmails) && empty($errors)) {
-                try {
-                    $pdo->beginTransaction();
-
-                    foreach ($validEmails as $email) {
+                if (!empty($result['valid']) && empty($errors)) {
+                    $processedCount = $result['processed'];
+                    
+                    // Send emails to all successfully created users
+                    foreach ($result['valid'] as $email) {
                         if ($isTestAccount) {
                             $password = '12345678';
-                            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-                            $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
-                            $stmt->execute(['New', 'User', $email, $passwordHash]);
-
                             $emailSubject = 'Welcome to ' . SITE_TITLE . ' - Your Test Account';
                             $emailBody = $emailGenerator->generateTestAccountEmail($email, $password);
                             sendEmail($email, 'New User', $emailSubject, $emailBody);
                         } else {
-                            $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
-                            $stmt->execute(['New', 'User', $email, '']);
-
                             $token = bin2hex(random_bytes(32));
                             $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
                             $tokenStmt = $pdo->prepare('INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)');
@@ -82,20 +61,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             sendEmail($email, 'New User', $emailSubject, $emailBody);
                         }
-                        $processedCount++;
                     }
 
-                    $pdo->commit();
                     if ($isTestAccount) {
                         $successMessage = "Successfully created {$processedCount} test user accounts. Welcome emails with login credentials have been sent to all users.";
                     } else {
                         $successMessage = "Successfully created {$processedCount} user accounts. Welcome emails with password setup links have been sent to all users.";
                     }
                     $_POST = [];
-                } catch (PDOException $e) {
-                    $pdo->rollback();
-                    $errors[] = 'Database error occurred while creating users. Please try again.';
                 }
+            } catch (PDOException $e) {
+                $errors[] = 'Database error occurred while creating users. Please try again.';
             }
         }
     }

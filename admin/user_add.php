@@ -2,11 +2,12 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/UserRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
 
-
+$userRepository = new UserRepository($pdo);
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -34,9 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) {
+        if ($userRepository->emailExists($email)) {
             $errors[] = 'Email already in use';
         }
     }
@@ -44,8 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         try {
-            $stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, address, city, phone, zip_code, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
-            $stmt->execute([$firstName, $lastName, $address, $city, $phone, $zipCode, $email, $passwordHash]);
+            $userRepository->create($firstName, $lastName, $email, $passwordHash, $address, $city, $phone, $zipCode);
             $_SESSION['success'] = 'User created successfully';
             header('Location: user_list');
             exit;
