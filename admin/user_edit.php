@@ -76,10 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = $userToEdit['first_name'];
     $lastName = $userToEdit['last_name'];
     $email = $userToEdit['email'];
-    $address = $userToEdit['address'];
-    $city = $userToEdit['city'];
-    $phone = $userToEdit['phone'];
-    $zipCode = $userToEdit['zip_code'];
+    $address = $userToEdit['address'] ?? '';
+    $city = $userToEdit['city'] ?? '';
+    $phone = $userToEdit['phone'] ?? '';
+    $zipCode = $userToEdit['zip_code'] ?? '';
 }
 
 headerContainer();
