@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/Paginator.php');
+require_once(__DIR__ . '/../repositories/admin/AdminRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
@@ -15,34 +16,12 @@ $search = $_GET['q'] ?? '';
 $page = $_GET['page'] ?? 1;
 $perPage = 10;
 
-$whereSql = '';
-$params = [];
-if ($search !== '') {
-    $whereSql = ' WHERE (admin_name LIKE :keyword OR admin_email LIKE :keyword OR admin_id = :admin_id)';
-    $params[':keyword'] = '%' . $search . '%';
-    $params[':admin_id'] = $search;
-}
-
-$countSql = 'SELECT COUNT(*) FROM admins' . $whereSql;
-$stmtCount = $pdo->prepare($countSql);
-$stmtCount->execute($params);
-$totalAdminsCount = $stmtCount->fetchColumn();
+// Use repository
+$adminRepository = new AdminRepository($pdo);
+$totalAdminsCount = $adminRepository->countAll($search);
 
 $paginator = new Paginator($totalAdminsCount, $page, $perPage);
-
-$dataSql = 'SELECT admin_id, admin_name, admin_email, active, is_super_admin, last_log_date, last_log_ip, created_at
-            FROM admins' . $whereSql . ' ORDER BY admin_id DESC LIMIT :lim OFFSET :off';
-
-$stmt = $pdo->prepare($dataSql);
-
-foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v);
-}
-
-$stmt->bindValue(':lim', $paginator->limit(), PDO::PARAM_INT);
-$stmt->bindValue(':off', $paginator->offset(), PDO::PARAM_INT);
-$stmt->execute();
-$admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$admins = $adminRepository->findAll($search, $paginator->limit(), $paginator->offset());
 
 
 
@@ -219,46 +198,7 @@ headerContainer();
                                     </div>
                                 </div>
                                 <?php if (!empty($admins)) { ?>
-                                    <div class="card-footer">
-                                        <div class="row align-items-center g-3">
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">
-                                                    <?php
-                                                    $start = $paginator->offset() + 1;
-                                                    $end = $paginator->offset() + count($admins);
-                                                    ?>
-                                                    <?php if ($totalAdminsCount > 0) { ?>
-                                                        Showing <?php echo $start; ?>–<?php echo $end; ?> of <?php echo $totalAdminsCount; ?>
-                                                    <?php } else { ?>
-                                                        No results
-                                                    <?php } ?>
-                                                </small>
-                                                <?php if ($search !== '') { ?>
-                                                    <small class="text-muted">Filtered by "<?php echo $search; ?>"</small>
-                                                <?php } ?>
-                                            </div>
-                                            <div class="col-md-4 text-md-center">
-                                                <nav aria-label="Pagination">
-                                                    <ul class="pagination pagination-sm mb-0 justify-content-center">
-                                                        <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(max(1, $paginator->currentPage - 1)); ?>" tabindex="-1">&laquo;</a>
-                                                        </li>
-                                                        <?php foreach ($paginator->pages() as $pg) { ?>
-                                                            <li class="page-item <?php echo ($pg === $paginator->currentPage) ? 'active' : ''; ?>">
-                                                                <a class="page-link" href="<?php echo buildPageUrl($pg); ?>"><?php echo $pg; ?></a>
-                                                            </li>
-                                                        <?php } ?>
-                                                        <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
-                                                            <a class="page-link" href="<?php echo buildPageUrl(min($paginator->totalPages, $paginator->currentPage + 1)); ?>">&raquo;</a>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <small class="text-muted d-block">Last updated: <?php echo date('M j, Y g:i A'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php renderPagination($paginator, $totalAdminsCount, count($admins), 'admin_list', $search); ?>
                                 <?php } ?>
                             </div>
                         </div>
@@ -273,169 +213,7 @@ headerContainer();
 
     </div>
 
-    <style>
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .table th {
-            border-top: none;
-            font-weight: 600;
-        }
-
-        .small-box {
-            border-radius: 0.375rem;
-            padding: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .small-box .inner {
-            position: relative;
-            z-index: 2;
-        }
-
-        .small-box .inner h3 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .small-box .inner p {
-            margin-bottom: 0;
-            opacity: 0.8;
-        }
-
-        .small-box-icon {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            font-size: 3rem;
-            opacity: 0.3;
-        }
-
-        .form-switch .form-check-input {
-            cursor: pointer;
-        }
-
-        .form-switch .form-check-input:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .form-switch .form-check-input {
-            cursor: pointer;
-        }
-
-        .form-switch .form-check-input:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-    </style>
-
-
-    <!-- AJAX Change Status -->
-    <script>
-        $(function() {
-            $('.js-admin-status-toggle:not(:disabled)').on('change', function() {
-                const $cb = $(this);
-                const adminId = $cb.data('admin-id');
-                const originalChecked = !$cb.prop('checked');
-                $cb.prop('disabled', true);
-
-                $.ajax({
-                        url: './include/ajax_admin_toggle_status.php',
-                        method: 'POST',
-                        data: {
-                            admin_id: adminId
-                        },
-                        dataType: 'json'
-                    })
-                    .done(function(resp) {
-                        if (!resp || resp.success !== true) {
-                            $cb.prop('checked', originalChecked);
-                            toastr.error(resp && resp.message ? resp.message : 'Failed to update status');
-                        } else {
-                            toastr.success('Status updated');
-                        }
-                    })
-                    .fail(function(xhr) {
-                        $cb.prop('checked', originalChecked);
-                        let msg = 'Network / server error';
-                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
-                        toastr.error(msg);
-                    })
-                    .always(function() {
-                        $cb.prop('disabled', false);
-                    });
-            });
-
-            // SweetAlert2 delete handler
-            $(document).on('click', '.js-admin-delete-btn', async function(e) {
-                e.preventDefault();
-                const $btn = $(this);
-                const adminId = $btn.data('admin-id');
-                const adminName = $btn.data('admin-name');
-
-                const confirmed = await Swal.fire({
-                    title: 'Delete admin?',
-                    html: `<p class="mb-1">You are about to delete <strong>${$('<div>').text(adminName).html()}</strong>.</p><small class="text-danger">This action cannot be undone.</small>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete',
-                    cancelButtonText: 'Cancel',
-                    confirmButtonColor: '#d33',
-                    reverseButtons: true,
-                    focusCancel: true,
-                }).then(r => r.isConfirmed);
-
-                if (!confirmed) return;
-
-                $btn.prop('disabled', true).addClass('opacity-50');
-
-                $.ajax({
-                        url: './include/ajax_admin_delete.php',
-                        method: 'POST',
-                        data: {
-                            admin_id: adminId
-                        },
-                        dataType: 'json'
-                    })
-                    .done(function(resp) {
-                        if (resp && resp.success) {
-                            toastr.success('Administrator deleted');
-                            // Remove row gracefully
-                            const $row = $btn.closest('tr');
-                            $row.fadeOut(300, function() {
-                                $(this).remove();
-                            });
-                        } else {
-                            toastr.error(resp && resp.message ? resp.message : 'Delete failed');
-                        }
-                    })
-                    .fail(function(xhr) {
-                        let msg = 'Server error';
-                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
-                        toastr.error(msg);
-                    })
-                    .always(function() {
-                        $btn.prop('disabled', false).removeClass('opacity-50');
-                    });
-            });
-        });
-    </script>
+    <script src="js/palermoAdminCrud.js"></script>
 </body>
 
 </html>

@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../include/connect.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/../../repositories/admin/AdminRepository.php';
 
 requireAdminLogin();
 
@@ -30,13 +31,14 @@ if ($adminId === (int) $currentAdmin['admin_id']) {
 }
 
 try {
-    $admin = fetchAdminById($pdo, $adminId);
+    $adminRepository = new AdminRepository($pdo);
+    $admin = $adminRepository->findById($adminId);
 
     if (!$admin) {
         sendJsonError('Admin not found', 404);
     }
 
-    $newStatus = toggleAdminStatus($pdo, $adminId, $admin['active']);
+    $newStatus = $adminRepository->toggleActive($adminId, $admin['active']);
 
     sendJsonResponse([
         'success' => true,
@@ -46,27 +48,6 @@ try {
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);
-}
-
-function fetchAdminById(PDO $pdo, int $id): ?array
-{
-    $stmt = $pdo->prepare('SELECT admin_id, active FROM admins WHERE admin_id = ? LIMIT 1');
-    $stmt->execute([$id]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $admin ?: null;
-}
-
-function toggleAdminStatus(PDO $pdo, int $id, string $currentStatus): string
-{
-    $newStatus = $currentStatus === '1' ? '0' : '1';
-
-    $stmt = $pdo->prepare(
-        'UPDATE admins SET active = ?, updated_at = NOW() WHERE admin_id = ? LIMIT 1'
-    );
-    $stmt->execute([$newStatus, $id]);
-
-    return $newStatus;
 }
 
 function sendJsonError(string $message, int $status = 400): void
