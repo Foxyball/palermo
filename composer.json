@@ -9,5 +9,11 @@
         "ext-fileinfo": "*",
         "phpoffice/phpspreadsheet": "^1.23"
     },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "platform-check": false
+    },
     "license": "proprietary"
 }
