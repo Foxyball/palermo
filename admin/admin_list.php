@@ -159,7 +159,7 @@ headerContainer();
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="btn-group" role="group">
-                                                                    <?php if ($isCurrentSuperAdmin || $admin['admin_id'] == $currentAdminID) { ?>
+                                                                    <?php if ($isCurrentSuperAdmin && $admin['admin_id'] != $currentAdminID) { ?>
                                                                         <a href="admin_edit?id=<?php echo $admin['admin_id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                                             <i class="bi bi-pencil"></i>
                                                                         </a>
