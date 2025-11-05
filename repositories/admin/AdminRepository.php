@@ -156,4 +156,72 @@ class AdminRepository
     {
         return (int) ($admin['is_super_admin'] ?? 0) === 1;
     }
+
+
+    public function getCurrentAdmin(int $adminId): ?array
+    {
+        $sql = "SELECT admin_id, admin_name, admin_email, active, is_super_admin, 
+                last_log_date, last_log_ip, created_at 
+                FROM admins WHERE admin_id = ? LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$adminId]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $admin !== false ? $admin : null;
+    }
+
+
+    public function updateProfile(int $id, string $name, string $email): bool
+    {
+        try {
+            $sql = 'UPDATE admins SET admin_name = ?, admin_email = ?, updated_at = NOW() 
+                    WHERE admin_id = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$name, $email, $id]);
+
+            return true;
+        } catch (Exception $e) {
+            error_log('Admin profile update failed: ' . $e->getMessage());
+
+            return false;
+        }
+    }
+
+    public function verifyPassword(int $adminId, string $password): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT admin_password FROM admins WHERE admin_id = ? LIMIT 1');
+        $stmt->execute([$adminId]);
+        $hash = $stmt->fetchColumn();
+        
+        return $hash && md5($password) === $hash;
+    }
+
+
+    public function updatePassword(int $adminId, string $newPasswordHash): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                'UPDATE admins SET admin_password = ?, updated_at = NOW() 
+                 WHERE admin_id = ? LIMIT 1'
+            );
+            $stmt->execute([$newPasswordHash, $adminId]);
+
+            return true;
+        } catch (Exception $e) {
+            error_log('Password update failed: ' . $e->getMessage());
+
+            return false;
+        }
+    }
+
+
+    public function getPasswordHash(int $adminId): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT admin_password FROM admins WHERE admin_id = ? LIMIT 1');
+        $stmt->execute([$adminId]);
+        $hash = $stmt->fetchColumn();
+        
+        return $hash !== false ? $hash : null;
+    }
 }
