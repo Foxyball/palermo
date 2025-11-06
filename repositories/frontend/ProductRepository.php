@@ -73,4 +73,21 @@ class ProductRepository
 
         return $result ?: null;
     }
+
+    public function getProductAddons(int $productId): array
+    {
+        $sql = 'SELECT 
+                a.id,
+                a.name,
+                a.price
+                FROM addons a
+                INNER JOIN product_addons pa ON a.id = pa.addon_id
+                WHERE pa.product_id = ? AND a.status = "1"
+                ORDER BY a.name ASC';
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$productId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

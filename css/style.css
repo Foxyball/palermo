@@ -3125,10 +3125,10 @@ html[xmlns] .slider-wrap {
 		position: absolute;
 	}
 
-	.header-wrap-clone {
+	/* .header-wrap-clone {
 		display: block;
 		height: calc( 100px + 1px );
-	}
+	} */
 
 	.header-size-sm .header-wrap-clone {
 		height: calc( 60px + 1px );
