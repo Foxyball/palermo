@@ -52,7 +52,7 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
 
                                 <div class="product-detail-card">
                                     <div class="row">
-                                        
+
                                         <!-- Product Image -->
                                         <div class="col-md-5 mb-4 mb-md-0">
                                             <div class="product-image-container">
@@ -71,7 +71,7 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
                                         <!-- Product Info -->
                                         <div class="col-md-7">
                                             <div class="product-info">
-                                                
+
                                                 <!-- Category Badge -->
                                                 <div class="mb-3">
                                                     <span class="badge bg-danger"><?php echo htmlspecialchars($product['category_name']); ?></span>
@@ -111,12 +111,12 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
                                                             <div class="addons-list">
                                                                 <?php foreach ($addons as $addon) { ?>
                                                                     <div class="form-check addon-item">
-                                                                        <input class="form-check-input addon-checkbox" 
-                                                                               type="checkbox" 
-                                                                               name="addons[]" 
-                                                                               value="<?php echo $addon['id']; ?>"
-                                                                               id="addon_<?php echo $addon['id']; ?>"
-                                                                               data-price="<?php echo $addon['price']; ?>">
+                                                                        <input class="form-check-input addon-checkbox"
+                                                                            type="checkbox"
+                                                                            name="addons[]"
+                                                                            value="<?php echo $addon['id']; ?>"
+                                                                            id="addon_<?php echo $addon['id']; ?>"
+                                                                            data-price="<?php echo $addon['price']; ?>">
                                                                         <label class="form-check-label text-white" for="addon_<?php echo $addon['id']; ?>">
                                                                             <?php echo htmlspecialchars($addon['name']); ?>
                                                                             <span class="text-danger">
@@ -136,12 +136,12 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
                                                             <button type="button" class="btn btn-outline-light btn-sm qty-btn js-qty-decrease">
                                                                 -
                                                             </button>
-                                                            <input type="number" 
-                                                                   class="form-control form-control-sm text-center js-quantity" 
-                                                                   name="quantity" 
-                                                                   value="1" 
-                                                                   min="1" 
-                                                                   max="99">
+                                                            <input type="number"
+                                                                class="form-control form-control-sm text-center js-quantity"
+                                                                name="quantity"
+                                                                value="1"
+                                                                min="1"
+                                                                max="99">
                                                             <button type="button" class="btn btn-outline-light btn-sm qty-btn js-qty-increase">
                                                                 +
                                                             </button>
@@ -203,4 +203,5 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
     <script src="js/product-detail.js"></script>
 
 </body>
+
 </html>
