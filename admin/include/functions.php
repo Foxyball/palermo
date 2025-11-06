@@ -62,13 +62,13 @@ function buildPageUrl(int $page, ?string $base = null): string
  */
 function generateSlug(string $text): string
 {
-    return strtolower(
-        trim(
-            preg_replace(
-                ['/[^a-z0-9\s-]/', '/\s+/', '/-+/', '/^-|-$/'],
-                ['', '-', '-', ''],
-                $text
-            )
+    $text = strtolower($text);
+    
+    return trim(
+        preg_replace(
+            ['/[^a-z0-9\s-]/', '/\s+/', '/-+/', '/^-|-$/'],
+            ['', '-', '-', ''],
+            $text
         )
     );
 }
