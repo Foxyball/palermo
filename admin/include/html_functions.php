@@ -60,6 +60,7 @@ function headerContainer(): void
     <script src="../node_modules/toastr/build/toastr.min.js"></script>
     <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
     <script src="./js/session-renew.js"></script>
+    <script src="./js/notifications.js"></script>
     <?php
 }
 
@@ -86,24 +87,14 @@ function navbarContainer(): void
             </ul>
             <ul class="navbar-nav ms-auto">
 
-
-                <!-- T0D0: Notifications system - use AJAX to fetch new unread notifications and show them here -->
-
+                <!-- Notifications system - AJAX fetches pending orders -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-bs-toggle="dropdown" href="#">
                         <i class="bi bi-bell-fill"></i>
-                        <span class="navbar-badge badge text-bg-warning">1</span>
+                        <span class="navbar-badge badge text-bg-warning" style="display: none;">0</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                        <span class="dropdown-item dropdown-header">1 Notification</span>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="bi bi-envelope me-2"></i> 4 new messages
-                            <span class="float-end text-secondary fs-7">3 mins</span>
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item dropdown-footer"> See All Notifications </a>
+                        <span class="dropdown-item dropdown-header">Loading...</span>
                     </div>
                 </li>
 

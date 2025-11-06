@@ -47,11 +47,9 @@ try {
     $items = $cartData['items'];
     $totalAmount = $cartData['cart_total'];
 
-    // Create order using repository
     $orderRepo = new OrderProcessingRepository($pdo);
     $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $message);
 
-    // Clear cart after successful order
     $cart->clear();
 
     echo json_encode([

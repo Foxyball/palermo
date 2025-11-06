@@ -19,7 +19,7 @@ class OrderProcessingRepository
         $this->pdo->beginTransaction();
 
         try {
-            // Insert order
+        
             $orderId = $this->insertOrder($userId, $totalAmount, $orderAddress, $message);
 
             // Insert order items and addons
@@ -62,7 +62,7 @@ class OrderProcessingRepository
 
     private function insertOrderItem(int $orderId, array $item): int
     {
-        // Calculate subtotal (item_price already includes addons, used for final total)
+        // Calculate subtotal 
         $subtotal = $item['item_price'] * $item['quantity'];
 
         $sql = "INSERT INTO order_items (order_id, product_id, unit_price, qty, subtotal) 
@@ -72,7 +72,7 @@ class OrderProcessingRepository
         $stmt->execute([
             $orderId,
             $item['product_id'],
-            $item['price'],  // Base product price WITHOUT addons
+            $item['price'], 
             $item['quantity'],
             $subtotal
         ]);
