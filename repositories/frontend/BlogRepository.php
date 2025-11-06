@@ -34,8 +34,17 @@ class BlogRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAll(int $limit = 10, int $offset = 0): array
+    public function getAll(string $search = '', int $limit = 10, int $offset = 0): array
     {
+        $whereSql = 'WHERE b.status = "1"';
+        $params = [];
+
+        if ($search !== '') {
+            $whereSql .= ' AND (b.title LIKE :keyword OR b.description LIKE :keyword OR c.name LIKE :keyword OR b.id = :id)';
+            $params[':keyword'] = '%' . $search . '%';
+            $params[':id'] = $search;
+        }
+
         $sql = 'SELECT 
                 b.id,
                 b.title,
@@ -48,11 +57,16 @@ class BlogRepository
                 FROM blogs b
                 LEFT JOIN blog_categories c ON b.category_id = c.id
                 LEFT JOIN admins a ON b.user_id = a.admin_id
-                WHERE b.status = "1"
+                ' . $whereSql . '
                 ORDER BY b.created_at DESC
                 LIMIT :limit OFFSET :offset';
         
         $stmt = $this->pdo->prepare($sql);
+        
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v, PDO::PARAM_STR);
+        }
+        
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -86,10 +100,24 @@ class BlogRepository
         return $result ?: null;
     }
 
-    public function countAll(): int
+    public function countAll(string $search = ''): int
     {
-        $sql = 'SELECT COUNT(*) FROM blogs WHERE status = "1"';
-        $stmt = $this->pdo->query($sql);
+        $whereSql = 'WHERE b.status = "1"';
+        $params = [];
+
+        if ($search !== '') {
+            $whereSql .= ' AND (b.title LIKE :keyword OR b.description LIKE :keyword OR c.name LIKE :keyword OR b.id = :id)';
+            $params[':keyword'] = '%' . $search . '%';
+            $params[':id'] = $search;
+        }
+
+        $sql = 'SELECT COUNT(*) 
+                FROM blogs b
+                LEFT JOIN blog_categories c ON b.category_id = c.id
+                ' . $whereSql;
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
 
         return (int) $stmt->fetchColumn();
     }

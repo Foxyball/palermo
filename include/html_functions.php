@@ -298,3 +298,81 @@ function sliderContainer(): void
         </section>
 
     <?php }
+
+
+function renderPagination(Paginator $paginator, string $baseUrl, int $range = 2, string $search = ''): void
+{
+    if ($paginator->totalPages <= 1) {
+        return;
+    }
+    
+    $startPage = max(1, $paginator->currentPage - $range);
+    $endPage = min($paginator->totalPages, $paginator->currentPage + $range);
+    
+    $searchQuery = $search !== '' ? '&search=' . $search : '';
+    ?>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
+                        <a class="page-link"
+                           href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo max(1, $paginator->currentPage - 1) . $searchQuery; ?>"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <?php
+                    // First page
+                    if ($startPage > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?php echo BASE_URL . $baseUrl; ?>?page=1<?php echo $searchQuery; ?>">1</a>
+                        </li>
+                        <?php if ($startPage > 2): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <!-- Page numbers -->
+                    <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                        <li class="page-item <?php echo ($i === $paginator->currentPage) ? 'active' : ''; ?>">
+                            <a class="page-link" href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo $i . $searchQuery; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <!-- Last page -->
+                    <?php if ($endPage < $paginator->totalPages): ?>
+                        <?php if ($endPage < $paginator->totalPages - 1): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo $paginator->totalPages . $searchQuery; ?>">
+                                <?php echo $paginator->totalPages; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Next Button -->
+                    <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
+                        <a class="page-link"
+                           href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo min($paginator->totalPages, $paginator->currentPage + 1) . $searchQuery; ?>"
+                           aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <?php
+}
