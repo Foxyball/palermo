@@ -100,7 +100,7 @@ if (isset($_POST['submit_contact'])) {
                 <ul class="top-links-container">
                     <li class="top-links-item"><a href="#"><i class="fas fa-truck"></i>Order now from 11:00 AM to 11:00 PM</a></li>
                     <li class="top-links-item"><a href="#"><i class="fas fa-phone"></i> 0885 83 51 71 or 078 98 88 71</a></li>
-                    <li class="top-links-item"><a href="#"><i class="fas fa-envelope"></i>office@pizzaroyalkn.eu</a></li>
+                    <li class="top-links-item"><a href="#"><i class="fas fa-envelope"></i>office@palermo.eu</a></li>
                 </ul>
             </div><!-- .top-links end -->
 
@@ -222,7 +222,7 @@ if (isset($_POST['submit_contact'])) {
                                 <div class="card-body">
                                     <div class="mb-4">
                                         <h5 class="text-danger"><i class="fas fa-map-marker-alt me-2"></i>Address</h5>
-                                        <p class="text-white-50 mb-0">2 Vlasina Street<br>Kyustendil, Bulgaria</p>
+                                        <p class="text-white-50 mb-0">2 Vlasina Street<br><?php echo SITE_TITLE; ?>, Bulgaria</p>
                                     </div>
                                     <div class="mb-4">
                                         <h5 class="text-danger"><i class="fas fa-phone me-2"></i>Phone Numbers</h5>
@@ -236,7 +236,7 @@ if (isset($_POST['submit_contact'])) {
                                     <div class="mb-4">
                                         <h5 class="text-danger"><i class="fas fa-envelope me-2"></i>Email</h5>
                                         <p class="text-white-50 mb-0">
-                                            <a href="mailto:office@pizzaroyalkn.eu" class="text-white-50 text-decoration-none">office@pizzaroyalkn.eu</a>
+                                            <a href="mailto:office@palermo.eu" class="text-white-50 text-decoration-none">office@palermo.eu</a>
                                         </p>
                                     </div>
                                     <div class="mb-4">
