@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 
 require_once(__DIR__ . '/connect.php');
 require_once(__DIR__ . '/Cart.php');
+require_once(__DIR__ . '/../repositories/frontend/OrderProcessingRepository.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -46,60 +47,11 @@ try {
     $items = $cartData['items'];
     $totalAmount = $cartData['cart_total'];
 
-    $pdo->beginTransaction();
+    // Create order using repository
+    $orderRepo = new OrderProcessingRepository($pdo);
+    $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $message);
 
-    $stmt = $pdo->prepare("
-        INSERT INTO orders (user_id, amount, status_id, message, order_address, status, created_at) 
-        VALUES (?, ?, 1, ?, ?, 'pending', NOW())
-    ");
-
-    $stmt->execute([
-        $userId,
-        $totalAmount,
-        $message,
-        $orderAddress
-    ]);
-
-    $orderId = $pdo->lastInsertId();
-
-    // Insert order items
-    $itemStmt = $pdo->prepare("
-        INSERT INTO order_items (order_id, product_id, unit_price, qty, subtotal) 
-        VALUES (?, ?, ?, ?, ?)
-    ");
-
-    $addonStmt = $pdo->prepare("
-        INSERT INTO order_item_addons (order_item_id, addon_id, price) 
-        VALUES (?, ?, ?)
-    ");
-
-    foreach ($items as $item) {
-        $subtotal = $item['item_price'] * $item['quantity'];
-
-        // Insert order item WITHOUT addons
-        $itemStmt->execute([
-            $orderId,
-            $item['product_id'],
-            $item['price'],
-            $item['quantity'],
-            $subtotal
-        ]);
-
-        $orderItemId = $pdo->lastInsertId();
-
-        // Insert addons, if any
-        if (!empty($item['addons'])) {
-            foreach ($item['addons'] as $addon) {
-                $addonStmt->execute([
-                    $orderItemId,
-                    $addon['id'],
-                    $addon['price']
-                ]);
-            }
-        }
-    }
-
-    $pdo->commit();
+    // Clear cart after successful order
     $cart->clear();
 
     echo json_encode([
@@ -109,13 +61,12 @@ try {
         'redirect' => BASE_URL . 'thank-you'
     ]);
 } catch (PDOException $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-
+    // Log error for debugging
+    error_log('Order processing error: ' . $e->getMessage());
 
     echo json_encode([
         'success' => false,
         'message' => 'An error occurred while processing your order. Please try again.'
     ]);
 }
+
