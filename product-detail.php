@@ -102,6 +102,7 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
                                                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                                                     <input type="hidden" class="js-base-price" value="<?php echo $product['price']; ?>">
                                                     <input type="hidden" class="js-bgn-to-eur-rate" value="<?php echo BGN_TO_EUR_RATE; ?>">
+                                                    <input type="hidden" class="js-base-url" value="<?php echo BASE_URL; ?>">
 
                                                     <!-- Addons -->
                                                     <?php if (!empty($addons)) { ?>
@@ -200,109 +201,7 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
 
     </div>
 
-    <script>
-        $(document).ready(function() {
-            const basePrice = parseFloat($('.js-base-price').val());
-            const bgnToEurRate = parseFloat($('.js-bgn-to-eur-rate').val());
-
-            // Function to calculate and update total price
-            function updateTotalPrice() {
-                const quantity = parseInt($('.js-quantity').val()) || 1;
-                let totalPrice = basePrice * quantity;
-
-                // Add selected addons
-                $('.addon-checkbox:checked').each(function() {
-                    const addonPrice = parseFloat($(this).data('price')) || 0;
-                    totalPrice += addonPrice * quantity;
-                });
-
-                // Convert to EUR
-                const priceEur = (totalPrice / bgnToEurRate).toFixed(2);
-                const priceBgn = totalPrice.toFixed(2);
-
-                // Add animation effect
-                const $priceElement = $('.js-total-price');
-                $priceElement.addClass('updating');
-                
-                setTimeout(function() {
-                    $priceElement.text(priceBgn + ' лв / ' + priceEur + ' €');
-                    $priceElement.removeClass('updating');
-                }, 150);
-            }
-
-            // Quantity controls
-            $('.js-qty-decrease').on('click', function() {
-                const $qty = $('.js-quantity');
-                const currentVal = parseInt($qty.val()) || 1;
-                if (currentVal > 1) {
-                    $qty.val(currentVal - 1);
-                    updateTotalPrice();
-                }
-            });
-
-            $('.js-qty-increase').on('click', function() {
-                const $qty = $('.js-quantity');
-                const currentVal = parseInt($qty.val()) || 1;
-                const max = parseInt($qty.attr('max')) || 99;
-                if (currentVal < max) {
-                    $qty.val(currentVal + 1);
-                    updateTotalPrice();
-                }
-            });
-
-            // Validate quantity input
-            $('.js-quantity').on('input', function() {
-                let val = parseInt($(this).val()) || 1;
-                const min = parseInt($(this).attr('min')) || 1;
-                const max = parseInt($(this).attr('max')) || 99;
-                
-                if (val < min) val = min;
-                if (val > max) val = max;
-                
-                $(this).val(val);
-                updateTotalPrice();
-            });
-
-            // Update price when addons change
-            $('.addon-checkbox').on('change', function() {
-                updateTotalPrice();
-            });
-
-            // Add to cart form submission
-            $('.js-add-to-cart-form').on('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = $(this).serialize();
-                const $btn = $('.js-add-to-cart-btn');
-                
-                $btn.prop('disabled', true).html('<i class="icon-line-loader icon-spin"></i> Adding...');
-
-                $.ajax({
-                    url: '<?php echo BASE_URL; ?>include/cart_add.php',
-                    method: 'POST',
-                    data: formData,
-                    dataType: 'json'
-                })
-                .done(function(response) {
-                    if (response.success) {
-                        toastr.success(response.message || 'Product added to cart!');
-                        // Update cart count if you have one
-                        if (response.cart_count) {
-                            $('.cart-count').text(response.cart_count);
-                        }
-                    } else {
-                        toastr.error(response.message || 'Failed to add product to cart');
-                    }
-                })
-                .fail(function() {
-                    toastr.error('An error occurred. Please try again.');
-                })
-                .always(function() {
-                    $btn.prop('disabled', false).html('<i class="icon-shopping-cart"></i> Add to Cart');
-                });
-            });
-        });
-    </script>
+    <script src="js/product-detail.js"></script>
 
 </body>
 </html>
