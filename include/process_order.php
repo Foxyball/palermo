@@ -56,25 +56,27 @@ try {
 
     // Send confirmation email to user
     try {
-        $userEmail = $_SESSION['user_email'];
-        $userName = $_SESSION['user_name'];
+        $userEmail = $_SESSION['user_email'] ?? '';
+        $userName = $_SESSION['name'] ?? $_SESSION['email'] ?? 'Customer';
         
-        $emailGenerator = new EmailTemplateGenerator();
-        $emailBody = $emailGenerator->generateOrderConfirmationEmail(
-            $userEmail,
-            $orderId,
-            $totalAmount,
-            $items,
-            $orderAddress,
-            $message
-        );
-        
-        sendEmail(
-            $userEmail,
-            $userName,
-            "Order Confirmation #$orderId - " . SITE_TITLE,
-            $emailBody
-        );
+        if (!empty($userEmail)) {
+            $emailGenerator = new EmailTemplateGenerator();
+            $emailBody = $emailGenerator->generateOrderConfirmationEmail(
+                $userEmail,
+                $orderId,
+                $totalAmount,
+                $items,
+                $orderAddress,
+                $message
+            );
+            
+            sendEmail(
+                $userEmail,
+                $userName,
+                "Order Confirmation #$orderId - " . SITE_TITLE,
+                $emailBody
+            );
+        }
     } catch (Exception $e) {
     }
 
@@ -85,8 +87,12 @@ try {
         'redirect' => BASE_URL . 'thank-you'
     ]);
 } catch (PDOException $e) {
-    // Log error for debugging
-    error_log('Order processing error: ' . $e->getMessage());
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'An error occurred while processing your order. Please try again.'
+    ]);
+} catch (Exception $e) {
 
     echo json_encode([
         'success' => false,

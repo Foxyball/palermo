@@ -165,38 +165,45 @@ class EmailTemplateGenerator
     private function getOrderConfirmationContent(int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null): string
     {
         $orderDetailsUrl = $this->baseUrl . "order-detail?id={$orderId}";
+        $bgnToEurRate = BGN_TO_EUR_RATE;
         
         // Build items list
         $itemsHtml = "";
         foreach ($items as $item) {
-            $itemPrice = number_format($item['price'], 2);
-            $itemTotal = number_format($item['item_price'] * $item['quantity'], 2);
+            $itemPriceBgn = number_format($item['price'], 2);
+            $itemPriceEur = number_format($item['price'] * $bgnToEurRate, 2);
+            $itemTotalBgn = number_format($item['item_price'] * $item['quantity'], 2);
+            $itemTotalEur = number_format($item['item_price'] * $item['quantity'] * $bgnToEurRate, 2);
             $qty = $item['quantity'];
+            $productName = htmlspecialchars($item['name'] ?? 'Product');
             
             $itemsHtml .= "
             <tr>
-                <td style='padding: 12px; border-bottom: 1px solid #eeeeee;'>{$item['product_name']}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee;'>{$productName}</td>
                 <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: center;'>{$qty}</td>
-                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: right;'>{$itemPrice} BGN</td>
-                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: right; font-weight: 600;'>{$itemTotal} BGN</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: right;'>{$itemPriceBgn} BGN / {$itemPriceEur} €</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: right; font-weight: 600;'>{$itemTotalBgn} BGN / {$itemTotalEur} €</td>
             </tr>";
             
             // Add addons if any
             if (!empty($item['addons'])) {
                 foreach ($item['addons'] as $addon) {
-                    $addonPrice = number_format($addon['price'], 2);
+                    $addonPriceBgn = number_format($addon['price'], 2);
+                    $addonPriceEur = number_format($addon['price'] * $bgnToEurRate, 2);
+                    $addonName = htmlspecialchars($addon['name'] ?? 'Add-on');
                     $itemsHtml .= "
                     <tr>
-                        <td style='padding: 8px 12px 8px 30px; border-bottom: 1px solid #f8f9fa; color: #666; font-size: 14px;'>+ {$addon['name']}</td>
+                        <td style='padding: 8px 12px 8px 30px; border-bottom: 1px solid #f8f9fa; color: #666; font-size: 14px;'>+ {$addonName}</td>
                         <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa;'></td>
-                        <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa; text-align: right; color: #666; font-size: 14px;'>{$addonPrice} BGN</td>
+                        <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa; text-align: right; color: #666; font-size: 14px;'>{$addonPriceBgn} BGN / {$addonPriceEur} €</td>
                         <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa;'></td>
                     </tr>";
                 }
             }
         }
         
-        $totalFormatted = number_format($totalAmount, 2);
+        $totalBgn = number_format($totalAmount, 2);
+        $totalEur = number_format($totalAmount * $bgnToEurRate, 2);
         $messageHtml = $message ? "
         <div class='info-box'>
             <h3>Order Notes</h3>
@@ -231,7 +238,7 @@ class EmailTemplateGenerator
                 <tfoot>
                     <tr style='background-color: #f8f9fa;'>
                         <td colspan='3' style='padding: 15px; text-align: right; font-weight: 700; font-size: 18px; border-top: 2px solid #9c0000;'>Total:</td>
-                        <td style='padding: 15px; text-align: right; font-weight: 700; font-size: 18px; color: #9c0000; border-top: 2px solid #9c0000;'>{$totalFormatted} BGN</td>
+                        <td style='padding: 15px; text-align: right; font-weight: 700; font-size: 18px; color: #9c0000; border-top: 2px solid #9c0000;'>{$totalBgn} BGN / {$totalEur} €</td>
                     </tr>
                 </tfoot>
             </table>
