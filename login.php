@@ -8,9 +8,40 @@ if (isset($_SESSION['user_logged_in'])) {
     exit;
 }
 
+if (!isset($_SESSION['user_logged_in']) && isset($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
+    $hashedToken = hash('sha256', $token);
+    
+    try {
+        $stmt = $pdo->prepare("SELECT id, first_name, last_name, email, remember_expires FROM users WHERE remember_token = ? AND active = '1' LIMIT 1");
+        $stmt->execute([$hashedToken]);
+        
+        if ($stmt->rowCount() == 1) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user['remember_expires'] && strtotime($user['remember_expires']) > time()) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_first_name'] = $user['first_name'];
+                $_SESSION['user_last_name'] = $user['last_name'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_logged_in'] = true;
+                
+                session_regenerate_id(true);
+                
+                header('location: index');
+                exit;
+            } else {
+                setcookie('remember_token', '', time() - 3600, '/');
+            }
+        }
+    } catch (PDOException $e) {
+    }
+}
+
 if (isset($_POST['login'])) {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
+    $remember = isset($_POST['remember']) ? true : false;
 
     try {
         $stmt = $pdo->prepare("SELECT id, first_name, last_name, email, password, active FROM users WHERE email = ? LIMIT 1");
@@ -37,6 +68,17 @@ if (isset($_POST['login'])) {
                 $_SESSION['user_last_name'] = $user['last_name'];
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_logged_in'] = true;
+
+                if ($remember) {
+                    $token = bin2hex(random_bytes(32));
+                    $expiresAt = time() + (30 * 24 * 60 * 60); // 30 days
+                    
+                    setcookie('remember_token', $token, $expiresAt, '/', '', false, true);
+                    
+                    $hashedToken = hash('sha256', $token);
+                    $updateStmt = $pdo->prepare("UPDATE users SET remember_token = ?, remember_expires = FROM_UNIXTIME(?) WHERE id = ?");
+                    $updateStmt->execute([$hashedToken, $expiresAt, $user['id']]);
+                }
 
                 session_regenerate_id(true);
 
@@ -124,7 +166,7 @@ headerContainer();
 
                                         <div class="mb-4 d-flex justify-content-between align-items-center">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="remember" />
+                                                <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1" />
                                                 <label class="form-check-label" for="remember">
                                                     Remember me
                                                 </label>
