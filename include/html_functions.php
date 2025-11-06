@@ -130,7 +130,11 @@ function footerContainer(): void
 
 function navbarContainer(): void
 {
-
+    // Load categories dynamically
+    global $pdo;
+    require_once(__DIR__ . '/../repositories/frontend/CategoryRepository.php');
+    $categoryRepository = new CategoryRepository($pdo);
+    $categories = $categoryRepository->getActive();
     ?>
 
         <header id="header" class="transparent-header dark" data-sticky-class="dark-color" data-sticky-shrink-offset="0">
@@ -139,8 +143,8 @@ function navbarContainer(): void
                     <div class="header-row">
 
                         <div id="logo">
-                            <a href="index.php" class="standard-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
-                            <a href="index.php" class="retina-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
+                            <a href="<?php echo BASE_URL; ?>index" class="standard-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
+                            <a href="<?php echo BASE_URL; ?>index" class="retina-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
                         </div>
 
 
@@ -156,25 +160,34 @@ function navbarContainer(): void
                         <nav class="primary-menu">
 
                             <ul class="one-page-menu menu-container" data-easing="easeInOutExpo" data-speed="1250" data-offset="60">
-                                <li class="menu-item"><a class="menu-link" href="https://dev.balikgstudio.eu/pizzaroyalkn/">
+                                <li class="menu-item"><a class="menu-link" href="<?php echo BASE_URL; ?>">
                                         <div>Home</div>
                                     </a></li>
                                 <li class="menu-item"><a class="menu-link" href="#">
                                         <div>Menu</div>
                                     </a>
                                     <ul class="sub-menu-container rounded-bottom">
-                                        <li class="menu-item"><a class="menu-link" href="salati">
-                                                <div>Pizza</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="supi">
-                                                <div>Pasta</div>
-                                            </a></li>
-                                        <li class="menu-item"><a class="menu-link" href="predqstiq">
-                                                <div>Deserts</div>
-                                            </a></li>
+                                        <?php if (!empty($categories)) { ?>
+                                            <?php foreach ($categories as $category): ?>
+                                                <li class="menu-item">
+                                                    <a class="menu-link" href="<?php echo BASE_URL . 'cat/' . htmlspecialchars($category['slug']); ?>">
+                                                        <div><?php echo htmlspecialchars($category['name']); ?></div>
+                                                    </a>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        <?php } else { ?>
+                                            <li class="menu-item">
+                                                <a class="menu-link" href="#">
+                                                    <div>No categories available</div>
+                                                </a>
+                                            </li>
+                                        <?php } ?>
                                     </ul>
                                 </li>
-                                <li class="menu-item"><a class="menu-link" href="contacts">
+                                <li class="menu-item"><a class="menu-link" href="<?php echo BASE_URL; ?>blog">
+                                        <div>Blog</div>
+                                    </a></li>
+                                <li class="menu-item"><a class="menu-link" href="<?php echo BASE_URL; ?>contacts">
                                         <div>Contacts</div>
                                     </a></li>
                             </ul>
