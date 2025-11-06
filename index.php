@@ -55,60 +55,6 @@ include(__DIR__ . '/include/html_functions.php');
 
 				<div class="clear"></div>
 
-				<div id="todays-menu" class="section dark m-0" style="padding: 80px 0; background: #101010 url('images/icon-bg-white.png') repeat center center;">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-5 dark order-2 order-md-1">
-								<div class="bottommargin">
-									<div class="d-flex align-items-center dotted-bg">
-										<h1 class="font-border display-4 ls1 fw-bold mb-0 ms-3">Today's Menu</h1>
-									</div>
-								</div>
-
-								<div class="clear"></div>
-
-								<div class="price-menu-warp img-hover-block" data-img="images/menu-items/пилешка_супа.jpg">
-									<div class="price-header">
-										<div class="price-name color">Chicken Soup</div>
-										<div class="price-dots">
-											<span class="separator-dots"></span>
-										</div>
-										<div class="price-price">300g - 4.50 lv</div>
-									</div>
-									<p class="price-desc">Traditional chicken soup with homemade noodles and fresh vegetables.</p>
-								</div>
-
-								<div class="price-menu-warp img-hover-block" data-img="images/menu-items/Пилешки-филенца-с-корнфлейкс.jpg">
-									<div class="price-header">
-										<div class="price-name color">Cornflake Chicken Fillets</div>
-										<div class="price-dots">
-											<span class="separator-dots"></span>
-										</div>
-										<div class="price-price">250g - 12.90 lv</div>
-									</div>
-									<p class="price-desc">Crispy chicken fillets breaded in cornflakes, served with fries.</p>
-								</div>
-
-								<div class="price-menu-warp img-hover-block" data-img="images/menu-items/burgers/double.jpg">
-									<div class="price-header">
-										<div class="price-name color">Double Burger</div>
-										<div class="price-dots">
-											<span class="separator-dots"></span>
-										</div>
-										<div class="price-price">400g - 15.90 lv</div>
-									</div>
-									<p class="price-desc">Juicy double burger with beef, cheese, lettuce, and special sauce.</p>
-								</div>
-
-							</div>
-							<div class="col-md-7 order-1 order-md-2">
-								<div class="slide-img" data-animate="img-to-right">
-									<img src="images/svg/items.svg" alt="Today's Menu" style="max-width: 100%; height: auto;">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
 
 
 			</div>
