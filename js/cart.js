@@ -1,11 +1,7 @@
-/**
- * Palermo Cart Module
- * Handles all cart-related functionality
- */
 const PalermoCart = (function () {
     'use strict';
 
-    // Configuration
+    // config
     const config = {
         baseUrl: window.location.origin + '/palermo/',
         bgnToEurRate: 1.95583,
@@ -139,7 +135,7 @@ const PalermoCart = (function () {
     function buildItemHtml(item) {
         const imageSrc = item.image ? config.baseUrl + item.image : config.baseUrl + 'images/svg/burger-house.svg';
         const itemUrl = config.baseUrl + 'art/' + item.slug;
-        
+
         let addonsHtml = '';
         if (item.addons && item.addons.length > 0) {
             addonsHtml = '<div class="text-muted small">';
@@ -184,7 +180,6 @@ const PalermoCart = (function () {
         return bgnPrice + ' лв / ' + eurPrice + ' €';
     }
 
-    // Show Bootstrap alert
     function showAlert(message, type) {
         $('.bootstrap-alert-container .alert').remove();
 
@@ -208,7 +203,6 @@ const PalermoCart = (function () {
         }, 3000);
     }
 
-    // Public API
     return {
         init: init,
         add: addItem,
@@ -219,10 +213,8 @@ const PalermoCart = (function () {
     };
 })();
 
-// Initialize cart on document ready
 $(document).ready(function () {
     PalermoCart.init();
 });
 
-// Expose globally
 window.PalermoCart = PalermoCart;
