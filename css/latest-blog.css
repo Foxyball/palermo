@@ -1,0 +1,69 @@
+/* Latest Blog Section Styles */
+
+#blog {
+    padding: 80px 0;
+    background: #1a1a1a;
+}
+
+/* Blog Card Styles */
+#blog .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #444;
+    cursor: pointer;
+}
+
+#blog .blog-card-clickable:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border-color: #666;
+}
+
+#blog a.text-decoration-none {
+    color: inherit;
+}
+
+#blog a.text-decoration-none:hover {
+    text-decoration: none;
+}
+
+#blog .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+#blog .card-img-top.placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content-center;
+}
+
+#blog .card-img-top.placeholder i {
+    font-size: 3rem;
+    color: #666;
+}
+
+/* Dotted Background Decoration */
+.dotted-bg {
+    position: relative;
+}
+
+.dotted-bg::before,
+.dotted-bg::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 100px;
+    height: 2px;
+    background-image: repeating-linear-gradient(90deg, #fff 0px, #fff 10px, transparent 10px, transparent 20px);
+}
+
+.dotted-bg::before {
+    right: 100%;
+    margin-right: 20px;
+}
+
+.dotted-bg::after {
+    left: 100%;
+    margin-left: 20px;
+}

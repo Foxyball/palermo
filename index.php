@@ -1,11 +1,13 @@
 <?php
 require_once(__DIR__ . '/include/connect.php');
+require_once(__DIR__ . '/repositories/frontend/BlogRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 ?>
 
 <?php headerContainer(); ?>
 
 <title><?php echo SITE_TITLE; ?></title>
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>css/latest-blog.css">
 </head>
 
 <body class="stretched">
@@ -127,70 +129,7 @@ include(__DIR__ . '/include/html_functions.php');
 				</div>
 			</div>
 
-			<div id="blog" class="section dark m-0" style="padding: 80px 0; background: #1a1a1a;">
-				<div class="container">
-					<div class="row mb-5">
-						<div class="col-12 text-center">
-							<div class="d-flex align-items-center justify-content-center dotted-bg mb-4">
-								<h1 class="font-border display-4 ls1 fw-bold mb-0">Latest News</h1>
-							</div>
-							<p class="lead text-white-50">Discover the latest news, recipes, and stories from our kitchen</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-lg-4 col-md-6 mb-4">
-							<div class="card bg-dark border-secondary h-100" style="transition: transform 0.3s ease; border: 1px solid #444;">
-								<img src="images/menu-items/пилешка_супа.jpg" class="card-img-top" alt="Traditional Recipes" style="height: 200px; object-fit: cover;">
-								<div class="card-body d-flex flex-column">
-									<div class="mb-2">
-										<span class="badge bg-danger mb-2">Recipes</span>
-										<small class="text-muted d-block">September 27, 2025</small>
-									</div>
-									<h5 class="card-title text-white">Secrets of Traditional Chicken Soup</h5>
-									<p class="card-text text-white-50 flex-grow-1">We reveal the secrets of our most popular soup - how to prepare the perfect chicken soup with homemade noodles and fresh vegetables.</p>
-									<a href="#" class="btn btn-outline-light btn-sm mt-auto">Read More</a>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-lg-4 col-md-6 mb-4">
-							<div class="card bg-dark border-secondary h-100" style="transition: transform 0.3s ease; border: 1px solid #444;">
-								<img src="images/menu-items/burgers/double.jpg" class="card-img-top" alt="New Menu Items" style="height: 200px; object-fit: cover;">
-								<div class="card-body d-flex flex-column">
-									<div class="mb-2">
-										<span class="badge bg-success mb-2">News</span>
-										<small class="text-muted d-block">September 25, 2025</small>
-									</div>
-									<h5 class="card-title text-white">New Burgers on the Menu</h5>
-									<p class="card-text text-white-50 flex-grow-1">Introducing our new creations - a double burger with a unique combination of flavors. Try it today with free delivery.</p>
-									<a href="#" class="btn btn-outline-light btn-sm mt-auto">Read More</a>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-lg-4 col-md-6 mb-4">
-							<div class="card bg-dark border-secondary h-100" style="transition: transform 0.3s ease; border: 1px solid #444;">
-								<img src="images/svg/delivery.svg" class="card-img-top bg-secondary p-4" alt="Delivery Service" style="height: 200px; object-fit: contain;">
-								<div class="card-body d-flex flex-column">
-									<div class="mb-2">
-										<span class="badge bg-info mb-2">Services</span>
-										<small class="text-muted d-block">September 20, 2025</small>
-									</div>
-									<h5 class="card-title text-white">Improved Delivery in Kyustendil</h5>
-									<p class="card-text text-white-50 flex-grow-1">We have expanded our delivery area and reduced delivery times. Free delivery for orders over 10 lv within the city.</p>
-									<a href="#" class="btn btn-outline-light btn-sm mt-auto">Read More</a>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="row mt-4">
-						<div class="col-12 text-center">
-							<a href="#" class="btn btn-danger btn-lg">View All Articles</a>
-						</div>
-					</div>
-				</div>
-			</div>
+			<?php include(__DIR__ . '/sections/latest-blog.php'); ?>
 
 			<div id="delivery" class="section page-section dark m-0 pb-0 pb-md-5 slide-img" data-animate="img-to-left" style="background: #101010 url('images/icon-bg-white.png') repeat center center;">
 				<div class="container pt-3 pb-4">

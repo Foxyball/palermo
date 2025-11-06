@@ -1,6 +1,10 @@
 RewriteEngine On
 RewriteBase /
 
+# Blog routes
+RewriteRule ^bart/([a-zA-Z0-9-]+)$ blog-detail.php?slug=$1 [QSA,L]
+RewriteRule ^blog$ blog.php [QSA,L]
+
 # Hide .php extension
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.+)/$ http%{ENV:SFORSSL}://%{HTTP_HOST}/$1 [R=301,QSA,L]

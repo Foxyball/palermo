@@ -11,8 +11,9 @@ function headerContainer(): void
 
     <head>
 
+        <base href="<?php echo BASE_URL; ?>">
+
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <meta name="author" content="SemiColonWeb" />
 
         <link href="https://fonts.googleapis.com/css?family=Dosis:400,500,600,700|Open+Sans:400,600,700|Dancing+Script&display=swap" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="./css/bootstrap.css" type="text/css" />
@@ -224,46 +225,46 @@ function navbarContainer(): void
 
                             <!-- Shopping Cart -->
                             <div class="hidden js-cart-dropdown d-flex align-items-center">
-                            <a href="#" class="js-cart-dropdown__trigger d-flex align-items-center text-white">
-                                <i class="fas fa-shopping-cart me-2"></i>
-                                <span class="js-cart-dropdown__counter bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center">1</span>
-                            </a>
-                            <div class="js-cart-dropdown__content shadow-lg rounded">
-                                <div class="js-cart-dropdown__header p-3 border-bottom">
-                                    <h4 class="mb-0">Shopping Cart</h4>
-                                </div>
-                                <div class="js-cart-dropdown__items p-3">
-                                    <div class="js-cart-dropdown__item d-flex align-items-center pb-3 border-bottom">
-                                        <div class="js-cart-dropdown__item-image me-3">
-                                            <img src="images/menu-items/пилешка_супа.jpg" alt="Пилешка супа" class="js-cart-dropdown__item-img">
-                                        </div>
-                                        <div class="js-cart-dropdown__item-desc flex-grow-1">
-                                            <div class="js-cart-dropdown__item-title fw-bold">Peperoni</div>
-                                            <div class="js-cart-dropdown__item-price text-muted">1x 4.50 lv</div>
-                                        </div>
-                                        <div class="js-cart-dropdown__item-actions">
-                                            <a href="#" class="js-cart-dropdown__remove text-danger"><i class="fas fa-times"></i></a>
+                                <a href="#" class="js-cart-dropdown__trigger d-flex align-items-center text-white">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    <span class="js-cart-dropdown__counter bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center">1</span>
+                                </a>
+                                <div class="js-cart-dropdown__content shadow-lg rounded">
+                                    <div class="js-cart-dropdown__header p-3 border-bottom">
+                                        <h4 class="mb-0">Shopping Cart</h4>
+                                    </div>
+                                    <div class="js-cart-dropdown__items p-3">
+                                        <div class="js-cart-dropdown__item d-flex align-items-center pb-3 border-bottom">
+                                            <div class="js-cart-dropdown__item-image me-3">
+                                                <img src="images/menu-items/пилешка_супа.jpg" alt="Пилешка супа" class="js-cart-dropdown__item-img">
+                                            </div>
+                                            <div class="js-cart-dropdown__item-desc flex-grow-1">
+                                                <div class="js-cart-dropdown__item-title fw-bold">Peperoni</div>
+                                                <div class="js-cart-dropdown__item-price text-muted">1x 4.50 lv</div>
+                                            </div>
+                                            <div class="js-cart-dropdown__item-actions">
+                                                <a href="#" class="js-cart-dropdown__remove text-danger"><i class="fas fa-times"></i></a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="js-cart-dropdown__footer p-3 border-top">
-                                    <div class="js-cart-dropdown__total d-flex justify-content-between mb-3">
-                                        <span class="fw-bold">Total:</span>
-                                        <span class="fw-bold text-danger">4.50 lv</span>
-                                    </div>
-                                    <div class="d-grid gap-2">
-                                        <a href="#" class="btn btn-sm js-cart-dropdown__view-btn">View Cart</a>
-                                        <a href="#" class="btn btn-danger btn-sm js-cart-dropdown__order-btn">Checkout</a>
+                                    <div class="js-cart-dropdown__footer p-3 border-top">
+                                        <div class="js-cart-dropdown__total d-flex justify-content-between mb-3">
+                                            <span class="fw-bold">Total:</span>
+                                            <span class="fw-bold text-danger">4.50 lv</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <a href="#" class="btn btn-sm js-cart-dropdown__view-btn">View Cart</a>
+                                            <a href="#" class="btn btn-danger btn-sm js-cart-dropdown__order-btn">Checkout</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- End Header Actions -->
+                            <!-- End Header Actions -->
 
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="header-wrap-clone"></div>
+                <div class="header-wrap-clone"></div>
         </header>
 
     <?php }
@@ -297,3 +298,81 @@ function sliderContainer(): void
         </section>
 
     <?php }
+
+
+function renderPagination(Paginator $paginator, string $baseUrl, int $range = 2, string $search = ''): void
+{
+    if ($paginator->totalPages <= 1) {
+        return;
+    }
+    
+    $startPage = max(1, $paginator->currentPage - $range);
+    $endPage = min($paginator->totalPages, $paginator->currentPage + $range);
+    
+    $searchQuery = $search !== '' ? '&search=' . $search : '';
+    ?>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    <li class="page-item <?php echo !$paginator->hasPrev() ? 'disabled' : ''; ?>">
+                        <a class="page-link"
+                           href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo max(1, $paginator->currentPage - 1) . $searchQuery; ?>"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <?php
+                    // First page
+                    if ($startPage > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?php echo BASE_URL . $baseUrl; ?>?page=1<?php echo $searchQuery; ?>">1</a>
+                        </li>
+                        <?php if ($startPage > 2): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <!-- Page numbers -->
+                    <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                        <li class="page-item <?php echo ($i === $paginator->currentPage) ? 'active' : ''; ?>">
+                            <a class="page-link" href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo $i . $searchQuery; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <!-- Last page -->
+                    <?php if ($endPage < $paginator->totalPages): ?>
+                        <?php if ($endPage < $paginator->totalPages - 1): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo $paginator->totalPages . $searchQuery; ?>">
+                                <?php echo $paginator->totalPages; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Next Button -->
+                    <li class="page-item <?php echo !$paginator->hasNext() ? 'disabled' : ''; ?>">
+                        <a class="page-link"
+                           href="<?php echo BASE_URL . $baseUrl; ?>?page=<?php echo min($paginator->totalPages, $paginator->currentPage + 1) . $searchQuery; ?>"
+                           aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <?php
+}
