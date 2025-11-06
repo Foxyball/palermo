@@ -107,7 +107,6 @@
 
 .quantity-controls .btn:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.1);
 }
 
 .quantity-input {
@@ -148,7 +147,6 @@
     background: #dc3545;
     border-color: #dc3545;
     color: white;
-    transform: translateY(-2px);
 }
 
 /* Cart Summary */
@@ -189,7 +187,6 @@
 .btn-danger:hover {
     background: #bb2d3b;
     border-color: #bb2d3b;
-    transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
 }
 
@@ -204,7 +201,6 @@
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.5);
     color: white;
-    transform: translateY(-2px);
 }
 
 /* Animations */

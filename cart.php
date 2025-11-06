@@ -53,16 +53,12 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                             <div class="row justify-content-center">
                                 <div class="col-lg-6">
                                     <div class="empty-cart-message text-center">
-                                        <i class="icon-line-shopping-cart" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1.5rem;"></i>
                                         <h3 class="mb-3">Your cart is empty</h3>
-                                        <p class="text-muted mb-4">Add some delicious items to get started!</p>
-                                        <a href="<?php echo BASE_URL; ?>product-cat/all" class="btn btn-danger btn-lg">
-                                            <i class="icon-line-arrow-left me-2"></i>Continue Shopping
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         <?php else: ?>
+
                             <!-- Cart Items -->
                             <div class="row">
                                 <div class="col-lg-8 mb-4">
@@ -70,31 +66,29 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                         <?php foreach ($items as $item): ?>
                                             <div class="cart-item" data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
                                                 <div class="row align-items-center">
-                                                    
-                                                    <!-- Product Image -->
+
                                                     <div class="col-md-2 col-3 mb-3 mb-md-0">
                                                         <div class="cart-item-image">
                                                             <?php if (!empty($item['image'])): ?>
-                                                                <img src="<?php echo BASE_URL . $item['image']; ?>" 
-                                                                     alt="<?php echo htmlspecialchars($item['name']); ?>"
-                                                                     class="img-fluid rounded">
+                                                                <img src="<?php echo BASE_URL . $item['image']; ?>"
+                                                                    alt="<?php echo htmlspecialchars($item['name']); ?>"
+                                                                    class="img-fluid rounded">
                                                             <?php else: ?>
-                                                                <img src="<?php echo BASE_URL; ?>images/svg/burger-house.svg" 
-                                                                     alt="<?php echo htmlspecialchars($item['name']); ?>"
-                                                                     class="img-fluid rounded placeholder-image">
+                                                                <img src="<?php echo BASE_URL; ?>images/svg/burger-house.svg"
+                                                                    alt="<?php echo htmlspecialchars($item['name']); ?>"
+                                                                    class="img-fluid rounded placeholder-image">
                                                             <?php endif; ?>
                                                         </div>
                                                     </div>
 
-                                                    <!-- Product Info -->
                                                     <div class="col-md-4 col-9 mb-3 mb-md-0">
                                                         <h5 class="cart-item-name mb-2">
-                                                            <a href="<?php echo BASE_URL . 'art/' . $item['slug']; ?>" 
-                                                               class="text-white text-decoration-none">
+                                                            <a href="<?php echo BASE_URL . 'art/' . $item['slug']; ?>"
+                                                                class="text-white text-decoration-none">
                                                                 <?php echo htmlspecialchars($item['name']); ?>
                                                             </a>
                                                         </h5>
-                                                        
+
                                                         <!-- Product Price -->
                                                         <div class="text-muted small mb-2">
                                                             Price: <?php echo number_format($item['price'], 2); ?> лв / <?php echo number_format($item['price'] / BGN_TO_EUR_RATE, 2); ?> €
@@ -106,7 +100,7 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                                                 <small class="text-muted">Extras:</small>
                                                                 <?php foreach ($item['addons'] as $addon): ?>
                                                                     <span class="badge bg-secondary">
-                                                                        + <?php echo htmlspecialchars($addon['name']); ?> 
+                                                                        + <?php echo htmlspecialchars($addon['name']); ?>
                                                                         (<?php echo number_format($addon['price'], 2); ?> лв / <?php echo number_format($addon['price'] / BGN_TO_EUR_RATE, 2); ?> €)
                                                                     </span>
                                                                 <?php endforeach; ?>
@@ -116,46 +110,45 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
 
                                                     <div class="col-md-3 col-6 mb-3 mb-md-0">
                                                         <div class="quantity-controls d-flex align-items-center justify-content-center">
-                                                            <button type="button" 
-                                                                    class="btn btn-sm btn-outline-light qty-decrease"
-                                                                    data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-outline-light qty-decrease"
+                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
                                                                 -
                                                             </button>
-                                                            <input type="number" 
-                                                                   class="form-control quantity-input mx-2 text-center" 
-                                                                   value="<?php echo $item['quantity']; ?>"
-                                                                   min="1" 
-                                                                   max="99"
-                                                                   data-cart-key="<?php echo htmlspecialchars($item['key']); ?>"
-                                                                   readonly>
-                                                            <button type="button" 
-                                                                    class="btn btn-sm btn-outline-light qty-increase"
-                                                                    data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
+                                                            <input type="number"
+                                                                class="form-control quantity-input mx-2 text-center"
+                                                                value="<?php echo $item['quantity']; ?>"
+                                                                min="1"
+                                                                max="99"
+                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>"
+                                                                readonly>
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-outline-light qty-increase"
+                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
                                                                 +
                                                             </button>
                                                         </div>
                                                     </div>
 
-                                                    <!-- Item Total & Remove -->
                                                     <div class="col-md-3 col-6 text-md-end">
                                                         <div class="cart-item-total mb-2">
                                                             <strong class="item-total-price">
-                                                                <?php 
+                                                                <?php
                                                                 $itemTotal = $item['item_price'] * $item['quantity'];
-                                                                echo number_format($itemTotal, 2); 
+                                                                echo number_format($itemTotal, 2);
                                                                 ?> лв
                                                             </strong>
                                                             <br>
                                                             <small class="text-muted">
-                                                                <?php 
+                                                                <?php
                                                                 $itemTotalEur = $itemTotal / BGN_TO_EUR_RATE;
-                                                                echo number_format($itemTotalEur, 2); 
+                                                                echo number_format($itemTotalEur, 2);
                                                                 ?> €
                                                             </small>
                                                         </div>
-                                                        <button type="button" 
-                                                                class="btn btn-sm btn-outline-danger remove-item"
-                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-danger remove-item"
+                                                            data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
                                                             <i class="icon-line-trash me-1"></i>Remove
                                                         </button>
                                                     </div>
@@ -170,7 +163,7 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                 <div class="col-lg-4">
                                     <div class="cart-summary">
                                         <h4 class="summary-title mb-4">Order Summary</h4>
-                                        
+
                                         <div class="summary-details mb-4">
                                             <div class="d-flex justify-content-between mb-3">
                                                 <span class="text-muted">Items</span>
@@ -201,10 +194,10 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
 
                                         <div class="d-grid gap-2">
                                             <a href="<?php echo BASE_URL; ?>checkout" class="btn btn-danger btn-lg">
-                                              Proceed to Checkout
+                                                Proceed to Checkout
                                             </a>
                                             <a href="<?php echo BASE_URL; ?>product-cat/all" class="btn btn-outline-light">
-                                              Continue Shopping
+                                                Continue Shopping
                                             </a>
                                         </div>
                                     </div>
