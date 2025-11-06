@@ -1,0 +1,276 @@
+/* Orders Page Styles */
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Empty Orders Message */
+.empty-orders-message {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+}
+
+/* Orders Container */
+.orders-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Order Card */
+.order-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Order Header */
+.order-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-id {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.order-status {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-total {
+    font-size: 1.2rem;
+    color: white;
+}
+
+/* Order Body */
+.order-body {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.order-info-section {
+    margin-bottom: 1.5rem;
+}
+
+.order-info-section:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+}
+
+.info-content {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* Order Footer */
+.order-footer {
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: right;
+}
+
+/* Status Colors */
+.bg-warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.bg-info {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.bg-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.bg-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.bg-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.bg-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Buttons */
+.btn-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #bb2d3b;
+    border-color: #bb2d3b;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.order-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.order-card:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.order-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.order-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.order-card:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.order-card:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .order-header,
+    .order-body,
+    .order-footer {
+        padding: 1rem;
+    }
+
+    .order-id {
+        font-size: 1.1rem;
+    }
+
+    .order-total {
+        font-size: 1rem;
+    }
+
+    .order-footer {
+        text-align: center;
+    }
+
+    .btn-outline-light {
+        width: 100%;
+    }
+}
+
+/* Order Detail Page Specific Styles */
+.order-items-list {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.order-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-items-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.order-items-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.order-items-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.order-item-detail {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.order-item-detail:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.order-item-detail h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+}
+
+.item-addons {
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-total-section {
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+    font-size: 1.1rem;
+}
+
