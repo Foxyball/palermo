@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 
 require_once(__DIR__ . '/connect.php');
 require_once(__DIR__ . '/Cart.php');
+require_once(__DIR__ . '/../repositories/frontend/OrderProcessingRepository.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
