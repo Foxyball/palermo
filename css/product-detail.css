@@ -172,13 +172,11 @@
 .add-to-cart-btn:hover {
     background: #bb2d3b;
     border-color: #bb2d3b;
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
 }
 
 .add-to-cart-btn:disabled {
     opacity: 0.6;
-    transform: none;
 }
 
 /* Product Description */
