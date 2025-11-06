@@ -63,11 +63,11 @@ function footerContainer(): void
                                         <ul class="list-unstyled ms-0">
                                             <li class="mb-2"><a class="text-white-50" href="tel:+359789888871">+359 78 98 88 71</a></li>
                                             <li class="mb-2"><a class="text-white-50" href="tel:+359885835171">+359 885 83 51 71</a></li>
-                                            <li class="mb-2"><a class="text-white-50" href="mailto:office@pizzaroyalkn.eu">office@pizzaroyalkn.eu</a></li>
-                                            <li class="mb-2"><a class="text-white-50" href="https://facebook.com/royal.kn" target="_blank">facebook.com/royal.kn</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="mailto:office@palermo.eu">office@palermo.eu</a></li>
+                                            <li class="mb-2"><a class="text-white-50" href="https://facebook.com/palermo" target="_blank">facebook.com/palermo</a></li>
                                         </ul>
                                         2 Vlasina Street<br>
-                                        Kyustendil, Bulgaria
+                                        <?php echo SITE_TITLE; ?>, Bulgaria
 
                                     </div>
                                 </div>
@@ -103,7 +103,7 @@ function footerContainer(): void
 
                     <div class="row col-mb-30">
                         <div class="col-md-6 text-center text-md-start">
-                            &copy; Pizza Royal, Kyustendil. All rights reserved.<br>
+                            &copy; Pizza Royal, <?php echo SITE_TITLE; ?>. All rights reserved.<br>
                             <div class="copyright-links"><a href="https://balikgstudio.eu" target="_blank">Maintained by BalikG Studio.</a></div>
                         </div>
 
