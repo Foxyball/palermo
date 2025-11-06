@@ -13,88 +13,81 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Check if user is logged in
 if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
     echo json_encode([
-        'success' => false, 
+        'success' => false,
         'redirect' => BASE_URL . 'login',
         'message' => 'Please login to continue'
     ]);
     exit;
 }
 
-// Get user ID
 $userId = $_SESSION['user_id'];
 
-// Get form data
 $orderAddress = isset($_POST['order_address']) ? trim($_POST['order_address']) : '';
 $message = isset($_POST['message']) ? trim($_POST['message']) : null;
 
-// Validate required fields
 if (empty($orderAddress)) {
     echo json_encode(['success' => false, 'message' => 'Delivery address is required']);
     exit;
 }
 
 try {
-    // Get cart data
     $cart = new Cart($pdo);
     $cartData = $cart->getData();
-    
+
     if (empty($cartData['items'])) {
         echo json_encode([
-            'success' => false, 
+            'success' => false,
             'message' => 'Your cart is empty',
             'redirect' => BASE_URL . 'cart'
         ]);
         exit;
     }
-    
+
     $items = $cartData['items'];
     $totalAmount = $cartData['cart_total'];
-    
-    // Start transaction
+
     $pdo->beginTransaction();
-    
-    // Insert order
+
     $stmt = $pdo->prepare("
         INSERT INTO orders (user_id, amount, status_id, message, order_address, status, created_at) 
         VALUES (?, ?, 1, ?, ?, 'pending', NOW())
     ");
-    
+
     $stmt->execute([
         $userId,
         $totalAmount,
         $message,
         $orderAddress
     ]);
-    
+
     $orderId = $pdo->lastInsertId();
-    
+
     // Insert order items
     $itemStmt = $pdo->prepare("
         INSERT INTO order_items (order_id, product_id, unit_price, qty, subtotal) 
         VALUES (?, ?, ?, ?, ?)
     ");
-    
+
     $addonStmt = $pdo->prepare("
         INSERT INTO order_item_addons (order_item_id, addon_id, price) 
         VALUES (?, ?, ?)
     ");
-    
+
     foreach ($items as $item) {
-        // Calculate subtotal for this item
         $subtotal = $item['item_price'] * $item['quantity'];
-        
-        // Insert order item
+
+        // Insert order item WITHOUT addons
         $itemStmt->execute([
             $orderId,
             $item['product_id'],
-            $item['item_price'],
+            $item['price'],
             $item['quantity'],
             $subtotal
         ]);
-        
+
         $orderItemId = $pdo->lastInsertId();
-        
-        // Insert addons for this item
+
+        // Insert addons, if any
         if (!empty($item['addons'])) {
             foreach ($item['addons'] as $addon) {
                 $addonStmt->execute([
@@ -105,29 +98,24 @@ try {
             }
         }
     }
-    
-    // Commit transaction
+
     $pdo->commit();
-    
-    // Clear cart
     $cart->clear();
-    
-    // Return success response
+
     echo json_encode([
         'success' => true,
         'message' => 'Order placed successfully',
         'order_id' => $orderId,
         'redirect' => BASE_URL . 'thank-you'
     ]);
-    
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    
-    
+
+
     echo json_encode([
-        'success' => false, 
+        'success' => false,
         'message' => 'An error occurred while processing your order. Please try again.'
     ]);
 }
