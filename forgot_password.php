@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     if (empty($errors)) {
-        // Check if email exists in users table
         $stmt = $pdo->prepare('SELECT id, first_name, last_name FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -23,15 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'No account found with that email address';
         } else {
             try {
-                // Generate secure token
                 $token = bin2hex(random_bytes(32));
                 $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
                 
-                // Clean up old tokens for this email
                 $stmt = $pdo->prepare('DELETE FROM password_reset_tokens WHERE email = ? OR expires_at < NOW()');
                 $stmt->execute([$email]);
                 
-                // Insert new token
                 $stmt = $pdo->prepare('INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)');
                 $stmt->execute([$email, $token, $expiresAt]);
                 
@@ -134,134 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 headerContainer();
 ?>
 <title>Forgot Password | <?php echo SITE_TITLE; ?></title>
-
-<style>
-.page-section {
-    padding: 80px 0;
-    min-height: 70vh;
-}
-
-.auth-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    overflow: hidden;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.auth-header {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    color: white;
-    padding: 30px;
-    text-align: center;
-}
-
-.auth-body {
-    padding: 40px;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-label {
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #333;
-    display: block;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #dc3545;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-}
-
-.btn {
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    color: white;
-    width: 100%;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(135deg, #c82333, #bd2130);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
-}
-
-.btn-outline {
-    background: transparent;
-    color: #dc3545;
-    border: 2px solid #dc3545;
-}
-
-.btn-outline:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.alert {
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-}
-
-.alert-success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-muted {
-    color: #6c757d;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-.back-link {
-    color: #dc3545;
-    text-decoration: none;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
-</style>
+<link rel="stylesheet" href="css/auth.css">
 
 </head>
 
@@ -309,13 +178,13 @@ headerContainer();
                                 <?php if (!$successMessage) { ?>
                                     <form method="post" novalidate>
                                         <div class="form-group">
-                                            <label class="form-label">
+                                            <label class="form-label" style="color:black;">
                                                 <i class="fas fa-envelope"></i> Email Address
                                             </label>
                                             <input 
                                                 type="email" 
                                                 name="email" 
-                                                class="form-control" 
+                                                class="form-control"
                                                 placeholder="Enter your email address"
                                                 value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
                                                 required
@@ -335,19 +204,6 @@ headerContainer();
                                         <a href="index.php" class="back-link">Back to Login</a>
                                     </small>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Help Section -->
-                        <div style="max-width: 500px; margin: 40px auto 0; text-align: center;">
-                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                                <h5 style="color: #333; margin-bottom: 15px;">
-                                    <i class="fas fa-question-circle"></i> Need Help?
-                                </h5>
-                                <p style="color: #6c757d; margin: 0; font-size: 14px;">
-                                    If you're having trouble receiving the reset email, please check your spam folder 
-                                    or contact support for assistance.
-                                </p>
                             </div>
                         </div>
                     </div>
