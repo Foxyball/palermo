@@ -30,7 +30,7 @@ $pageTitle = htmlspecialchars($blog['title']) . ' - ' . SITE_TITLE;
 
 <title><?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/blog-detail.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>css/fancybox.css">
 </head>
 
 <body class="stretched">
@@ -64,7 +64,6 @@ $pageTitle = htmlspecialchars($blog['title']) . ' - ' . SITE_TITLE;
                                         </span>
                                     </div>
 
-                                    <!-- Title -->
                                     <h1 class="blog-title text-white mb-4">
                                         <?php echo htmlspecialchars($blog['title']); ?>
                                     </h1>
@@ -113,7 +112,7 @@ $pageTitle = htmlspecialchars($blog['title']) . ' - ' . SITE_TITLE;
         <?php footerContainer(); ?>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script src="<?php echo BASE_URL; ?>js/fancybox.umd.js"></script>
     <script>
         Fancybox.bind('[data-fancybox="gallery"]', {
             Thumbs: {
