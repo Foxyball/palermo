@@ -273,7 +273,7 @@ function navbarContainer(): void
                                             </div>
                                             <hr class="my-2">
                                             <div class="d-grid">
-                                                <a href="<?php echo BASE_URL; ?>logout" class="btn btn-outline-danger btn-sm">
+                                                <a href="<?php echo BASE_URL; ?>logout?logout" class="btn btn-outline-danger btn-sm">
                                                     <i class="fas fa-sign-out-alt me-2"></i>Logout
                                                 </a>
                                             </div>
