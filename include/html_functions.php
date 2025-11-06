@@ -236,38 +236,54 @@ function navbarContainer(): void
                             <div class="hidden js-account-dropdown d-flex align-items-center me-2">
                                 <a href="#" class="js-account-dropdown__trigger d-flex align-items-center text-white">
                                     <i class="fas fa-user me-1"></i>
-                                    <span class="d-none d-md-inline me-1">Account</span>
+                                    <span class="d-none d-md-inline me-1">
+                                        <?php echo isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] 
+                                            ? htmlspecialchars($_SESSION['user_first_name']) 
+                                            : 'Account'; ?>
+                                    </span>
                                     <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
                                 </a>
                                 <div class="js-account-dropdown__content shadow-lg rounded">
                                     <div class="js-account-dropdown__header p-3 border-bottom">
-                                        <h5 class="mb-0">My Account</h5>
-                                        <small class="text-muted">Sign in to your account</small>
+                                        <h5 class="mb-0">
+                                            <?php if (!isset($_SESSION['user_logged_in']) && !$_SESSION['user_logged_in']): ?>
+                                                My Account
+                                            <?php endif; ?>
+                                        </h5>
+                                        <small class="text-muted">
+                                            <?php if (!isset($_SESSION['user_logged_in']) && !$_SESSION['user_logged_in']): ?>
+                                                Sign in to your account
+                                            <?php endif; ?>
+                                        </small>
                                     </div>
                                     <div class="js-account-dropdown__items p-3">
-                                        <div class="d-grid gap-2 mb-3">
-                                            <a href="#" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-sign-in-alt me-2"></i>Login
-                                            </a>
-                                            <a href="#" class="btn btn-outline-primary btn-sm">
-                                                <i class="fas fa-user-plus me-2"></i>Register
-                                            </a>
-                                        </div>
-                                        <hr class="my-2">
-                                        <div class="list-group list-group-flush">
-                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
-                                                <i class="fas fa-user me-2"></i>My Profile
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
-                                                <i class="fas fa-shopping-bag me-2"></i>My Orders
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
-                                                <i class="fas fa-heart me-2"></i>Favorites
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
-                                                <i class="fas fa-cog me-2"></i>Settings
-                                            </a>
-                                        </div>
+                                        <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
+                                            <!-- Logged In Menu -->
+                                            <div class="list-group list-group-flush">
+                                                <a href="<?php echo BASE_URL; ?>account" class="list-group-item list-group-item-action border-0 px-0 py-2">
+                                                    <i class="fas fa-user me-2"></i>My Profile
+                                                </a>
+                                                <a href="<?php echo BASE_URL; ?>orders" class="list-group-item list-group-item-action border-0 px-0 py-2">
+                                                    <i class="fas fa-shopping-bag me-2"></i>My Orders
+                                                </a>
+                                            </div>
+                                            <hr class="my-2">
+                                            <div class="d-grid">
+                                                <a href="<?php echo BASE_URL; ?>logout" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <!-- Not Logged In Menu -->
+                                            <div class="d-grid gap-2 mb-3">
+                                                <a href="<?php echo BASE_URL; ?>login" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                                </a>
+                                                <a href="<?php echo BASE_URL; ?>register" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-user-plus me-2"></i>Register
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
