@@ -14,27 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$productID = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+$productId = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
 
-if ($productID <= 0) {
+if ($productId <= 0) {
     sendJsonError('Invalid product ID', 400);
 }
 
 try {
     $productRepo = new ProductRepository($pdo);
     
-    $product = $productRepo->findById($productID);
+    $product = $productRepo->findById($productId);
 
     if (!$product) {
         sendJsonError('Product not found', 404);
     }
 
-    $newStatus = $productRepo->toggleActive($productID, $product['active']);
+    $newStatus = $productRepo->toggleActive($productId, $product['active']);
 
     sendJsonResponse([
         'success' => true,
         'message' => 'Status updated',
-        'status' => $newStatus,
+        'product_id' => $productId,
+        'active' => $newStatus,
     ]);
 } catch (Throwable $e) {
     sendJsonError('Server error', 500);

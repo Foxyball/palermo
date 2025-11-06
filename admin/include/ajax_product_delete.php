@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$productId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+$productId = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
 
 if ($productId <= 0) {
     sendJsonError('Invalid product ID', 400);

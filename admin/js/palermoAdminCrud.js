@@ -870,7 +870,7 @@ $(function () {
       url: './include/ajax_product_toggle_status.php',
       method: 'POST',
       data: {
-        id: productId,
+        product_id: productId,
       },
       dataType: 'json'
     })
@@ -922,7 +922,7 @@ $(function () {
       url: './include/ajax_product_delete.php',
       method: 'POST',
       data: {
-        id: productId,
+        product_id: productId,
       },
       dataType: 'json'
     })
