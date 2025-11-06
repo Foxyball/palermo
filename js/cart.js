@@ -154,7 +154,7 @@ const PalermoCart = (function () {
                 </div>
                 <div class="js-cart-dropdown__item-desc flex-grow-1">
                     <div class="js-cart-dropdown__item-title fw-bold">
-                        <a href="${itemUrl}" class="text-dark text-decoration-none">${item.name}</a>
+                        <a href="${itemUrl}" class="text-white text-decoration-none">${item.name}</a>
                     </div>
                     ${addonsHtml}
                     <div class="js-cart-dropdown__item-price text-muted">

@@ -46,9 +46,6 @@ headerContainer();
                                 <a href="orders" class="list-group-item list-group-item-action">
                                     <i class="fas fa-shopping-bag me-2"></i>My Orders
                                 </a>
-                                <a href="logout" class="list-group-item list-group-item-action text-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                </a>
                             </div>
                         </div>
 
@@ -73,10 +70,6 @@ headerContainer();
                                             <strong>Email:</strong>
                                             <p><?php echo htmlspecialchars($_SESSION['user_email']); ?></p>
                                         </div>
-                                    </div>
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        This is a placeholder page. Account management features coming soon!
                                     </div>
                                 </div>
                             </div>

@@ -322,8 +322,8 @@ function navbarContainer(): void
                                             <span class="fw-bold text-danger"></span>
                                         </div>
                                         <div class="d-grid gap-2">
-                                            <a href="#" class="btn btn-sm js-cart-dropdown__view-btn">View Cart</a>
-                                            <a href="#" class="btn btn-danger btn-sm js-cart-dropdown__order-btn">Checkout</a>
+                                            <a href="<?php echo BASE_URL; ?>cart" class="btn btn-sm js-cart-dropdown__view-btn">View Cart</a>
+                                            <a href="<?php echo BASE_URL; ?>checkout" class="btn btn-danger btn-sm js-cart-dropdown__order-btn">Checkout</a>
                                         </div>
                                     </div>
                                 </div>
