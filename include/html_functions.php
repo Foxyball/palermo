@@ -130,7 +130,6 @@ function footerContainer(): void
 
 function navbarContainer(): void
 {
-    // Load categories dynamically
     global $pdo;
     require_once(__DIR__ . '/../repositories/frontend/CategoryRepository.php');
     $categoryRepository = new CategoryRepository($pdo);

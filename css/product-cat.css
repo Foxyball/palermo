@@ -1,0 +1,119 @@
+/* Product Category Page Styles */
+
+#content {
+    background: #1a1a1a;
+}
+
+/* Product Cards */
+.product-card-clickable {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.product-card-clickable:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+}
+
+.product-card-clickable .card-img-top {
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card-clickable:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.product-card-clickable .placeholder {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #6c757d;
+}
+
+.product-card-clickable .card-body {
+    padding: 1.25rem;
+    min-height: 200px;
+}
+
+.product-card-clickable .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    min-height: 2.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-card-clickable .card-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+}
+
+.product-card-clickable .btn {
+    transition: all 0.3s ease;
+}
+
+.product-card-clickable:hover .btn {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+/* Page Header */
+.dotted-bg {
+    position: relative;
+    padding: 20px 0;
+}
+
+.font-border {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .product-card-clickable .card-img-top,
+    .product-card-clickable .placeholder {
+        height: 220px;
+    }
+}
+
+@media (max-width: 767px) {
+    .product-card-clickable .card-img-top,
+    .product-card-clickable .placeholder {
+        height: 200px;
+    }
+    
+    .product-card-clickable .card-body {
+        min-height: 180px;
+        padding: 1rem;
+    }
+    
+    .product-price {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .product-card-clickable .card-img-top,
+    .product-card-clickable .placeholder {
+        height: 180px;
+    }
+}
