@@ -1,0 +1,151 @@
+/* Blog Detail Page Styles */
+
+#content {
+    background: #1a1a1a;
+}
+
+.blog-post {
+    background: #242424;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Meta Information */
+.blog-meta {
+    font-size: 0.95rem;
+}
+
+.blog-meta .badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+}
+
+.blog-meta i {
+    font-size: 0.9rem;
+}
+
+/* Title */
+.blog-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1.3;
+    border-bottom: 3px solid #dc3545;
+    padding-bottom: 20px;
+}
+
+/* Featured Image */
+.blog-image {
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.blog-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.blog-image:hover img {
+    transform: scale(1.02);
+}
+
+/* Content */
+.blog-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-top: 30px;
+}
+
+/* Gallery Section */
+.blog-gallery h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-left: 4px solid #dc3545;
+    padding-left: 15px;
+}
+
+.blog-gallery h3 i {
+    color: #dc3545;
+}
+
+.blog-gallery a {
+    text-decoration: none;
+    display: block;
+}
+
+.gallery-item {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.gallery-item::after {
+    content: '\1F50D';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.gallery-item:hover::after {
+    opacity: 1;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+    filter: brightness(0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .blog-post {
+        padding: 25px;
+    }
+
+    .blog-title {
+        font-size: 1.8rem;
+    }
+
+    .blog-content {
+        font-size: 1rem;
+    }
+
+    .gallery-item img {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .blog-title {
+        font-size: 1.5rem;
+    }
+
+    .gallery-item img {
+        height: 180px;
+    }
+}

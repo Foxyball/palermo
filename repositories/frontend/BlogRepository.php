@@ -68,6 +68,7 @@ class BlogRepository
                 b.slug,
                 b.description,
                 b.image,
+                b.gallery_id,
                 b.created_at,
                 b.updated_at,
                 c.name AS category_name,
@@ -91,5 +92,14 @@ class BlogRepository
         $stmt = $this->pdo->query($sql);
 
         return (int) $stmt->fetchColumn();
+    }
+
+    public function getGalleryImages(int $galleryId): array
+    {
+        $sql = 'SELECT image FROM gallery_images WHERE gallery_id = ? ORDER BY id ASC';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$galleryId]);
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 }
