@@ -1,54 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 class Cart
 {
+    private const MAX_QUANTITY = 99;
+    private const MIN_QUANTITY = 1;
+
     private $pdo;
-    
+
     public function __construct($pdo = null)
     {
         $this->pdo = $pdo;
         $this->initialize();
     }
-    
 
-    private function initialize()
+    private function initialize(): void
     {
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
         }
     }
-    
 
-    public function add($productId, $quantity, $addons = [])
+    public function add(int $productId, int $quantity, array $addons = []): bool
     {
-        if ($productId <= 0 || $quantity < 1 || $quantity > 99) {
+        if (!$this->validateQuantity($quantity) || $productId <= 0) {
             return false;
         }
-        
-        // Get product details
-        require_once(__DIR__ . '/../repositories/frontend/ProductRepository.php');
-        $productRepo = new ProductRepository($this->pdo);
+
+        $productRepo = $this->getProductRepository();
         $product = $productRepo->getByIdForCart($productId);
-        
+
         if (!$product) {
             return false;
         }
-        
-        // Get addon details
+
         $addonDetails = [];
-        $addonsTotal = 0;
+        $addonsTotal = 0.0;
+
         if (!empty($addons)) {
             $addonDetails = $productRepo->getAddonsByIds($addons);
-            foreach ($addonDetails as $addon) {
-                $addonsTotal += $addon['price'];
-            }
+            $addonsTotal = $this->calculateAddonsTotal($addonDetails);
         }
-        
-        // Create unique  key
+
         $cartKey = $this->generateCartKey($productId, $addons);
         $itemPrice = $product['price'] + $addonsTotal;
-        
-        // Add or update cart item
+
         if (isset($_SESSION['cart'][$cartKey])) {
             $_SESSION['cart'][$cartKey]['quantity'] += $quantity;
         } else {
@@ -57,116 +54,124 @@ class Cart
                 'name' => $product['name'],
                 'slug' => $product['slug'],
                 'image' => $product['image'],
-                'price' => $product['price'],
+                'price' => (float)$product['price'],
                 'addons' => $addonDetails,
                 'addons_total' => $addonsTotal,
                 'item_price' => $itemPrice,
                 'quantity' => $quantity
             ];
         }
-        
+
         return true;
     }
-    
-    /**
-     * Remove item from cart
-     */
-    public function remove($cartKey)
+
+    public function remove(string $cartKey): bool
     {
         if (isset($_SESSION['cart'][$cartKey])) {
             unset($_SESSION['cart'][$cartKey]);
             return true;
         }
+
         return false;
     }
-    
-    /**
-     * Update item quantity
-     */
-    public function updateQuantity($cartKey, $quantity)
+
+    public function updateQuantity(string $cartKey, int $quantity): bool
     {
-        if (isset($_SESSION['cart'][$cartKey])) {
-            if ($quantity > 0 && $quantity <= 99) {
-                $_SESSION['cart'][$cartKey]['quantity'] = $quantity;
-                return true;
-            } elseif ($quantity <= 0) {
-                return $this->remove($cartKey);
-            }
+        if (!isset($_SESSION['cart'][$cartKey])) {
+            return false;
         }
+
+        if ($quantity <= 0) {
+            return $this->remove($cartKey);
+        }
+
+        if ($this->validateQuantity($quantity)) {
+            $_SESSION['cart'][$cartKey]['quantity'] = $quantity;
+            return true;
+        }
+
         return false;
     }
-    
-    /**
-     * Clear entire cart
-     */
-    public function clear()
+
+    public function clear(): void
     {
         $_SESSION['cart'] = [];
     }
-    
-    /**
-     * Get all cart items with calculated totals
-     */
-    public function getItems()
+
+    public function getItems(): array
     {
         $items = [];
+
         foreach ($_SESSION['cart'] as $cartKey => $item) {
             $items[] = array_merge($item, [
                 'key' => $cartKey,
                 'item_total' => $item['item_price'] * $item['quantity']
             ]);
         }
+
         return $items;
     }
-    
-    /**
-     * Get cart totals
-     */
-    public function getTotals()
+
+    public function getTotals(): array
     {
         $count = 0;
-        $total = 0;
-        
+        $total = 0.0;
+
         foreach ($_SESSION['cart'] as $item) {
             $count += $item['quantity'];
             $total += $item['item_price'] * $item['quantity'];
         }
-        
+
         return [
             'count' => $count,
             'total' => $total
         ];
     }
-    
-    /**
-     * Get complete cart data
-     */
-    public function getData()
+
+    public function getData(): array
     {
         $totals = $this->getTotals();
-        
+
         return [
             'items' => $this->getItems(),
             'cart_count' => $totals['count'],
             'cart_total' => $totals['total']
         ];
     }
-    
-    /**
-     * Check if cart is empty
-     */
-    public function isEmpty()
+
+    public function isEmpty(): bool
     {
         return empty($_SESSION['cart']);
     }
-    
-    /**
-     * Generate unique cart key for product + addons combination
-     */
-    private function generateCartKey($productId, $addons = [])
+
+    private function validateQuantity(int $quantity): bool
+    {
+        return $quantity >= self::MIN_QUANTITY && $quantity <= self::MAX_QUANTITY;
+    }
+
+    private function calculateAddonsTotal(array $addonDetails): float
+    {
+        $total = 0.0;
+
+        foreach ($addonDetails as $addon) {
+            $total += (float)$addon['price'];
+        }
+
+        return $total;
+    }
+
+    private function getProductRepository()
+    {
+        require_once __DIR__ . '/../repositories/frontend/ProductRepository.php';
+        return new ProductRepository($this->pdo);
+    }
+
+    private function generateCartKey(int $productId, array $addons = []): string
     {
         $addonIds = array_map('intval', $addons);
         sort($addonIds);
+
         return $productId . '_' . implode('-', $addonIds);
     }
 }
+
