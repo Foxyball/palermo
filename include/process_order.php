@@ -5,6 +5,8 @@ header('Content-Type: application/json');
 require_once(__DIR__ . '/connect.php');
 require_once(__DIR__ . '/Cart.php');
 require_once(__DIR__ . '/../repositories/frontend/OrderProcessingRepository.php');
+require_once(__DIR__ . '/smtp_class.php');
+require_once(__DIR__ . '/EmailTemplateGenerator.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -51,6 +53,30 @@ try {
     $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $message);
 
     $cart->clear();
+
+    // Send confirmation email to user
+    try {
+        $userEmail = $_SESSION['user_email'];
+        $userName = $_SESSION['user_name'];
+        
+        $emailGenerator = new EmailTemplateGenerator();
+        $emailBody = $emailGenerator->generateOrderConfirmationEmail(
+            $userEmail,
+            $orderId,
+            $totalAmount,
+            $items,
+            $orderAddress,
+            $message
+        );
+        
+        sendEmail(
+            $userEmail,
+            $userName,
+            "Order Confirmation #$orderId - " . SITE_TITLE,
+            $emailBody
+        );
+    } catch (Exception $e) {
+    }
 
     echo json_encode([
         'success' => true,

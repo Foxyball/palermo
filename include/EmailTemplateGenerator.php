@@ -30,6 +30,15 @@ class EmailTemplateGenerator
         return $this->buildEmailTemplate($title, $heading, $content, $email, true);
     }
 
+    public function generateOrderConfirmationEmail(string $email, int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null): string
+    {
+        $title = "Order Confirmation - {$this->siteTitle}";
+        $heading = "Thank You for Your Order!";
+        $content = $this->getOrderConfirmationContent($orderId, $totalAmount, $items, $orderAddress, $message);
+
+        return $this->buildEmailTemplate($title, $heading, $content, $email);
+    }
+
     private function buildEmailTemplate(string $title, string $heading, string $content, string $email, bool $isTestAccount = false): string
     {
         return "
@@ -57,189 +66,8 @@ class EmailTemplateGenerator
 
     private function getEmailStyles(): string
     {
-        return "<style>
-            body { 
-                margin: 0; 
-                padding: 0; 
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background-color: #f5f5f5;
-                line-height: 1.6;
-            }
-            .email-container { 
-                max-width: 600px; 
-                margin: 0 auto; 
-                background-color: #ffffff;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            }
-            .header { 
-                background-color: #9c0000; 
-                color: #ffffff; 
-                padding: 30px 20px;
-                text-align: center;
-            }
-            .header h1 { 
-                margin: 0; 
-                font-size: 28px;
-                font-weight: 700;
-                letter-spacing: 1px;
-            }
-            .test-badge {
-                background-color: #ff6b35;
-                color: #ffffff;
-                padding: 5px 15px;
-                border-radius: 20px;
-                font-size: 12px;
-                font-weight: 600;
-                margin-top: 10px;
-                display: inline-block;
-                letter-spacing: 1px;
-            }
-            .content { 
-                padding: 40px 30px;
-                color: #444444;
-            }
-            .content h2 {
-                color: #9c0000;
-                margin: 0 0 20px 0;
-                font-size: 24px;
-                font-weight: 600;
-            }
-            .content p {
-                margin: 0 0 20px 0;
-                font-size: 16px;
-                color: #555555;
-            }
-            .cta-button { 
-                display: inline-block;
-                background-color: #9c0000;
-                color: #ffffff !important;
-                padding: 15px 30px;
-                text-decoration: none;
-                border-radius: 5px;
-                font-weight: 600;
-                font-size: 16px;
-                margin: 20px 0;
-                transition: background-color 0.3s ease;
-            }
-            .cta-button:hover {
-                background-color: #7a0000;
-            }
-            .info-box {
-                background-color: #f8f9fa;
-                border-left: 4px solid #9c0000;
-                padding: 20px;
-                margin: 25px 0;
-                border-radius: 0 5px 5px 0;
-            }
-            .info-box h3 {
-                color: #9c0000;
-                margin: 0 0 10px 0;
-                font-size: 18px;
-                font-weight: 600;
-            }
-            .credentials-box {
-                background-color: #f8f9fa;
-                border: 2px solid #9c0000;
-                padding: 25px;
-                margin: 25px 0;
-                border-radius: 8px;
-                text-align: center;
-            }
-            .credentials-box h3 {
-                color: #9c0000;
-                margin: 0 0 15px 0;
-                font-size: 18px;
-                font-weight: 600;
-            }
-            .credential-item {
-                background-color: #ffffff;
-                padding: 12px;
-                margin: 10px 0;
-                border-radius: 5px;
-                border-left: 4px solid #9c0000;
-                text-align: left;
-            }
-            .credential-label {
-                font-weight: 600;
-                color: #9c0000;
-                display: block;
-                font-size: 14px;
-                margin-bottom: 5px;
-            }
-            .credential-value {
-                font-family: 'Courier New', monospace;
-                background-color: #f8f9fa;
-                padding: 8px;
-                border-radius: 3px;
-                font-size: 16px;
-                word-break: break-all;
-                color: #333;
-            }
-            .warning-box {
-                background-color: #fff3cd;
-                border-left: 4px solid #ff6b35;
-                padding: 20px;
-                margin: 25px 0;
-                border-radius: 0 5px 5px 0;
-            }
-            .warning-box h3 {
-                color: #ff6b35;
-                margin: 0 0 10px 0;
-                font-size: 16px;
-                font-weight: 600;
-            }
-            .warning-box p {
-                margin: 0;
-                font-size: 14px;
-                color: #856404;
-            }
-            .footer {
-                background-color: #f8f9fa;
-                padding: 25px 30px;
-                text-align: center;
-                border-top: 1px solid #eeeeee;
-                color: #666666;
-                font-size: 14px;
-            }
-            .footer a {
-                color: #9c0000;
-                text-decoration: none;
-            }
-            .footer a:hover {
-                text-decoration: underline;
-            }
-            .social-links {
-                margin: 15px 0;
-            }
-            .social-links a {
-                display: inline-block;
-                margin: 0 10px;
-                color: #9c0000;
-                text-decoration: none;
-            }
-            @media only screen and (max-width: 600px) {
-                .email-container {
-                    width: 100% !important;
-                }
-                .content {
-                    padding: 20px 15px !important;
-                }
-                .header {
-                    padding: 20px 15px !important;
-                }
-                .header h1 {
-                    font-size: 24px !important;
-                }
-                .cta-button {
-                    display: block !important;
-                    text-align: center !important;
-                    margin: 20px 0 !important;
-                }
-                .credentials-box {
-                    padding: 15px !important;
-                }
-            }
-        </style>";
+        $cssUrl = $this->baseUrl . "css/email-template.css";
+        return "<link rel='stylesheet' href='{$cssUrl}'>";
     }
 
 
@@ -332,4 +160,92 @@ class EmailTemplateGenerator
         
         <p>Welcome to {$this->siteTitle}!</p>";
     }
+
+
+    private function getOrderConfirmationContent(int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null): string
+    {
+        $orderDetailsUrl = $this->baseUrl . "order-detail?id={$orderId}";
+        
+        // Build items list
+        $itemsHtml = "";
+        foreach ($items as $item) {
+            $itemPrice = number_format($item['price'], 2);
+            $itemTotal = number_format($item['item_price'] * $item['quantity'], 2);
+            $qty = $item['quantity'];
+            
+            $itemsHtml .= "
+            <tr>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee;'>{$item['product_name']}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: center;'>{$qty}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: right;'>{$itemPrice} BGN</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eeeeee; text-align: right; font-weight: 600;'>{$itemTotal} BGN</td>
+            </tr>";
+            
+            // Add addons if any
+            if (!empty($item['addons'])) {
+                foreach ($item['addons'] as $addon) {
+                    $addonPrice = number_format($addon['price'], 2);
+                    $itemsHtml .= "
+                    <tr>
+                        <td style='padding: 8px 12px 8px 30px; border-bottom: 1px solid #f8f9fa; color: #666; font-size: 14px;'>+ {$addon['name']}</td>
+                        <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa;'></td>
+                        <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa; text-align: right; color: #666; font-size: 14px;'>{$addonPrice} BGN</td>
+                        <td style='padding: 8px 12px; border-bottom: 1px solid #f8f9fa;'></td>
+                    </tr>";
+                }
+            }
+        }
+        
+        $totalFormatted = number_format($totalAmount, 2);
+        $messageHtml = $message ? "
+        <div class='info-box'>
+            <h3>Order Notes</h3>
+            <p style='font-style: italic;'>{$message}</p>
+        </div>" : "";
+
+        return "
+        <p>Your order has been successfully placed! We're preparing your delicious meal and will deliver it to you soon.</p>
+        
+        <div class='info-box'>
+            <h3>📦 Order Details</h3>
+            <p><strong>Order Number:</strong> #{$orderId}</p>
+            <p><strong>Delivery Address:</strong><br>{$orderAddress}</p>
+        </div>
+        
+        {$messageHtml}
+        
+        <div style='margin: 30px 0;'>
+            <h3 style='color: #9c0000; margin-bottom: 15px;'>Order Summary</h3>
+            <table style='width: 100%; border-collapse: collapse; background-color: #ffffff; border: 1px solid #eeeeee;'>
+                <thead>
+                    <tr style='background-color: #f8f9fa;'>
+                        <th style='padding: 12px; text-align: left; border-bottom: 2px solid #9c0000;'>Item</th>
+                        <th style='padding: 12px; text-align: center; border-bottom: 2px solid #9c0000;'>Qty</th>
+                        <th style='padding: 12px; text-align: right; border-bottom: 2px solid #9c0000;'>Price</th>
+                        <th style='padding: 12px; text-align: right; border-bottom: 2px solid #9c0000;'>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {$itemsHtml}
+                </tbody>
+                <tfoot>
+                    <tr style='background-color: #f8f9fa;'>
+                        <td colspan='3' style='padding: 15px; text-align: right; font-weight: 700; font-size: 18px; border-top: 2px solid #9c0000;'>Total:</td>
+                        <td style='padding: 15px; text-align: right; font-weight: 700; font-size: 18px; color: #9c0000; border-top: 2px solid #9c0000;'>{$totalFormatted} BGN</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div style='text-align: center; margin: 30px 0;'>
+            <a href='{$orderDetailsUrl}' class='cta-button'>View Order Details</a>
+        </div>
+        
+        <p>You can track your order status anytime by logging into your account.</p>
+        
+        <p>If you have any questions about your order, please don't hesitate to contact us.</p>
+        
+        <p>Thank you for choosing {$this->siteTitle}!</p>";
+    }
 }
+
