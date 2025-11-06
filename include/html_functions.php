@@ -179,8 +179,8 @@ function navbarContainer(): void
                     <div class="header-row">
 
                         <div id="logo">
-                            <a href="<?php echo BASE_URL; ?>index" class="standard-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
-                            <a href="<?php echo BASE_URL; ?>index" class="retina-logo" data-dark-logo="images/royal_logo.png" data-sticky-logo="images/royal_logo.png"><img src="images/royal_logo.png" alt="Royal Logo"></a>
+                            <a href="<?php echo BASE_URL; ?>index" class="standard-logo" data-dark-logo="images/palermo_logo.png" data-sticky-logo="images/palermo_logo.png"><img src="images/palermo_logo.png" alt="Royal Logo"></a>
+                            <a href="<?php echo BASE_URL; ?>index" class="retina-logo" data-dark-logo="images/palermo_logo.png" data-sticky-logo="images/palermo_logo.png"><img src="images/palermo_logo.png" alt="Royal Logo"></a>
                         </div>
 
 
