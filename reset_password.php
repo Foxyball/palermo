@@ -71,153 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $validToken) {
 headerContainer();
 ?>
 <title>Reset Password | <?php echo SITE_TITLE; ?></title>
-
-<style>
-.page-section {
-    padding: 80px 0;
-    min-height: 70vh;
-}
-
-.auth-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    overflow: hidden;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.auth-header {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    color: white;
-    padding: 30px;
-    text-align: center;
-}
-
-.auth-body {
-    padding: 40px;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-label {
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #333;
-    display: block;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #dc3545;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-}
-
-.btn {
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    color: white;
-    width: 100%;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(135deg, #c82333, #bd2130);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
-}
-
-.btn-outline {
-    background: transparent;
-    color: #dc3545;
-    border: 2px solid #dc3545;
-}
-
-.btn-outline:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.alert {
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-}
-
-.alert-success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-muted {
-    color: #6c757d;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-.back-link {
-    color: #dc3545;
-    text-decoration: none;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
-
-.password-strength {
-    height: 5px;
-    background: #e9ecef;
-    border-radius: 3px;
-    margin-top: 5px;
-    overflow: hidden;
-}
-
-.password-strength-bar {
-    height: 100%;
-    transition: all 0.3s ease;
-    border-radius: 3px;
-}
-
-.strength-weak { background: #dc3545; width: 25%; }
-.strength-fair { background: #ffc107; width: 50%; }
-.strength-good { background: #28a745; width: 75%; }
-.strength-strong { background: #28a745; width: 100%; }
-</style>
+<link rel="stylesheet" href="css/auth.css">
 
 </head>
 
@@ -280,9 +134,6 @@ headerContainer();
                                                 autocomplete="new-password"
                                                 id="password"
                                             >
-                                            <div class="password-strength">
-                                                <div class="password-strength-bar" id="strength-bar"></div>
-                                            </div>
                                             <small class="text-muted" id="strength-text">Minimum 6 characters</small>
                                         </div>
                                         
@@ -360,55 +211,8 @@ headerContainer();
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password');
             const confirmInput = document.getElementById('confirm_password');
-            const strengthBar = document.getElementById('strength-bar');
-            const strengthText = document.getElementById('strength-text');
             const matchText = document.getElementById('match-text');
             const submitBtn = document.getElementById('submit-btn');
-            
-            if (passwordInput) {
-                passwordInput.addEventListener('input', function() {
-                    const password = this.value;
-                    const strength = getPasswordStrength(password);
-                    updatePasswordStrength(strength, password.length);
-                    checkPasswordMatch();
-                });
-            }
-            
-            if (confirmInput) {
-                confirmInput.addEventListener('input', checkPasswordMatch);
-            }
-            
-            function getPasswordStrength(password) {
-                let score = 0;
-                if (password.length >= 6) score++;
-                if (password.length >= 8) score++;
-                if (/[A-Z]/.test(password)) score++;
-                if (/[0-9]/.test(password)) score++;
-                if (/[^A-Za-z0-9]/.test(password)) score++;
-                return score;
-            }
-            
-            function updatePasswordStrength(strength, length) {
-                if (!strengthBar || !strengthText) return;
-                
-                const classes = ['strength-weak', 'strength-fair', 'strength-good', 'strength-strong'];
-                const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
-                
-                strengthBar.className = 'password-strength-bar';
-                
-                if (length === 0) {
-                    strengthText.textContent = 'Minimum 6 characters';
-                    strengthText.style.color = '#6c757d';
-                } else if (length < 6) {
-                    strengthBar.classList.add('strength-weak');
-                    strengthText.textContent = 'Too short';
-                    strengthText.style.color = '#dc3545';
-                } else if (strength > 0 && strength <= 4) {
-                    strengthBar.classList.add(classes[Math.min(strength - 1, 3)]);
-                    strengthText.textContent = 'Password strength: ' + texts[Math.min(strength - 1, 4)];
-                    strengthText.style.color = strength >= 3 ? '#28a745' : (strength >= 2 ? '#ffc107' : '#dc3545');
-                }
-            }
             
             function checkPasswordMatch() {
                 if (!confirmInput || !matchText || !passwordInput) return;
