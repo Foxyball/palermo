@@ -18,7 +18,6 @@ class PalermoCartDropdown {
             return;
         }
 
-        // Show the cart dropdown by removing hidden class
         this.cartContainer.classList.remove('hidden');
 
         this.setupStyles();
@@ -27,7 +26,6 @@ class PalermoCartDropdown {
     }
 
     detectDarkTheme() {
-        // Check if body or document has dark theme class
         return document.body.classList.contains('dark') || 
                document.documentElement.classList.contains('dark') ||
                document.querySelector('.dark') !== null;
@@ -147,7 +145,6 @@ class PalermoCartDropdown {
     }
 
     bindEvents() {
-        // Toggle cart dropdown
         this.cartTrigger.addEventListener('click', (e) => {
             e.preventDefault();
             this.toggleCart();
@@ -197,7 +194,6 @@ class PalermoCartDropdown {
     openCart() {
           this.cartContent.removeAttribute('hidden');
         this.cartContent.style.display = 'block';
-        // Force reflow
         this.cartContent.offsetHeight;
         this.cartContent.classList.add('show');
         this.isOpen = true;
@@ -216,7 +212,6 @@ class PalermoCartDropdown {
     removeItem(itemElement) {
         if (!itemElement) return;
 
-        // Add remove animation
         itemElement.style.opacity = '0';
         itemElement.style.transform = 'translateX(100px)';
         itemElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -226,7 +221,6 @@ class PalermoCartDropdown {
             this.updateCartCounter();
             this.updateCartTotal();
             
-            // Close cart if empty
             const remainingItems = document.querySelectorAll('.js-cart-dropdown__item');
             if (remainingItems.length === 0) {
                 this.showEmptyCart();

@@ -161,7 +161,6 @@ $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
                                                     <!-- Add to Cart Button -->
                                                     <div class="product-actions">
                                                         <button type="submit" class="btn btn-danger btn-lg w-100 add-to-cart-btn js-add-to-cart-btn">
-                                                            <i class="icon-shopping-cart"></i>
                                                             Add to Cart
                                                         </button>
                                                     </div>

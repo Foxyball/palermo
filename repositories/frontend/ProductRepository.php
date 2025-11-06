@@ -90,4 +90,44 @@ class ProductRepository
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getByIdForCart(int $productId): ?array
+    {
+        $sql = 'SELECT 
+                id,
+                name,
+                slug,
+                image,
+                price
+                FROM products
+                WHERE id = ? AND active = "1"
+                LIMIT 1';
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$productId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ?: null;
+    }
+
+    public function getAddonsByIds(array $addonIds): array
+    {
+        if (empty($addonIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($addonIds), '?'));
+        $sql = "SELECT 
+                id,
+                name,
+                price
+                FROM addons
+                WHERE id IN ($placeholders) AND status = '1'
+                ORDER BY name ASC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($addonIds);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

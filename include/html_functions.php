@@ -124,6 +124,43 @@ function footerContainer(): void
         <script src="js/hover-animate.js"></script>
 
         <script src="js/functions.js"></script>
+        <script src="js/cart.js"></script>
+
+        <style>
+            .bootstrap-alert-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                max-width: 400px;
+                width: 100%;
+            }
+            
+            .bootstrap-alert-container .alert {
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                animation: slideInRight 0.3s ease-out;
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @media (max-width: 576px) {
+                .bootstrap-alert-container {
+                    left: 10px;
+                    right: 10px;
+                    max-width: none;
+                }
+            }
+        </style>
 
     <?php }
 
@@ -239,7 +276,7 @@ function navbarContainer(): void
                             <div class="hidden js-cart-dropdown d-flex align-items-center">
                                 <a href="#" class="js-cart-dropdown__trigger d-flex align-items-center text-white">
                                     <i class="fas fa-shopping-cart me-2"></i>
-                                    <span class="js-cart-dropdown__counter bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center">1</span>
+                                    <span class="js-cart-dropdown__counter bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center">0</span>
                                 </a>
                                 <div class="js-cart-dropdown__content shadow-lg rounded">
                                     <div class="js-cart-dropdown__header p-3 border-bottom">
@@ -248,11 +285,11 @@ function navbarContainer(): void
                                     <div class="js-cart-dropdown__items p-3">
                                         <div class="js-cart-dropdown__item d-flex align-items-center pb-3 border-bottom">
                                             <div class="js-cart-dropdown__item-image me-3">
-                                                <img src="images/menu-items/пилешка_супа.jpg" alt="Пилешка супа" class="js-cart-dropdown__item-img">
+                                                <img src="" alt="" class="js-cart-dropdown__item-img">
                                             </div>
                                             <div class="js-cart-dropdown__item-desc flex-grow-1">
-                                                <div class="js-cart-dropdown__item-title fw-bold">Peperoni</div>
-                                                <div class="js-cart-dropdown__item-price text-muted">1x 4.50 lv</div>
+                                                <div class="js-cart-dropdown__item-title fw-bold"></div>
+                                                <div class="js-cart-dropdown__item-price text-muted"></div>
                                             </div>
                                             <div class="js-cart-dropdown__item-actions">
                                                 <a href="#" class="js-cart-dropdown__remove text-danger"><i class="fas fa-times"></i></a>
@@ -262,7 +299,7 @@ function navbarContainer(): void
                                     <div class="js-cart-dropdown__footer p-3 border-top">
                                         <div class="js-cart-dropdown__total d-flex justify-content-between mb-3">
                                             <span class="fw-bold">Total:</span>
-                                            <span class="fw-bold text-danger">4.50 lv</span>
+                                            <span class="fw-bold text-danger"></span>
                                         </div>
                                         <div class="d-grid gap-2">
                                             <a href="#" class="btn btn-sm js-cart-dropdown__view-btn">View Cart</a>

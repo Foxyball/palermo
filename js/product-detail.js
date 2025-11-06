@@ -94,27 +94,17 @@ $(document).ready(function () {
 
         $btn.prop('disabled', true).html('<i class="icon-line-loader icon-spin"></i> Adding...');
 
-        $.ajax({
-            url: baseUrl + 'include/cart_add.php',
-            method: 'POST',
-            data: formData,
-            dataType: 'json'
-        })
+        PalermoCart.add(formData)
             .done(function (response) {
                 if (response.success) {
-                    toastr.success(response.message || 'Product added to cart!');
-
-                    // Update cart count if available
-                    if (response.cart_count) {
-                        $('.cart-count').text(response.cart_count);
-                    }
+                    PalermoCart.showAlert(response.message || 'Product added to cart', 'success');
+                    PalermoCart.refresh();
                 } else {
-                    toastr.error(response.message || 'Failed to add product to cart');
+                    PalermoCart.showAlert(response.message || 'Failed to add product', 'danger');
                 }
             })
-            .fail(function (xhr, status, error) {
-                console.error('Add to cart error:', error);
-                toastr.error('An error occurred. Please try again.');
+            .fail(function () {
+                PalermoCart.showAlert('An error occurred. Please try again.', 'danger');
             })
             .always(function () {
                 $btn.prop('disabled', false).html(originalText);
