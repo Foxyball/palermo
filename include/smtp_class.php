@@ -17,6 +17,10 @@ function sendEmail(
 ): bool {
     $mail = new PHPMailer(true);
     try {
+        // Character set
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
+        
         // Server settings
         $mail->isSMTP();
         $mail->Host       = 'sandbox.smtp.mailtrap.io';

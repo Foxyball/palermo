@@ -85,12 +85,15 @@
     padding: 1.5rem;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .addons-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    width: 100%;
 }
 
 .addon-item {
@@ -98,6 +101,10 @@
     background: rgba(255, 255, 255, 0.03);
     border-radius: 6px;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
 }
 
 .addon-item:hover {
@@ -108,16 +115,21 @@
     cursor: pointer;
     width: 1.2rem;
     height: 1.2rem;
+    margin: 0 !important;
+    flex-shrink: 0;
+    position: relative;
 }
 
 .addon-item label {
     cursor: pointer;
     margin-bottom: 0;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
     font-size: 1rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
+    gap: 0.5rem;
+    flex: 1;
 }
 
 /* Quantity Control */

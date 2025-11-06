@@ -5,6 +5,8 @@ header('Content-Type: application/json');
 require_once(__DIR__ . '/connect.php');
 require_once(__DIR__ . '/Cart.php');
 require_once(__DIR__ . '/../repositories/frontend/OrderProcessingRepository.php');
+require_once(__DIR__ . '/smtp_class.php');
+require_once(__DIR__ . '/EmailTemplateGenerator.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -52,6 +54,32 @@ try {
 
     $cart->clear();
 
+    // Send confirmation email to user
+    try {
+        $userEmail = $_SESSION['user_email'] ?? '';
+        $userName = $_SESSION['name'] ?? $_SESSION['email'] ?? 'Customer';
+        
+        if (!empty($userEmail)) {
+            $emailGenerator = new EmailTemplateGenerator();
+            $emailBody = $emailGenerator->generateOrderConfirmationEmail(
+                $userEmail,
+                $orderId,
+                $totalAmount,
+                $items,
+                $orderAddress,
+                $message
+            );
+            
+            sendEmail(
+                $userEmail,
+                $userName,
+                "Order Confirmation #$orderId - " . SITE_TITLE,
+                $emailBody
+            );
+        }
+    } catch (Exception $e) {
+    }
+
     echo json_encode([
         'success' => true,
         'message' => 'Order placed successfully',
@@ -59,8 +87,12 @@ try {
         'redirect' => BASE_URL . 'thank-you'
     ]);
 } catch (PDOException $e) {
-    // Log error for debugging
-    error_log('Order processing error: ' . $e->getMessage());
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'An error occurred while processing your order. Please try again.'
+    ]);
+} catch (Exception $e) {
 
     echo json_encode([
         'success' => false,
