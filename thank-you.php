@@ -37,9 +37,6 @@ $pageTitle = 'Thank You - ' . SITE_TITLE;
                             <div class="col-lg-6 col-md-8">
 
                                 <div class="auth-card text-center">
-                                    <div class="mb-4">
-                                        <i class="icon-line-check-circle" style="font-size: 5rem; color: #28a745;"></i>
-                                    </div>
 
                                     <div class="auth-header mb-4">
                                         <h2 class="mb-3">Thank You!</h2>
