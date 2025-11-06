@@ -36,9 +36,9 @@ $(document).ready(function () {
             if (response.success) {
                 showAlert('Order placed successfully! Redirecting...', 'success');
                 
-                // Redirect to order success page
+                // Redirect to thank you page
                 setTimeout(function () {
-                    window.location.href = response.redirect || 'order-success?order_id=' + response.order_id;
+                    window.location.href = response.redirect || 'thank-you';
                 }, 1500);
             } else {
                 $btn.prop('disabled', false).removeClass('loading').html(originalHtml);

@@ -117,7 +117,7 @@ try {
         'success' => true,
         'message' => 'Order placed successfully',
         'order_id' => $orderId,
-        'redirect' => BASE_URL . 'order-success?order_id=' . $orderId
+        'redirect' => BASE_URL . 'thank-you'
     ]);
     
 } catch (PDOException $e) {
