@@ -2,9 +2,12 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/ProductRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$productRepo = new ProductRepository($pdo);
 
 $errors = [];
 $successMessage = '';
@@ -41,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT id FROM products WHERE slug = ? LIMIT 1');
-        $stmt->execute([$slug]);
-        if ($stmt->fetch()) {
+        if ($productRepo->slugExists($slug)) {
             $errors[] = 'Product slug already exists. Please choose a different slug.';
         }
     }
@@ -66,8 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $stmt = $pdo->prepare('INSERT INTO products (category_id, name, slug, image, price, active, short_description, long_description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, "1", ?, ?, NOW(), NOW())');
-            $stmt->execute([
+            $productId = $productRepo->create(
                 $categoryId,
                 $name,
                 $slug,
@@ -75,18 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $price,
                 $shortDescription,
                 $longDescription
-            ]);
+            );
 
-            $productId = $pdo->lastInsertId();
-
-            if (!empty($selectedAddons)) {
-                $addonStmt = $pdo->prepare('INSERT INTO product_addons (product_id, addon_id) VALUES (?, ?)');
-                foreach ($selectedAddons as $addonId) {
-                    if (is_numeric($addonId)) {
-                        $addonStmt->execute([$productId, $addonId]);
-                    }
-                }
-            }
+            $productRepo->syncAddons($productId, $selectedAddons);
 
             $pdo->commit();
             $_SESSION['success'] = 'Product created successfully';

@@ -2,9 +2,12 @@
 
 require_once(__DIR__ . '/../include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
+require_once(__DIR__ . '/../repositories/admin/ProductRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
 requireAdminLogin();
+
+$productRepo = new ProductRepository($pdo);
 
 $productId = $_GET['id'] ?? 0;
 if ($productId <= 0) {
@@ -13,9 +16,7 @@ if ($productId <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT * FROM products WHERE id = ? LIMIT 1');
-$stmt->execute([$productId]);
-$productToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+$productToEdit = $productRepo->findById($productId);
 
 if (!$productToEdit) {
     $_SESSION['error'] = 'Product not found.';
@@ -33,9 +34,7 @@ $addonsStmt = $pdo->prepare('SELECT id, name, price FROM addons WHERE status = "
 $addonsStmt->execute();
 $addons = $addonsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$currentAddonsStmt = $pdo->prepare('SELECT addon_id FROM product_addons WHERE product_id = ?');
-$currentAddonsStmt->execute([$productId]);
-$currentAddons = $currentAddonsStmt->fetchAll(PDO::FETCH_COLUMN);
+$currentAddons = $productRepo->getProductAddons($productId);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
@@ -60,9 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('SELECT id FROM products WHERE slug = ? AND id != ? LIMIT 1');
-        $stmt->execute([$slug, $productId]);
-        if ($stmt->fetch()) {
+        if ($productRepo->slugExists($slug, $productId)) {
             $errors[] = 'Product slug already exists. Please choose a different slug.';
         }
     }
@@ -89,30 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $stmt = $pdo->prepare('UPDATE products SET category_id = ?, name = ?, slug = ?, image = ?, price = ?, short_description = ?, long_description = ?, updated_at = NOW() WHERE id = ?');
-            $stmt->execute([
+            $productRepo->update(
+                $productId,
                 $categoryId,
                 $name,
                 $slug,
                 $imagePath,
                 $price,
                 $shortDescription,
-                $longDescription,
-                $productId
-            ]);
+                $longDescription
+            );
 
-            // Delete existing product addons
-            $stmt = $pdo->prepare('DELETE FROM product_addons WHERE product_id = ?');
-            $stmt->execute([$productId]);
-
-            if (!empty($selectedAddons)) {
-                $addonStmt = $pdo->prepare('INSERT INTO product_addons (product_id, addon_id) VALUES (?, ?)');
-                foreach ($selectedAddons as $addonId) {
-                    if (is_numeric($addonId)) {
-                        $addonStmt->execute([$productId, $addonId]);
-                    }
-                }
-            }
+            $productRepo->syncAddons($productId, $selectedAddons);
 
             $pdo->commit();
             $_SESSION['success'] = 'Product updated successfully';
