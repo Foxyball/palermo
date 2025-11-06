@@ -100,7 +100,13 @@ $(document).ready(function () {
                     PalermoCart.showAlert(response.message || 'Product added to cart', 'success');
                     PalermoCart.refresh();
                 } else {
-                    PalermoCart.showAlert(response.message || 'Failed to add product', 'danger');
+                    if (response.redirect) {
+                        setTimeout(function() {
+                            window.location.href = baseUrl + response.redirect;
+                        }, 1500);
+                    } else {
+                        PalermoCart.showAlert(response.message || 'Failed to add product', 'danger');
+                    }
                 }
             })
             .fail(function () {

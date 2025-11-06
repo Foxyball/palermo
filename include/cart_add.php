@@ -11,6 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
+    echo json_encode([
+        'success' => false, 
+        'redirect' => 'login'
+    ]);
+    exit;
+}
+
 $productId = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
 $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
 $addons = isset($_POST['addons']) ? $_POST['addons'] : [];

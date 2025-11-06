@@ -246,12 +246,16 @@ function navbarContainer(): void
                                 <div class="js-account-dropdown__content shadow-lg rounded">
                                     <div class="js-account-dropdown__header p-3 border-bottom">
                                         <h5 class="mb-0">
-                                            <?php if (!isset($_SESSION['user_logged_in']) && !$_SESSION['user_logged_in']): ?>
+                                            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
+                                                Welcome, <?php echo htmlspecialchars($_SESSION['user_first_name']); ?>!
+                                            <?php else: ?>
                                                 My Account
                                             <?php endif; ?>
                                         </h5>
                                         <small class="text-muted">
-                                            <?php if (!isset($_SESSION['user_logged_in']) && !$_SESSION['user_logged_in']): ?>
+                                            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
+                                                <?php echo htmlspecialchars($_SESSION['user_email']); ?>
+                                            <?php else: ?>
                                                 Sign in to your account
                                             <?php endif; ?>
                                         </small>
