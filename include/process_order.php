@@ -59,13 +59,12 @@ try {
         'redirect' => BASE_URL . 'thank-you'
     ]);
 } catch (PDOException $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-
+    // Log error for debugging
+    error_log('Order processing error: ' . $e->getMessage());
 
     echo json_encode([
         'success' => false,
         'message' => 'An error occurred while processing your order. Please try again.'
     ]);
 }
+

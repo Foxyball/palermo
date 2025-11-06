@@ -9,7 +9,6 @@ class OrderProcessingRepository
         $this->pdo = $pdo;
     }
 
-
     public function createOrder(
         int $userId, 
         float $totalAmount, 
@@ -40,7 +39,6 @@ class OrderProcessingRepository
             throw $e;
         }
     }
-
 
     private function insertOrder(
         int $userId, 
