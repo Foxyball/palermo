@@ -117,7 +117,7 @@ headerContainer();
                                                                 <strong>#<?php echo $product['id']; ?></strong>
                                                             </td>
                                                             <td class="align-middle">
-                                                                <img src="<?php echo '/palermo/' . htmlspecialchars($product['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
+                                                                <img src="<?php echo BASE_URL . htmlspecialchars($product['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="d-flex align-items-center">
