@@ -166,7 +166,7 @@ headerContainer();
                                             <tr data-image-row-id="<?php echo (int)$img['id']; ?>">
                                                 <td>#<?php echo (int)$img['id']; ?></td>
                                                 <td>
-                                                    <img src="<?php echo '/palermo/' . htmlspecialchars($img['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
+                                                    <img src="<?php echo BASE_URL . htmlspecialchars($img['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
                                                 </td>
                                                 <td class="text-break"><code class="d-inline-block" style="max-width: 520px; white-space: normal; word-break: break-all; overflow-wrap: anywhere;">&nbsp;<?php echo htmlspecialchars($img['image']); ?></code></td>
                                                 <td><?php echo $img['created_at'] ? date('M j, Y g:i A', strtotime($img['created_at'])) : '-'; ?></td>
