@@ -122,19 +122,27 @@ jobs:
           EOF
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
-      # 10. Remote commands: DB + Permissions + Version log
-      - name: DB + Permissions + Version log
+      # 10. Remote commands: Install dependencies + Permissions + Version log
+      - name: Install dependencies + Permissions + Version log
         if: github.event_name == 'release'
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /var/www/kursova.balikgstudio.eu/
+            
+            echo 'Installing Composer dependencies...'
+            composer install --no-dev --optimize-autoloader --no-interaction
+            
+            echo 'Installing NPM dependencies...'
+            sudo npm install --omit=dev
+            
             echo 'Ensuring uploads/ directory exists...'
             sudo mkdir -p uploads
             echo 'Setting uploads/ permissions...'
             sudo chown -R www-data:www-data uploads/
             sudo chmod -R 775 uploads/
+            
             echo 'Updating .version.txt...'
             rm -f .version.txt
             echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
