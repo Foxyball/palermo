@@ -58,7 +58,7 @@ jobs:
       - name: Deploy code via rsync
         uses: burnett01/rsync-deployments@5.2
         with:
-          switches: -avzr --delete --no-perms --no-owner --no-group --omit-dir-times --exclude='.git*' --exclude='.github' --exclude='node_modules' --exclude='uploads/'
+          switches: -avzr --delete --exclude='.git*' --exclude='.github' --exclude='node_modules'
           path: ./
           remote_path: /var/www/kursova.balikgstudio.eu/
           remote_host: ${{ secrets.SERVER_HOST }}
@@ -122,22 +122,20 @@ jobs:
           EOF
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
-      # 10. Remote setup: Ensure uploads dir exists, fix permissions, update version
-      - name: Permissions & version update on remote host
+      # 10. Remote commands: DB + Permissions + Version log
+      - name: DB + Permissions + Version log
         if: github.event_name == 'release'
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /var/www/kursova.balikgstudio.eu/
-
-            echo 'Ensuring uploads/ exists...'
-            mkdir -p uploads
-            chmod -R 775 uploads
-
+            echo 'Fixing uploads/ permissions...'
+            sudo chown -R www-data:www-data uploads/
+            sudo chmod -R 775 uploads/
             echo 'Updating .version.txt...'
+            rm -f .version.txt
             echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
-            chmod 644 .version.txt
           EOF
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
