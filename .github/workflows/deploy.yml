@@ -132,12 +132,12 @@ jobs:
             cd /var/www/kursova.balikgstudio.eu/
 
             echo 'Ensuring uploads/ exists...'
-            sudo mkdir -p uploads
-            sudo chown -R www-data:www-data uploads
-            sudo chmod -R 775 uploads
+            mkdir -p uploads
+            chmod -R 775 uploads
 
             echo 'Updating .version.txt...'
-            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' | sudo tee .version.txt > /dev/null
+            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
+            chmod 644 .version.txt
           EOF
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
