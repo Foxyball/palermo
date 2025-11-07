@@ -140,16 +140,8 @@ jobs:
             rm -f .version.txt
             echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
             
+            echo 'Testing database connection...'
+            php -r "\$mysqli = new mysqli('${{ secrets.DB_HOST }}', '${{ secrets.DB_USER }}', '${{ secrets.DB_PASSWORD }}', '${{ secrets.DB_NAME }}'); if (\$mysqli->connect_errno) { echo 'DB connection failed: '.\$mysqli->connect_error; exit(1); } echo 'DB connection successful'; \$mysqli->close();"
+            
             echo 'Deployment step completed successfully.'
           EOF
-
-      # 11. Optional: Test database connection
-      - name: Test DB connection
-        run: |
-          echo "Testing database connection..."
-          php -r "
-          \$mysqli = new mysqli('${{ secrets.DB_HOST }}', '${{ secrets.DB_USER }}', '${{ secrets.DB_PASSWORD }}', '${{ secrets.DB_NAME }}');
-          if (\$mysqli->connect_errno) { echo 'DB connection failed: '.\$mysqli->connect_error; exit(1); }
-          echo 'DB connection successful';
-          \$mysqli->close();
-          "
