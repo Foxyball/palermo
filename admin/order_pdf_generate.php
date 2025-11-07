@@ -26,11 +26,9 @@ function fetchOrderData(PDO $pdo, int $orderId): array|false
             u.phone,
             u.address,
             u.city,
-            u.zip_code,
-            os.name AS status_name
+            u.zip_code
         FROM orders o
         LEFT JOIN users u ON o.user_id = u.id
-        LEFT JOIN order_statuses os ON o.status_id = os.id
         WHERE o.id = ? LIMIT 1
     ');
     $stmt->execute([$orderId]);
@@ -46,8 +44,7 @@ function fetchOrderItems(PDO $pdo, int $orderId): array
             oi.qty as quantity,
             oi.unit_price,
             oi.subtotal,
-            p.name as product_name,
-            p.description as product_description
+            p.name as product_name
         FROM order_items oi
         LEFT JOIN products p ON oi.product_id = p.id
         WHERE oi.order_id = ?
@@ -115,12 +112,8 @@ function generateInvoiceHeader(array $order): string
     <div class="invoice-details">
         <table>
             <tr>
-                <td width="50%"><strong>Invoice Number:</strong> #' . htmlspecialchars($order['id'], ENT_QUOTES, 'UTF-8') . '</td>
+                <td width="50%"><strong>Invoice Number:</strong> #' . htmlspecialchars((string)$order['id'], ENT_QUOTES, 'UTF-8') . '</td>
                 <td width="50%"><strong>Date:</strong> ' . date('F j, Y', strtotime($order['created_at'])) . '</td>
-            </tr>
-            <tr>
-                <td><strong>Time:</strong> ' . date('g:i A', strtotime($order['created_at'])) . '</td>
-                <td><strong>Status:</strong> <span class="status-badge">' . htmlspecialchars($order['status_name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8') . '</span></td>
             </tr>
         </table>
     </div>';
@@ -142,7 +135,7 @@ function generateCustomerInfo(array $order): string
                     ' . htmlspecialchars($order['email'], ENT_QUOTES, 'UTF-8') . '<br>';
 
         if (!empty($order['phone'])) {
-            $html .= 'Phone: ' . htmlspecialchars($order['phone'], ENT_QUOTES, 'UTF-8') . '<br>';
+            $html .= 'Phone: ' . htmlspecialchars((string)$order['phone'], ENT_QUOTES, 'UTF-8') . '<br>';
         }
 
         if (!empty($order['address']) || !empty($order['city']) || !empty($order['zip_code'])) {
@@ -200,12 +193,12 @@ function generateOrderItemsTable(array $orderItems): array
 
     foreach ($orderItems as $item) {
         // Calculate item total: (unit_price * quantity) + addons
-        $baseItemTotal = $item['unit_price'] * $item['quantity'];
+        $baseItemTotal = (float)$item['unit_price'] * (int)$item['quantity'];
 
         // Calculate addon total
         $addonTotal = 0;
         foreach ($item['addons'] as $addon) {
-            $addonTotal += $addon['unit_price'];
+            $addonTotal += (float)$addon['unit_price'];
         }
 
         $itemTotal = $baseItemTotal + $addonTotal;
@@ -216,19 +209,16 @@ function generateOrderItemsTable(array $orderItems): array
                 <td>
                     <strong>' . htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8') . '</strong>';
 
-        if (!empty($item['product_description'])) {
-            $html .= '<br><small style="color: #666;">' . htmlspecialchars($item['product_description'], ENT_QUOTES, 'UTF-8') . '</small>';
-        }
 
         // Add addons
         foreach ($item['addons'] as $addon) {
-            $html .= '<br><div class="addon-item">+ ' . htmlspecialchars($addon['addon_name'], ENT_QUOTES, 'UTF-8') . ' — ' . displayPrice($addon['unit_price']) . '</div>';
+            $html .= '<br><div class="addon-item">+ ' . htmlspecialchars($addon['addon_name'], ENT_QUOTES, 'UTF-8') . ' — ' . displayPrice((float)$addon['unit_price']) . '</div>';
         }
 
         $html .= '
                 </td>
                 <td class="text-center">' . $item['quantity'] . '</td>
-                <td class="text-right">' . displayPrice($item['unit_price']) . '</td>
+                <td class="text-right">' . displayPrice((float)$item['unit_price']) . '</td>
                 <td class="text-right"><strong>' . displayPrice($itemTotal) . '</strong></td>
             </tr>';
     }
