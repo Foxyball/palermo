@@ -3,7 +3,7 @@ const PalermoCart = (function () {
 
     // config
     const config = {
-        baseUrl: window.location.origin + '/palermo/',
+        baseUrl: window.location.origin + '/',
         bgnToEurRate: 1.95583,
         endpoints: {
             add: 'include/cart_add.php',

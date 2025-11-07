@@ -54,3 +54,7 @@
   font-weight: bold;
   font-size: 14px;
 }
+/* Modal backdrop fix - semi-transparent */
+.modal-backdrop {
+  opacity: 0.5 !important;
+}

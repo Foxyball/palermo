@@ -47,7 +47,7 @@ headerContainer();
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
-                                <li class="breadcrumb-item"><a href="/palermo/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>admin">Home</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Blog List</li>
                             </ol>
                         </div>
@@ -118,7 +118,7 @@ headerContainer();
                                                                 <strong>#<?php echo $blog['id']; ?></strong>
                                                             </td>
                                                             <td class="align-middle">
-                                                                <img src="<?php echo '/palermo/' . htmlspecialchars($blog['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
+                                                                <img src="<?php echo '<?php echo BASE_URL; ?>' . htmlspecialchars($blog['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="d-flex align-items-center">

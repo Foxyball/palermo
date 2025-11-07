@@ -116,7 +116,7 @@ headerContainer();
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
-                                <li class="breadcrumb-item"><a href="/palermo/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>admin">Home</a></li>
                                 <li class="breadcrumb-item"><a href="product_list">Product List</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Add Product</li>
                             </ol>
