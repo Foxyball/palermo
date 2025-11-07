@@ -1,0 +1,149 @@
+@page { 
+    margin: 20mm; 
+}
+
+body { 
+    font-family: Arial, sans-serif; 
+    font-size: 12px; 
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+}
+
+.header { 
+    text-align: center; 
+    margin-bottom: 30px; 
+    border-bottom: 2px solid #333; 
+    padding-bottom: 15px; 
+}
+
+.header h1 { 
+    color: #333; 
+    margin: 0 0 5px 0; 
+    font-size: 24px;
+}
+
+.header p { 
+    margin: 0; 
+    font-size: 16px; 
+    color: #666; 
+}
+
+.invoice-details { 
+    margin-bottom: 25px; 
+}
+
+.invoice-details table { 
+    width: 100%; 
+    border-collapse: collapse;
+}
+
+.invoice-details td { 
+    padding: 8px 0; 
+    vertical-align: top;
+}
+
+.section-title { 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #333; 
+    margin: 20px 0 10px 0; 
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.customer-info { 
+    margin-bottom: 25px; 
+}
+
+.customer-info table { 
+    width: 100%; 
+    border-collapse: collapse;
+}
+
+.customer-info td { 
+    padding: 5px 10px; 
+    vertical-align: top; 
+    border: 1px solid #ddd;
+}
+
+.items-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 25px; 
+}
+
+.items-table th, .items-table td { 
+    border: 1px solid #ddd; 
+    padding: 10px 8px; 
+    text-align: left; 
+}
+
+.items-table th { 
+    background-color: #f8f9fa; 
+    font-weight: bold; 
+    text-align: center;
+}
+
+.items-table .text-right { 
+    text-align: right; 
+}
+
+.items-table .text-center { 
+    text-align: center; 
+}
+
+.addon-item { 
+    font-style: italic; 
+    color: #666; 
+    font-size: 11px;
+    margin-left: 10px;
+}
+
+.totals { 
+    margin-top: 30px; 
+}
+
+.totals table { 
+    width: 100%; 
+    margin-left: auto;
+    margin-right: 0;
+    width: 300px;
+    float: right;
+}
+
+.totals td { 
+    padding: 8px 10px; 
+    border: 1px solid #ddd;
+}
+
+.total-row { 
+    font-weight: bold; 
+    font-size: 14px; 
+    background-color: #f8f9fa;
+}
+
+.status-badge { 
+    display: inline-block; 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    background-color: #e9ecef; 
+    border: 1px solid #adb5bd; 
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.footer { 
+    margin-top: 40px; 
+    text-align: center; 
+    font-size: 10px; 
+    color: #666;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
