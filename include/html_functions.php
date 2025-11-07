@@ -32,6 +32,9 @@ function headerContainer(): void
 
         <script src="js/js-cart-palermo.js"></script>
         <script src="js/js-account-dropdown.js"></script>
+        
+        <!-- BASE_URL for JavaScript -->
+        <input type="hidden" id="js-base-url" value="<?php echo BASE_URL; ?>">
 
 
 
