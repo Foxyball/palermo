@@ -135,10 +135,10 @@ jobs:
             composer install --no-dev --optimize-autoloader --no-interaction
             
             echo 'Installing NPM dependencies...'
-            sudo npm install --omit=dev
+            npm install --omit=dev
             
             echo 'Ensuring uploads/ directory exists...'
-            sudo mkdir -p uploads
+            mkdir -p uploads
             echo 'Setting uploads/ permissions...'
             sudo chown -R www-data:www-data uploads/
             sudo chmod -R 775 uploads/
