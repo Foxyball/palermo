@@ -58,7 +58,7 @@ jobs:
       - name: Deploy code via rsync
         uses: burnett01/rsync-deployments@5.2
         with:
-          switches: -avzr --delete --exclude='.git*' --exclude='.github' --exclude='node_modules'
+          switches: -avzr --delete --no-perms --no-owner --no-group --exclude='.git*' --exclude='.github' --exclude='node_modules'
           path: ./
           remote_path: /var/www/kursova.balikgstudio.eu/
           remote_host: ${{ secrets.SERVER_HOST }}
