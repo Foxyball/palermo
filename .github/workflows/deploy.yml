@@ -130,7 +130,9 @@ jobs:
           chmod 600 private_key.pem
           ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /var/www/kursova.balikgstudio.eu/
-            echo 'Fixing uploads/ permissions...'
+            echo 'Ensuring uploads/ directory exists...'
+            sudo mkdir -p uploads
+            echo 'Setting uploads/ permissions...'
             sudo chown -R www-data:www-data uploads/
             sudo chmod -R 775 uploads/
             echo 'Updating .version.txt...'
