@@ -151,7 +151,7 @@ headerContainer();
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
-                                <li class="breadcrumb-item"><a href="/palermo/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>admin">Home</a></li>
                                 <li class="breadcrumb-item"><a href="blog_list">Blog List</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Edit
                                     #<?php echo (int)$blogId; ?></li>
@@ -248,7 +248,7 @@ headerContainer();
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label">Preview</label><br>
-                                                <img class="js-image-preview" src="<?php echo (!empty($_POST['image_url'])) ? htmlspecialchars($_POST['image_url']) : ((!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name'])) ? '/palermo/' . htmlspecialchars($imagePath) : '#'); ?>" alt="Image preview" style="max-width:220px; max-height:180px;<?php echo (!empty($_POST['image_url']) || (!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name']))) ? '' : 'display:none;'; ?> border:1px solid #ccc; background:#fafafa;" />
+                                                <img class="js-image-preview" src="<?php echo (!empty($_POST['image_url'])) ? htmlspecialchars($_POST['image_url']) : ((!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name'])) ? '<?php echo BASE_URL; ?>' . htmlspecialchars($imagePath) : '#'); ?>" alt="Image preview" style="max-width:220px; max-height:180px;<?php echo (!empty($_POST['image_url']) || (!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name']))) ? '' : 'display:none;'; ?> border:1px solid #ccc; background:#fafafa;" />
                                             </div>
                                         </div>
 

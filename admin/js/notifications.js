@@ -1,5 +1,5 @@
     const POLL_INTERVAL = 30000; // 30 seconds
-    const BASE_URL = window.location.origin + '/palermo/admin/';
+    const BASE_URL = document.getElementById('js-base-url')?.value || window.location.origin + '/admin/';
 
 
     function fetchNotifications() {

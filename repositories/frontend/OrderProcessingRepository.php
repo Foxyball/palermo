@@ -46,8 +46,8 @@ class OrderProcessingRepository
         string $orderAddress, 
         ?string $message
     ): int {
-        $sql = "INSERT INTO orders (user_id, amount, status_id, message, order_address, status, created_at) 
-                VALUES (?, ?, 1, ?, ?, 'pending', NOW())";
+        $sql = "INSERT INTO orders (user_id, amount, status_id, message, order_address, created_at) 
+                VALUES (?, ?, 1, ?, ?, NOW())";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -72,7 +72,7 @@ class OrderProcessingRepository
         $stmt->execute([
             $orderId,
             $item['product_id'],
-            $item['price'], 
+            $item['item_price'], 
             $item['quantity'],
             $subtotal
         ]);

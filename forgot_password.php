@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$email, $token, $expiresAt]);
                 
                 // Send email
-                $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/palermo/reset_password.php?token=" . $token;
+                $resetLink = "http://" . $_SERVER['HTTP_HOST'] . BASE_URL . "reset_password.php?token=" . $token;
                 $userName = trim($user['first_name'] . ' ' . $user['last_name']);
                 
                 $emailSubject = 'Password Reset - ' . SITE_TITLE;

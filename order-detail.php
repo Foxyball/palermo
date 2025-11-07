@@ -68,7 +68,7 @@ $pageTitle = 'Order #' . $order['id'] . ' - ' . SITE_TITLE;
                                     </div>
                                     <div>
                                         <a href="<?php echo BASE_URL; ?>orders" class="btn btn-outline-light">
-                                            <i class="icon-line-arrow-left me-2"></i>Back to Orders
+                                            Back to Orders
                                         </a>
                                     </div>
                                 </div>

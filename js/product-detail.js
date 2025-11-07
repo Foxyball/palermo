@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     const basePrice = parseFloat($('.js-base-price').val());
     const bgnToEurRate = parseFloat($('.js-bgn-to-eur-rate').val());
-    const baseUrl = $('.js-base-url').val() || '/palermo/';
+    const baseUrl = document.getElementById('js-base-url')?.value || $('.js-base-url').val() || '/';
 
     /**
      * Calculate and update the total price based on quantity and selected addons

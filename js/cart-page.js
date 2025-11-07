@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const baseUrl = window.location.origin + '/palermo/';
+    const baseUrl = document.getElementById('js-base-url')?.value || window.location.origin + '/';
     const bgnToEurRate = 1.95583;
 
     /**

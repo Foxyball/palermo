@@ -1,21 +1,15 @@
-/* Latest Blog Section Styles */
+/* Latest Blog Section Styles - Palermo Design System */
 
 #blog {
     padding: 80px 0;
     background: #1a1a1a;
 }
 
-/* Blog Card Styles */
+/* Blog Card Styles - Elegant & Minimal */
 #blog .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
-}
-
-#blog .blog-card-clickable:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    border-color: #666;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 #blog a.text-decoration-none {
@@ -26,26 +20,84 @@
     text-decoration: none;
 }
 
+/* Image Styling */
 #blog .card-img-top {
-    height: 200px;
+    height: 240px;
     object-fit: cover;
 }
 
 #blog .card-img-top.placeholder {
-    height: 200px;
+    height: 240px;
     display: flex;
     align-items: center;
-    justify-content-center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
 }
 
 #blog .card-img-top.placeholder i {
-    font-size: 3rem;
-    color: #666;
+    font-size: 3.5rem;
+    color: #dc3545;
+    opacity: 0.3;
 }
 
-/* Dotted Background Decoration */
+/* Card Body - Using Palermo Fonts */
+#blog .card-body {
+    padding: 1.75rem;
+}
+
+#blog .card-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+#blog .card-text {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+
+/* Badge Styling - Palermo Red */
+#blog .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.35em 0.75em;
+    background-color: #dc3545 !important;
+}
+
+#blog .text-muted {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Button Styling - Elegant Outline */
+#blog .btn-outline-light {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1.25rem;
+    border-width: 2px;
+}
+
+#blog .btn-outline-light:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+/* Dotted Background Decoration - Palermo Style */
 .dotted-bg {
     position: relative;
+    display: inline-block;
 }
 
 .dotted-bg::before,
@@ -53,17 +105,47 @@
     content: '';
     position: absolute;
     top: 50%;
-    width: 100px;
+    width: 120px;
     height: 2px;
-    background-image: repeating-linear-gradient(90deg, #fff 0px, #fff 10px, transparent 10px, transparent 20px);
+    background-image: repeating-linear-gradient(
+        90deg,
+        rgba(220, 53, 69, 0.6) 0px,
+        rgba(220, 53, 69, 0.6) 10px,
+        transparent 10px,
+        transparent 20px
+    );
 }
 
 .dotted-bg::before {
-    right: 100%;
-    margin-right: 20px;
+    right: calc(100% + 30px);
 }
 
 .dotted-bg::after {
-    left: 100%;
-    margin-left: 20px;
+    left: calc(100% + 30px);
+}
+
+/* Title Styling - Palermo Typography */
+#blog h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+#blog .lead {
+    font-family: 'Lato', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 400;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dotted-bg::before,
+    .dotted-bg::after {
+        display: none;
+    }
+    
+    #blog .card-img-top {
+        height: 200px;
+    }
 }

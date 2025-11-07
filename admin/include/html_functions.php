@@ -61,6 +61,9 @@ function headerContainer(): void
     <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
     <script src="./js/session-renew.js"></script>
     <script src="./js/notifications.js"></script>
+    
+    <!-- BASE_URL for JavaScript -->
+    <input type="hidden" id="js-base-url" value="<?php echo BASE_URL; ?>admin/">
     <?php
 }
 

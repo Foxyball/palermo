@@ -97,7 +97,7 @@ $pageTitle = 'My Orders - ' . SITE_TITLE;
 
                                                 <div class="order-footer">
                                                     <a href="<?php echo BASE_URL; ?>order-detail?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-light">
-                                                        <i class="icon-line-eye me-1"></i>View Details
+                                                        View Details
                                                     </a>
                                                 </div>
                                             </div>
