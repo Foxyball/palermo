@@ -122,20 +122,22 @@ jobs:
           EOF
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
-      # 10. Remote commands: DB + Permissions + Version log
-      - name: DB + Permissions + Version log
+      # 10. Remote setup: Ensure uploads dir exists, fix permissions, update version
+      - name: Permissions & version update on remote host
         if: github.event_name == 'release'
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /var/www/kursova.balikgstudio.eu/
-            echo 'Fixing uploads/ permissions...'
-            sudo chown -R www-data:www-data uploads/
-            sudo chmod -R 775 uploads/
+
+            echo 'Ensuring uploads/ exists...'
+            sudo mkdir -p uploads
+            sudo chown -R www-data:www-data uploads
+            sudo chmod -R 775 uploads
+
             echo 'Updating .version.txt...'
-            rm -f .version.txt
-            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
+            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' | sudo tee .version.txt > /dev/null
           EOF
           2>&1 | tee -a $GITHUB_WORKSPACE/logs/deploy.log
 
