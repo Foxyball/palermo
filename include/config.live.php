@@ -2,8 +2,8 @@
 
 // DB CREDENTIALS
 const DB_HOST = "localhost";
-const DB_USER = "root";
-const DB_PASS = "Hard Through-Dream Many-9";
+const DB_USER = "palermo";
+const DB_PASS = "WHeYdF8zevV3Dadd";
 const DB_NAME = "palermo_live";
 
 // GENERAL SETTINGS
