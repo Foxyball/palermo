@@ -1,6 +1,7 @@
 <?php
+require_once(__DIR__ . '/seo_tags.php');
 
-function headerContainer(): void
+function headerContainer(array $seoData = []): void
 {
 
 ?>
@@ -36,7 +37,7 @@ function headerContainer(): void
         <!-- BASE_URL for JavaScript -->
         <input type="hidden" id="js-base-url" value="<?php echo BASE_URL; ?>">
 
-
+        <?php renderSeoTags($seoData); ?>
 
     <?php }
 
