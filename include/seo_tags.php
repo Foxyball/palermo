@@ -1,34 +1,7 @@
 <?php
-/**
- * SEO Meta Tags Component
- * 
- * Generates dynamic meta tags for SEO optimization including:
- * - Basic meta tags (title, description)
- * - Open Graph tags (Facebook, LinkedIn)
- * - Twitter Card tags
- * 
- * Usage:
- * renderSeoTags([
- *     'title' => 'Page Title',
- *     'description' => 'Page description',
- *     'image' => 'path/to/image.jpg',
- *     'url' => 'https://example.com/page'
- * ]);
- */
 
-/**
- * Render SEO meta tags
- * 
- * @param array $seoData Array containing SEO data:
- *                       - title: Page title (required)
- *                       - description: Page description (optional)
- *                       - image: Page image URL (optional)
- *                       - url: Page canonical URL (optional)
- *                       - type: Open Graph type (optional, default: 'website')
- */
 function renderSeoTags(array $seoData = []): void
 {
-    // Default values
     $defaults = [
         'title' => SITE_TITLE,
         'description' => 'Palermo - Authentic Italian Pizza & Grill Restaurant',
@@ -37,20 +10,14 @@ function renderSeoTags(array $seoData = []): void
         'type' => 'website'
     ];
     
-    // Merge with provided data
     $seo = array_merge($defaults, $seoData);
     
-    // Sanitize data
     $seo['title'] = htmlspecialchars($seo['title'], ENT_QUOTES, 'UTF-8');
     $seo['description'] = htmlspecialchars($seo['description'], ENT_QUOTES, 'UTF-8');
     
-    // Ensure image is absolute URL
     if (!empty($seo['image']) && !preg_match('/^https?:\/\//', $seo['image'])) {
-        // Remove leading slash if present to avoid double slashes
         $seo['image'] = rtrim(BASE_URL, '/') . '/' . ltrim($seo['image'], '/');
     }
-    
-    // Output meta tags
     ?>
     
     <!-- Primary Meta Tags -->
