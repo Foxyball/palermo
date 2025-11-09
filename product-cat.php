@@ -32,7 +32,6 @@ if (!$currentCategory) {
 $productRepository = new ProductRepository($pdo);
 $pageTitle = htmlspecialchars($currentCategory['name']) . ' - ' . SITE_TITLE;
 
-// Prepare SEO data
 $seoData = [
     'title' => $pageTitle,
     'description' => 'Browse our ' . htmlspecialchars($currentCategory['name']) . ' menu at Palermo - Authentic Italian Pizza & Grill',
