@@ -7,7 +7,6 @@ include(__DIR__ . '/include/html_functions.php');
 $blogRepository = new BlogRepository($pdo);
 $pageTitle = 'Blog - ' . SITE_TITLE;
 
-// Prepare SEO data
 $seoData = [
     'title' => $pageTitle,
     'description' => 'Read the latest news and articles from Palermo - Authentic Italian Pizza & Grill Restaurant',
