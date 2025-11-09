@@ -72,7 +72,6 @@ if (isset($_POST['submit_contact'])) {
     exit();
 }
 
-// Prepare SEO data
 $seoData = [
     'title' => SITE_TITLE . ' | Contacts',
     'description' => 'Get in touch with Palermo - Authentic Italian Pizza & Grill. Visit us or contact us for reservations and inquiries.',
