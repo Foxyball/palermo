@@ -3,7 +3,6 @@ require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/repositories/frontend/BlogRepository.php');
 include(__DIR__ . '/include/html_functions.php');
 
-// Prepare SEO data for homepage
 $seoData = [
     'title' => SITE_TITLE . ' - Authentic Italian Pizza & Grill Restaurant',
     'description' => 'Welcome to Palermo - Your destination for authentic Italian pizza and grill cuisine. Order online or visit us for the best Italian food experience.',
