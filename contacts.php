@@ -71,9 +71,15 @@ if (isset($_POST['submit_contact'])) {
     header('Location: contacts.php');
     exit();
 }
+
+$seoData = [
+    'title' => SITE_TITLE . ' | Contacts',
+    'description' => 'Get in touch with Palermo - Authentic Italian Pizza & Grill. Visit us or contact us for reservations and inquiries.',
+    'url' => BASE_URL . 'contacts'
+];
 ?>
 
-<?php headerContainer(); ?>
+<?php headerContainer($seoData); ?>
 
 <!-- GOOGLE RECAPTCHA  -->
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>

@@ -6,9 +6,15 @@ include(__DIR__ . '/include/html_functions.php');
 
 $blogRepository = new BlogRepository($pdo);
 $pageTitle = 'Blog - ' . SITE_TITLE;
+
+$seoData = [
+    'title' => $pageTitle,
+    'description' => 'Read the latest news and articles from Palermo - Authentic Italian Pizza & Grill Restaurant',
+    'url' => BASE_URL . 'blog'
+];
 ?>
 
-<?php headerContainer(); ?>
+<?php headerContainer($seoData); ?>
 
 <title><?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/latest-blog.css">

@@ -2,9 +2,15 @@
 require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/repositories/frontend/BlogRepository.php');
 include(__DIR__ . '/include/html_functions.php');
+
+$seoData = [
+    'title' => SITE_TITLE . ' - Authentic Italian Pizza & Grill Restaurant',
+    'description' => 'Welcome to Palermo - Your destination for authentic Italian pizza and grill cuisine. Order online or visit us for the best Italian food experience.',
+    'url' => BASE_URL
+];
 ?>
 
-<?php headerContainer(); ?>
+<?php headerContainer($seoData); ?>
 
 <title><?php echo SITE_TITLE; ?></title>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/latest-blog.css">

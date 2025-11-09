@@ -22,9 +22,22 @@ if (!$product) {
 $addons = $productRepository->getProductAddons($product['id']);
 
 $pageTitle = htmlspecialchars($product['name']) . ' - ' . SITE_TITLE;
+
+// Prepare SEO data
+$seoData = [
+    'title' => $pageTitle,
+    'description' => !empty($product['short_description']) 
+        ? htmlspecialchars($product['short_description']) 
+        : htmlspecialchars($product['name']) . ' - Authentic Italian cuisine at Palermo',
+    'image' => !empty($product['image']) 
+        ? $product['image'] 
+        : 'images/palermo_logo.png',
+    'type' => 'product',
+    'url' => BASE_URL . 'product/' . $slug
+];
 ?>
 
-<?php headerContainer(); ?>
+<?php headerContainer($seoData); ?>
 
 <title><?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/product-detail.css">

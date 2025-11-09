@@ -24,9 +24,21 @@ if (!empty($blog['gallery_id'])) {
 }
 
 $pageTitle = htmlspecialchars($blog['title']) . ' - ' . SITE_TITLE;
+
+$seoData = [
+    'title' => $pageTitle,
+    'description' => !empty($blog['description']) 
+        ? strip_tags(htmlspecialchars($blog['description'])) 
+        : htmlspecialchars($blog['title']) . ' - Read our latest blog post at Palermo',
+    'image' => !empty($blog['image']) 
+        ? $blog['image'] 
+        : 'images/palermo_logo.png',
+    'type' => 'article',
+    'url' => BASE_URL . 'blog/' . $slug
+];
 ?>
 
-<?php headerContainer(); ?>
+<?php headerContainer($seoData); ?>
 
 <title><?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/blog-detail.css">

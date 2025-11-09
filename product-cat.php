@@ -31,9 +31,16 @@ if (!$currentCategory) {
 
 $productRepository = new ProductRepository($pdo);
 $pageTitle = htmlspecialchars($currentCategory['name']) . ' - ' . SITE_TITLE;
+
+$seoData = [
+    'title' => $pageTitle,
+    'description' => 'Browse our ' . htmlspecialchars($currentCategory['name']) . ' menu at Palermo - Authentic Italian Pizza & Grill',
+    'image' => !empty($currentCategory['image']) ? $currentCategory['image'] : 'images/palermo_logo.png',
+    'url' => BASE_URL . 'cat/' . $categorySlug
+];
 ?>
 
-<?php headerContainer(); ?>
+<?php headerContainer($seoData); ?>
 
 <title><?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/product-cat.css">
