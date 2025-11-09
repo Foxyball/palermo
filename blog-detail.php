@@ -25,7 +25,6 @@ if (!empty($blog['gallery_id'])) {
 
 $pageTitle = htmlspecialchars($blog['title']) . ' - ' . SITE_TITLE;
 
-// Prepare SEO data
 $seoData = [
     'title' => $pageTitle,
     'description' => !empty($blog['description']) 
