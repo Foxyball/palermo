@@ -1,6 +1,5 @@
 <?php
 
-header('Content-Type: application/json');
 
 require_once(__DIR__ . '/connect.php');
 require_once(__DIR__ . '/Cart.php');
@@ -27,9 +26,15 @@ $userId = $_SESSION['user_id'];
 
 $orderAddress = isset($_POST['order_address']) ? trim($_POST['order_address']) : '';
 $message = isset($_POST['message']) ? trim($_POST['message']) : null;
+$orderPhone = isset($_POST['order_phone']) ? trim($_POST['order_phone']) : '';
 
 if (empty($orderAddress)) {
     echo json_encode(['success' => false, 'message' => 'Delivery address is required']);
+    exit;
+}
+
+if (empty($orderPhone)) {
+    echo json_encode(['success' => false, 'message' => 'Contact phone number is required']);
     exit;
 }
 
@@ -50,11 +55,10 @@ try {
     $totalAmount = $cartData['cart_total'];
 
     $orderRepo = new OrderProcessingRepository($pdo);
-    $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $message);
+    $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $orderPhone, $message);
 
     $cart->clear();
 
-    // Send confirmation email to user
     try {
         $userEmail = $_SESSION['user_email'] ?? '';
         $userName = $_SESSION['name'] ?? $_SESSION['email'] ?? 'Customer';
@@ -67,6 +71,7 @@ try {
                 $totalAmount,
                 $items,
                 $orderAddress,
+                $orderPhone,
                 $message
             );
             

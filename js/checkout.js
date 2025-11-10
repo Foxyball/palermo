@@ -4,10 +4,17 @@ $(document).ready(function () {
     e.preventDefault();
 
     const address = $("#order_address").val().trim();
+    const phone = $("#order_phone").val().trim();
 
     if (!address) {
       showAlert("Please enter your delivery address", "danger");
       $("#order_address").focus();
+      return;
+    }
+
+    if (!phone) {
+      showAlert("Please enter your contact phone number", "danger");
+      $("#order_phone").focus();
       return;
     }
 

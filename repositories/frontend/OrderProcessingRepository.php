@@ -10,22 +10,22 @@ class OrderProcessingRepository
     }
 
     public function createOrder(
-        int $userId, 
-        float $totalAmount, 
-        array $items, 
-        string $orderAddress, 
+        int $userId,
+        float $totalAmount,
+        array $items,
+        string $orderAddress,
+        string $orderPhone,
         ?string $message = null
     ): int {
         $this->pdo->beginTransaction();
 
         try {
-        
-            $orderId = $this->insertOrder($userId, $totalAmount, $orderAddress, $message);
 
-            // Insert order items and addons
+            $orderId = $this->insertOrder($userId, $totalAmount, $orderAddress, $orderPhone, $message);
+
             foreach ($items as $item) {
                 $orderItemId = $this->insertOrderItem($orderId, $item);
-                
+
                 if (!empty($item['addons'])) {
                     $this->insertOrderItemAddons($orderItemId, $item['addons']);
                 }
@@ -40,21 +40,29 @@ class OrderProcessingRepository
         }
     }
 
+
+    /*
+    NOTE:
+     In php8^ we cannot put optional parameters after required ones!
+     This is why orderPhone comes before message. O_o;
+    */
     private function insertOrder(
-        int $userId, 
-        float $totalAmount, 
-        string $orderAddress, 
+        int $userId,
+        float $totalAmount,
+        string $orderAddress,
+        string $orderPhone,
         ?string $message
     ): int {
-        $sql = "INSERT INTO orders (user_id, amount, status_id, message, order_address, created_at) 
-                VALUES (?, ?, 1, ?, ?, NOW())";
-        
+        $sql = "INSERT INTO orders (user_id, amount, status_id, message, order_address, order_phone, created_at) 
+                VALUES (?, ?, 1, ?, ?, ?, NOW())";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             $userId,
             $totalAmount,
             $message,
-            $orderAddress
+            $orderAddress,
+            $orderPhone
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -62,17 +70,16 @@ class OrderProcessingRepository
 
     private function insertOrderItem(int $orderId, array $item): int
     {
-        // Calculate subtotal 
         $subtotal = $item['item_price'] * $item['quantity'];
 
         $sql = "INSERT INTO order_items (order_id, product_id, unit_price, qty, subtotal) 
                 VALUES (?, ?, ?, ?, ?)";
-        
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             $orderId,
             $item['product_id'],
-            $item['item_price'], 
+            $item['item_price'],
             $item['quantity'],
             $subtotal
         ]);
@@ -84,7 +91,7 @@ class OrderProcessingRepository
     {
         $sql = "INSERT INTO order_item_addons (order_item_id, addon_id, price) 
                 VALUES (?, ?, ?)";
-        
+
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($addons as $addon) {
