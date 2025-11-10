@@ -30,11 +30,11 @@ class EmailTemplateGenerator
         return $this->buildEmailTemplate($title, $heading, $content, $email, true);
     }
 
-    public function generateOrderConfirmationEmail(string $email, int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null): string
+    public function generateOrderConfirmationEmail(string $email, int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null, string $orderPhone): string
     {
         $title = "Order Confirmation - {$this->siteTitle}";
         $heading = "Thank You for Your Order!";
-        $content = $this->getOrderConfirmationContent($orderId, $totalAmount, $items, $orderAddress, $message);
+        $content = $this->getOrderConfirmationContent($orderId, $totalAmount, $items, $orderAddress, $message, $orderPhone);
 
         return $this->buildEmailTemplate($title, $heading, $content, $email);
     }
@@ -162,7 +162,7 @@ class EmailTemplateGenerator
     }
 
 
-    private function getOrderConfirmationContent(int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null): string
+    private function getOrderConfirmationContent(int $orderId, float $totalAmount, array $items, string $orderAddress, ?string $message = null, string $orderPhone): string
     {
         $orderDetailsUrl = $this->baseUrl . "order-detail?id={$orderId}";
         $bgnToEurRate = BGN_TO_EUR_RATE;
@@ -217,6 +217,7 @@ class EmailTemplateGenerator
             <h3>📦 Order Details</h3>
             <p><strong>Order Number:</strong> #{$orderId}</p>
             <p><strong>Delivery Address:</strong><br>{$orderAddress}</p>
+            <p><strong>Contact Phone:</strong> {$orderPhone}</p>
         </div>
         
         {$messageHtml}

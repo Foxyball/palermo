@@ -103,7 +103,7 @@ $pageTitle = 'Checkout - ' . SITE_TITLE;
                                                     <input type="tel"
                                                         class="form-control"
                                                         id="phone"
-                                                        name="phone"
+                                                        name="order_phone"
                                                         value="<?php echo htmlspecialchars($phone); ?>"
                                                         placeholder="Enter your phone number"
                                                         required>
