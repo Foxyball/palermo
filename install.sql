@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 27, 2025 at 10:20 AM
+-- Generation Time: Nov 10, 2025 at 07:56 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,8 @@ CREATE TABLE `addons` (
 --
 
 INSERT INTO `addons` (`id`, `name`, `price`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Extra Cheese', 2.00, '1', '2025-10-27 07:32:50', '2025-10-27 07:32:50');
+(1, 'Extra Cheese', 2.00, '1', '2025-10-27 07:32:50', '2025-11-01 07:11:23'),
+(3, 'Extra Ketchup', 1.00, '1', '2025-11-06 18:37:26', '2025-11-06 18:37:26');
 
 -- --------------------------------------------------------
 
@@ -94,6 +95,14 @@ CREATE TABLE `blogs` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `blogs`
+--
+
+INSERT INTO `blogs` (`id`, `user_id`, `category_id`, `gallery_id`, `image`, `title`, `slug`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 12, NULL, NULL, 'test', 'test', '<p>sfsfsf</p>', '1', '2025-11-05 18:12:58', '2025-11-05 18:12:58'),
+(2, 1, 15, 1, 'uploads/2025/11/t1/690b93b82ef30_ff.jpg', 'bbb', 'bbb', '<p>aa</p>', '1', '2025-11-05 18:13:12', '2025-11-06 18:07:45');
+
 -- --------------------------------------------------------
 
 --
@@ -128,7 +137,7 @@ INSERT INTO `blog_categories` (`id`, `name`, `status`, `created_at`, `updated_at
 (13, 'Local Ingredients', '1', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (14, 'Holiday Specials', '1', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (15, 'Staff Picks', '1', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(16, 'Food Photography', '0', '2025-09-27 15:00:04', '2025-09-27 15:00:04');
+(16, 'Food Photography', '1', '2025-09-27 15:00:04', '2025-10-31 07:44:50');
 
 -- --------------------------------------------------------
 
@@ -152,39 +161,39 @@ CREATE TABLE `categories` (
 INSERT INTO `categories` (`id`, `name`, `slug`, `active`, `created_at`, `updated_at`) VALUES
 (1, 'Pizza', 'pizza', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
 (2, 'Pasta', 'pasta', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(3, 'Appetizers', 'appetizers', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
+(3, 'Appetizers', 'appetizers', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:33'),
 (4, 'Salads', 'salads', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
 (5, 'Soups', 'soups', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(6, 'Main Courses', 'main-courses', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(7, 'Seafood', 'seafood', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(8, 'Chicken', 'chicken', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(9, 'Beef', 'beef', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(10, 'Pork', 'pork', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(11, 'Vegetarian', 'vegetarian', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(12, 'Vegan', 'vegan', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(13, 'Desserts', 'desserts', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(14, 'Beverages', 'beverages', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(15, 'Coffee', 'coffee', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(16, 'Tea', 'tea', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(17, 'Soft Drinks', 'soft-drinks', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(18, 'Alcoholic Beverages', 'alcoholic-beverages', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(19, 'Wine', 'wine', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(20, 'Beer', 'beer', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(21, 'Cocktails', 'cocktails', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
+(6, 'Main Courses', 'main-courses', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:27'),
+(7, 'Seafood', 'seafood', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:25'),
+(8, 'Chicken', 'chicken', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:24'),
+(9, 'Beef', 'beef', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:23'),
+(10, 'Pork', 'pork', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:23'),
+(11, 'Vegetarian', 'vegetarian', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:22'),
+(12, 'Vegan', 'vegan', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:22'),
+(13, 'Desserts', 'desserts', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:28'),
+(14, 'Beverages', 'beverages', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:29'),
+(15, 'Coffee', 'coffee', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:29'),
+(16, 'Tea', 'tea', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:21'),
+(17, 'Soft Drinks', 'soft-drinks', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:20'),
+(18, 'Alcoholic Beverages', 'alcoholic-beverages', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:19'),
+(19, 'Wine', 'wine', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:18'),
+(20, 'Beer', 'beer', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:18'),
+(21, 'Cocktails', 'cocktails', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:17'),
 (22, 'Kids Menu', 'kids-menu', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(23, 'Gluten Free', 'gluten-free', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(24, 'Healthy Options', 'healthy-options', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
+(23, 'Gluten Free', 'gluten-free', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:14'),
+(24, 'Healthy Options', 'healthy-options', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:14'),
 (25, 'Burgers', 'burgers', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(26, 'Sandwiches', 'sandwiches', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(29, 'Breakfast', 'breakfast', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
-(30, 'Brunch', 'brunch', '1', '2025-09-27 14:57:00', '2025-09-30 11:26:47'),
+(26, 'Sandwiches', 'sandwiches', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:10'),
+(29, 'Breakfast', 'breakfast', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:10'),
+(30, 'Brunch', 'brunch', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:09'),
 (31, 'Lunch Specials', 'lunch-specials', '0', '2025-09-27 14:57:00', '2025-09-30 11:26:44'),
 (32, 'Dinner Specials', 'dinner-specials', '0', '2025-09-27 14:57:00', '2025-09-30 11:26:43'),
-(33, 'Chef Recommendations', 'chef-recommendations', '1', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
+(33, 'Chef Recommendations', 'chef-recommendations', '0', '2025-09-27 14:57:00', '2025-11-06 17:45:08'),
 (34, 'Seasonal Menu', 'seasonal-menu', '0', '2025-09-27 14:57:00', '2025-09-27 14:57:00'),
 (35, 'Pizza2', 'izza2', '0', '2025-09-30 11:36:46', '2025-09-30 11:41:43'),
-(36, 'pizza4', 'pizza4', '0', '2025-09-30 11:40:49', '2025-09-30 11:41:41'),
-(37, 'Test', 'est', '1', '2025-10-09 16:44:07', '2025-10-09 16:44:07');
+(36, 'pizza4', 'pizza4', '0', '2025-09-30 11:40:49', '2025-10-31 07:15:04'),
+(37, 'Test', 'est', '0', '2025-10-09 16:44:07', '2025-10-31 07:22:55');
 
 -- --------------------------------------------------------
 
@@ -205,9 +214,7 @@ CREATE TABLE `galleries` (
 --
 
 INSERT INTO `galleries` (`id`, `title`, `active`, `created_at`, `updated_at`) VALUES
-(1, 'Summer Dishes 2022', '1', '2025-10-09 16:41:12', '2025-10-09 16:43:47'),
-(4, 'adad', '0', '2025-10-09 17:00:20', '2025-10-09 17:03:17'),
-(5, 'sdfdsf', '0', '2025-10-09 17:02:58', '2025-10-09 17:03:18');
+(1, 'Summer Dishes 2022', '1', '2025-10-09 16:41:12', '2025-10-09 16:43:47');
 
 -- --------------------------------------------------------
 
@@ -227,12 +234,8 @@ CREATE TABLE `gallery_images` (
 --
 
 INSERT INTO `gallery_images` (`id`, `gallery_id`, `image`, `created_at`) VALUES
-(1, 1, 'uploads/2025/10/68e7ecc74afcf_28Summer-100-Video-Still-hckg-verticalTwoByThree735.jpg', '2025-10-09 17:11:35'),
-(2, 1, 'uploads/2025/10/68e7ecc74b87b_images.jpg', '2025-10-09 17:11:35'),
-(8, 1, 'uploads/2025/10/68e7efdd00bee_16FD-SUMMER-100-Salmon-with-Corn-and-Tomato-zmbp-mediumSquareAt3X.jpg', '2025-10-09 17:24:45'),
-(9, 1, 'uploads/2025/10/68e7f01935219_28Summer-100-Video-Still-hckg-verticalTwoByThree735.jpg', '2025-10-09 17:25:45'),
-(10, 1, 'uploads/2025/10/68e7f01935740_images.jpg', '2025-10-09 17:25:45'),
-(11, 1, 'uploads/2025/10/68e7f0193715f_16FD-SUMMER-100-Salmon-with-Corn-and-Tomato-zmbp-mediumSquareAt3X.jpg', '2025-10-09 17:25:45');
+(12, 1, 'uploads/2025/11/690ce402b7281_ff.jpg', '2025-11-06 18:08:02'),
+(13, 1, 'uploads/2025/11/690ce4108bff7_images.jpg', '2025-11-06 18:08:16');
 
 -- --------------------------------------------------------
 
@@ -263,6 +266,7 @@ CREATE TABLE `orders` (
   `status_id` int(11) DEFAULT NULL,
   `message` text DEFAULT NULL,
   `order_address` text DEFAULT NULL,
+  `order_phone` varchar(20) NOT NULL,
   `status` enum('pending','processing','completed','canceled') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -272,9 +276,22 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `amount`, `status_id`, `message`, `order_address`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 23.98, 1, 'sfsf', 'Varna, BK', 'pending', '2025-10-27 07:13:19', '2025-10-27 07:58:31'),
-(2, 47, 23.98, 2, 'sfsf', 'Varna, BK', 'pending', '2025-10-27 07:13:19', '2025-10-27 08:26:57');
+INSERT INTO `orders` (`id`, `user_id`, `amount`, `status_id`, `message`, `order_address`, `order_phone`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 23.98, 2, 'sfsf', 'Varna, BK', '08848800809', 'pending', '2025-10-27 07:13:19', '2025-11-10 18:56:37'),
+(3, 69, 29.99, 1, 'No', 'Balik 31, vh G, ap.13', '08848800809', 'pending', '2025-11-06 18:40:24', '2025-11-10 18:56:37'),
+(4, 69, 95.96, 6, '', 'BK, 51, Varna', '08848800809', 'pending', '2025-11-06 18:46:51', '2025-11-10 18:56:37'),
+(5, 69, 89.97, 1, '', 'Test123', '08848800809', 'pending', '2025-11-06 18:49:03', '2025-11-10 18:56:37'),
+(6, 69, 59.98, 4, 'Test', 'Balik Test', '08848800809', 'pending', '2025-11-06 18:55:32', '2025-11-10 18:56:37'),
+(7, 69, 29.99, 1, '', 'Test2', '08848800809', 'pending', '2025-11-06 19:18:49', '2025-11-10 18:56:37'),
+(8, 69, 18.99, 7, '', 'Test3', '08848800809', 'pending', '2025-11-06 19:26:24', '2025-11-10 18:56:37'),
+(9, 69, 57.98, 1, '', 'aaaaaa', '08848800809', 'pending', '2025-11-06 19:41:06', '2025-11-10 18:56:37'),
+(10, 69, 56.98, 1, '', 'ffff', '08848800809', 'pending', '2025-11-06 19:43:38', '2025-11-10 18:56:37'),
+(11, 69, 56.98, 1, '', 'dfgdgdg', '08848800809', 'pending', '2025-11-06 19:44:36', '2025-11-10 18:56:37'),
+(12, 69, 56.98, 1, '', 'fffff', '08848800809', 'pending', '2025-11-06 19:45:27', '2025-11-10 18:56:37'),
+(13, 69, 56.98, 1, '', 'tsdfsdf', '08848800809', 'pending', '2025-11-06 19:47:03', '2025-11-10 18:56:37'),
+(14, 69, 50.98, 2, 'Нямам', 'Новите кооперации 51', '08848800809', 'pending', '2025-11-06 19:50:10', '2025-11-10 18:56:37'),
+(15, 69, 38.98, 6, 'Не', 'Новите кооперации', '08848800809', 'pending', '2025-11-06 19:52:42', '2025-11-10 18:56:37'),
+(16, 69, 29.99, 5, '', 'dfgdgdgf', '08848800809', 'pending', '2025-11-07 15:04:29', '2025-11-10 18:56:37');
 
 -- --------------------------------------------------------
 
@@ -297,7 +314,29 @@ CREATE TABLE `order_items` (
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `unit_price`, `qty`, `subtotal`) VALUES
 (1, 1, 15, 14.99, 1, 16.99),
-(2, 1, 25, 6.99, 1, 6.99);
+(2, 1, 25, 6.99, 1, 6.99),
+(3, 3, 4, 29.99, 1, 29.99),
+(4, 4, 8, 22.99, 1, 22.99),
+(5, 4, 2, 21.99, 2, 43.98),
+(6, 4, 18, 28.99, 1, 28.99),
+(7, 5, 4, 29.99, 3, 89.97),
+(8, 6, 4, 26.99, 2, 59.98),
+(9, 7, 4, 26.99, 1, 29.99),
+(10, 8, 1, 18.99, 1, 18.99),
+(11, 9, 4, 26.99, 2, 57.98),
+(12, 10, 4, 26.99, 1, 28.99),
+(13, 10, 4, 26.99, 1, 27.99),
+(14, 11, 4, 26.99, 1, 27.99),
+(15, 11, 4, 26.99, 1, 28.99),
+(16, 12, 4, 26.99, 1, 28.99),
+(17, 12, 4, 26.99, 1, 27.99),
+(18, 13, 4, 26.99, 1, 27.99),
+(19, 13, 4, 26.99, 1, 28.99),
+(20, 14, 4, 26.99, 1, 28.99),
+(21, 14, 2, 21.99, 1, 21.99),
+(22, 15, 7, 16.99, 1, 16.99),
+(23, 15, 2, 21.99, 1, 21.99),
+(24, 16, 4, 29.99, 1, 29.99);
 
 -- --------------------------------------------------------
 
@@ -316,7 +355,27 @@ CREATE TABLE `order_item_addons` (
 --
 
 INSERT INTO `order_item_addons` (`order_item_id`, `addon_id`, `price`) VALUES
-(1, 1, 2.00);
+(1, 1, 2.00),
+(3, 1, 2.00),
+(3, 3, 1.00),
+(7, 1, 2.00),
+(7, 3, 1.00),
+(8, 1, 2.00),
+(8, 3, 1.00),
+(9, 1, 2.00),
+(9, 3, 1.00),
+(11, 1, 2.00),
+(12, 1, 2.00),
+(13, 3, 1.00),
+(14, 3, 1.00),
+(15, 1, 2.00),
+(16, 1, 2.00),
+(17, 3, 1.00),
+(18, 3, 1.00),
+(19, 1, 2.00),
+(20, 1, 2.00),
+(24, 1, 2.00),
+(24, 3, 1.00);
 
 -- --------------------------------------------------------
 
@@ -337,7 +396,7 @@ CREATE TABLE `order_statuses` (
 --
 
 INSERT INTO `order_statuses` (`id`, `name`, `active`, `created_at`, `updated_at`) VALUES
-(1, 'Pending', '1', '2025-10-27 07:23:26', '2025-10-27 07:27:59'),
+(1, 'Pending', '1', '2025-10-27 07:23:26', '2025-10-27 20:08:25'),
 (2, 'Confirmed', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:09'),
 (3, 'Preparing', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:14'),
 (4, 'Ready', '1', '2025-10-27 07:23:26', '2025-10-27 07:28:06'),
@@ -421,29 +480,29 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `slug`, `image`, `price`, `
 (1, 1, 'Margherita Pizza', 'margherita-pizza', 'margherita.jpg', 18.99, '1', 'Classic pizza with fresh mozzarella and basil', 'Traditional Italian pizza with San Marzano tomatoes, fresh mozzarella di bufala, fresh basil, and extra virgin olive oil on our wood-fired pizza base.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (2, 1, 'Pepperoni Pizza', 'pepperoni-pizza', 'pepperoni.jpg', 21.99, '1', 'America\'s favorite with spicy pepperoni', 'Generous portions of premium pepperoni, mozzarella cheese, and our signature tomato sauce on a perfectly crispy crust.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (3, 1, 'Quattro Stagioni', 'quattro-stagioni', 'quattro.jpg', 24.99, '1', 'Four seasons pizza with varied toppings', 'Divided into four sections: mushrooms, ham, artichokes, and olives, representing the four seasons of the year.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(4, 1, 'Prosciutto e Funghi', 'prosciutto-funghi', 'prosciutto.jpg', 26.99, '1', 'Prosciutto and mushroom pizza', 'Thin sliced prosciutto di Parma, fresh mushrooms, mozzarella, and truffle oil drizzle.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
+(4, 1, 'Prosciutto e Funghi', 'prosciutto-e-funghi', 'uploads/2025/11/t1/690ce75ea1b50_ff.jpg', 26.99, '1', 'Prosciutto and mushroom pizza', '<p>Thin sliced prosciutto di Parma, fresh mushrooms, mozzarella, and truffle oil drizzle.</p>', '2025-09-27 15:00:04', '2025-11-06 18:37:39'),
 (5, 2, 'Spaghetti Carbonara', 'spaghetti-carbonara', 'carbonara.jpg', 19.99, '1', 'Creamy Roman classic with pancetta', 'Spaghetti with eggs, pecorino Romano, pancetta, and black pepper - the authentic Roman way.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (6, 2, 'Fettuccine Alfredo', 'fettuccine-alfredo', 'alfredo.jpg', 18.99, '1', 'Rich and creamy butter and parmesan sauce', 'Fresh fettuccine pasta tossed in our house-made alfredo sauce with parmigiano-reggiano.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (7, 2, 'Penne Arrabbiata', 'penne-arrabbiata', 'arrabbiata.jpg', 16.99, '1', 'Spicy tomato sauce with garlic and chili', 'Penne pasta in a fiery tomato sauce with garlic, red chili peppers, and fresh parsley.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(8, 2, 'Lasagna della Casa', 'lasagna-casa', 'lasagna.jpg', 22.99, '1', 'Traditional layered pasta with meat sauce', 'Layers of pasta, meat sauce, bechamel, and three cheeses baked to perfection.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(9, 3, 'Bruschetta Trio', 'bruschetta-trio', 'bruschetta.jpg', 12.99, '1', 'Three varieties of our famous bruschetta', 'Classic tomato basil, mushroom truffle, and roasted pepper varieties on toasted ciabatta.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(10, 3, 'Antipasto Platter', 'antipasto-platter', 'antipasto.jpg', 19.99, '1', 'Selection of Italian cured meats and cheeses', 'Prosciutto, salami, mortadella, fresh mozzarella, aged provolone, olives, and roasted peppers.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(11, 3, 'Calamari Fritti', 'calamari-fritti', 'calamari.jpg', 14.99, '1', 'Crispy fried squid rings with marinara', 'Fresh squid rings lightly battered and fried, served with spicy marinara sauce.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(12, 3, 'Arancini', 'arancini', 'arancini.jpg', 11.99, '1', 'Sicilian rice balls with mozzarella', 'Golden fried risotto balls stuffed with mozzarella, served with tomato sauce.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(13, 4, 'Caesar Salad', 'caesar-salad', 'caesar.jpg', 13.99, '1', 'Classic Caesar with house-made dressing', 'Romaine lettuce, parmesan, croutons, and our signature Caesar dressing.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(14, 4, 'Caprese Salad', 'caprese-salad', 'caprese.jpg', 15.99, '1', 'Fresh mozzarella, tomatoes, and basil', 'Buffalo mozzarella, vine-ripened tomatoes, fresh basil, and balsamic reduction.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(15, 4, 'Arugula Salad', 'arugula-salad', 'arugula.jpg', 14.99, '1', 'Peppery arugula with pears and gorgonzola', 'Baby arugula, sliced pears, gorgonzola cheese, walnuts, and honey vinaigrette.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(16, 5, 'Osso Buco', 'osso-buco', 'osso-buco.jpg', 32.99, '1', 'Braised veal shanks in rich tomato sauce', 'Tender veal shanks slow-braised with vegetables, white wine, and tomatoes, served with risotto milanese.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(17, 5, 'Chicken Parmigiana', 'chicken-parmigiana', 'chicken-parm.jpg', 24.99, '1', 'Breaded chicken with marinara and mozzarella', 'Breaded chicken breast topped with marinara sauce and mozzarella, served with spaghetti.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(18, 5, 'Veal Piccata', 'veal-piccata', 'veal-piccata.jpg', 28.99, '1', 'Tender veal in lemon caper sauce', 'Pan-seared veal medallions in white wine, lemon, and caper sauce with roasted vegetables.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(19, 9, 'Branzino al Sale', 'branzino-al-sale', 'branzino.jpg', 29.99, '1', 'Mediterranean sea bass baked in sea salt', 'Whole Mediterranean sea bass baked in aromatic sea salt crust, filleted tableside.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(20, 9, 'Linguine alle Vongole', 'linguine-vongole', 'vongole.jpg', 23.99, '1', 'Linguine with fresh clams in white wine', 'Fresh linguine with littleneck clams, garlic, white wine, and parsley.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(21, 9, 'Salmon Griglia', 'salmon-griglia', 'salmon.jpg', 26.99, '1', 'Grilled Atlantic salmon with herbs', 'Fresh Atlantic salmon grilled with Mediterranean herbs, served with seasonal vegetables.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
+(8, 2, 'Lasagna della Casa', 'lasagna-casa', 'lasagna.jpg', 22.99, '0', 'Traditional layered pasta with meat sauce', 'Layers of pasta, meat sauce, bechamel, and three cheeses baked to perfection.', '2025-09-27 15:00:04', '2025-11-06 19:16:09'),
+(9, 3, 'Bruschetta Trio', 'bruschetta-trio', 'bruschetta.jpg', 12.99, '0', 'Three varieties of our famous bruschetta', 'Classic tomato basil, mushroom truffle, and roasted pepper varieties on toasted ciabatta.', '2025-09-27 15:00:04', '2025-11-06 19:16:08'),
+(10, 3, 'Antipasto Platter', 'antipasto-platter', 'antipasto.jpg', 19.99, '0', 'Selection of Italian cured meats and cheeses', 'Prosciutto, salami, mortadella, fresh mozzarella, aged provolone, olives, and roasted peppers.', '2025-09-27 15:00:04', '2025-11-06 19:16:08'),
+(11, 3, 'Calamari Fritti', 'calamari-fritti', 'calamari.jpg', 14.99, '0', 'Crispy fried squid rings with marinara', 'Fresh squid rings lightly battered and fried, served with spicy marinara sauce.', '2025-09-27 15:00:04', '2025-11-06 19:16:07'),
+(12, 3, 'Arancini', 'arancini', 'arancini.jpg', 11.99, '0', 'Sicilian rice balls with mozzarella', 'Golden fried risotto balls stuffed with mozzarella, served with tomato sauce.', '2025-09-27 15:00:04', '2025-11-06 19:16:06'),
+(13, 4, 'Caesar Salad', 'caesar-salad', 'caesar.jpg', 13.99, '0', 'Classic Caesar with house-made dressing', 'Romaine lettuce, parmesan, croutons, and our signature Caesar dressing.', '2025-09-27 15:00:04', '2025-11-06 19:16:06'),
+(14, 4, 'Caprese Salad', 'caprese-salad', 'caprese.jpg', 15.99, '0', 'Fresh mozzarella, tomatoes, and basil', 'Buffalo mozzarella, vine-ripened tomatoes, fresh basil, and balsamic reduction.', '2025-09-27 15:00:04', '2025-11-06 19:16:05'),
+(15, 4, 'Arugula Salad', 'arugula-salad', 'arugula.jpg', 14.99, '0', 'Peppery arugula with pears and gorgonzola', 'Baby arugula, sliced pears, gorgonzola cheese, walnuts, and honey vinaigrette.', '2025-09-27 15:00:04', '2025-11-06 19:16:04'),
+(16, 5, 'Osso Buco', 'osso-buco', 'osso-buco.jpg', 32.99, '0', 'Braised veal shanks in rich tomato sauce', 'Tender veal shanks slow-braised with vegetables, white wine, and tomatoes, served with risotto milanese.', '2025-09-27 15:00:04', '2025-11-06 19:16:04'),
+(17, 5, 'Chicken Parmigiana', 'chicken-parmigiana', 'chicken-parm.jpg', 24.99, '0', 'Breaded chicken with marinara and mozzarella', 'Breaded chicken breast topped with marinara sauce and mozzarella, served with spaghetti.', '2025-09-27 15:00:04', '2025-11-06 19:16:01'),
+(18, 5, 'Veal Piccata', 'veal-piccata', 'veal-piccata.jpg', 28.99, '0', 'Tender veal in lemon caper sauce', 'Pan-seared veal medallions in white wine, lemon, and caper sauce with roasted vegetables.', '2025-09-27 15:00:04', '2025-11-06 19:16:00'),
+(19, 9, 'Branzino al Sale', 'branzino-al-sale', 'branzino.jpg', 29.99, '0', 'Mediterranean sea bass baked in sea salt', 'Whole Mediterranean sea bass baked in aromatic sea salt crust, filleted tableside.', '2025-09-27 15:00:04', '2025-11-06 19:15:59'),
+(20, 9, 'Linguine alle Vongole', 'linguine-vongole', 'vongole.jpg', 23.99, '0', 'Linguine with fresh clams in white wine', 'Fresh linguine with littleneck clams, garlic, white wine, and parsley.', '2025-09-27 15:00:04', '2025-11-06 19:15:59'),
+(21, 9, 'Salmon Griglia', 'salmon-griglia', 'salmon.jpg', 26.99, '0', 'Grilled Atlantic salmon with herbs', 'Fresh Atlantic salmon grilled with Mediterranean herbs, served with seasonal vegetables.', '2025-09-27 15:00:04', '2025-11-06 19:15:58'),
 (22, 6, 'Tiramisu', 'tiramisu', 'tiramisu.jpg', 8.99, '1', 'Classic Italian coffee-flavored dessert', 'Layers of coffee-soaked ladyfingers and mascarpone cream, dusted with cocoa.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (23, 6, 'Panna Cotta', 'panna-cotta', 'pannacotta.jpg', 7.99, '1', 'Silky vanilla custard with berry coulis', 'Traditional vanilla panna cotta topped with mixed berry compote.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (24, 6, 'Cannoli Siciliani', 'cannoli-siciliani', 'cannoli.jpg', 9.99, '1', 'Crispy shells filled with sweet ricotta', 'Traditional Sicilian cannoli with sweet ricotta filling and pistachios.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
 (25, 6, 'Gelato Trio', 'gelato-trio', 'gelato.jpg', 6.99, '1', 'Three scoops of artisanal gelato', 'Choose three flavors from our daily selection of house-made gelato.', '2025-09-27 15:00:04', '2025-09-27 15:00:04'),
-(26, 12, 'Winter Truffle Special', 'winter-truffle-special', 'truffle.jpg', 45.99, '0', 'Seasonal truffle pasta - Limited time', 'Fresh pasta with shaved white truffles, available only during truffle season.', '2025-09-27 15:00:04', '2025-09-27 15:00:04');
+(26, 1, 'Winter Truffle Special', 'winter-truffle-special', 'uploads/2025/11/t1/690e25de3b45b_ff.jpg', 45.99, '0', 'Seasonal truffle pasta - Limited time', '<p>Fresh pasta with shaved white truffles, available only during truffle season.</p>', '2025-09-27 15:00:04', '2025-11-07 17:01:18');
 
 -- --------------------------------------------------------
 
@@ -461,6 +520,8 @@ CREATE TABLE `product_addons` (
 --
 
 INSERT INTO `product_addons` (`product_id`, `addon_id`) VALUES
+(4, 1),
+(4, 3),
 (15, 1);
 
 -- --------------------------------------------------------
@@ -475,6 +536,8 @@ CREATE TABLE `users` (
   `last_name` varchar(100) DEFAULT NULL,
   `email` varchar(150) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `remember_token` varchar(64) DEFAULT NULL,
+  `remember_expires` datetime DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
   `phone` varchar(50) DEFAULT NULL,
@@ -488,74 +551,75 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `address`, `city`, `phone`, `zip_code`, `active`, `created_at`, `updated_at`) VALUES
-(1, 'John', 'Doe', 'john.doe@example.com', '$2y$10$gr1SJuUCJ1phmenHrQnOEeuraGwmbUFyWdrzEhJCzh3GD2ZW1DJ/e', '123 Main Street', 'New York', '+1-555-0101', '10001', '1', '2025-09-27 14:55:05', '2025-10-23 13:14:10'),
-(2, 'Jane', 'Smith', 'jane.smith@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '456 Oak Avenue', 'Los Angeles', '+1-555-0102', '90210', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(4, 'Emily', 'Davis', 'emily.davis@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '321 Elm Street', 'Houston', '+1-555-0104', '77001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(5, 'David', 'Wilson', 'david.wilson@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '654 Maple Drive', 'Phoenix', '+1-555-0105', '85001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(6, 'Sarah', 'Brown', 'sarah.brown@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '987 Cedar Lane', 'Philadelphia', '+1-555-0106', '19101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(7, 'Chris', 'Taylor', 'chris.taylor@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '147 Birch Court', 'San Antonio', '+1-555-0107', '78201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(8, 'Lisa', 'Anderson', 'lisa.anderson@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '258 Spruce Way', 'San Diego', '+1-555-0108', '92101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(9, 'Mark', 'Thomas', 'mark.thomas@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '369 Willow Street', 'Dallas', '+1-555-0109', '75201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(10, 'Jennifer', 'Jackson', 'jennifer.j@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '741 Poplar Avenue', 'San Jose', '+1-555-0110', '95101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(11, 'Robert', 'White', 'robert.white@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '852 Hickory Road', 'Austin', '+1-555-0111', '73301', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(12, 'Michelle', 'Harris', 'michelle.harris@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '963 Walnut Drive', 'Jacksonville', '+1-555-0112', '32099', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(13, 'Kevin', 'Martin', 'kevin.martin@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '159 Cherry Lane', 'Fort Worth', '+1-555-0113', '76101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(14, 'Amanda', 'Garcia', 'amanda.garcia@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '357 Peach Street', 'Columbus', '+1-555-0114', '43085', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(15, 'Ryan', 'Rodriguez', 'ryan.rodriguez@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '468 Apple Court', 'Charlotte', '+1-555-0115', '28201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(16, 'Nicole', 'Lewis', 'nicole.lewis@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '579 Orange Avenue', 'San Francisco', '+1-555-0116', '94101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(17, 'Brandon', 'Lee', 'brandon.lee@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '681 Lemon Road', 'Indianapolis', '+1-555-0117', '46201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(18, 'Stephanie', 'Walker', 'stephanie.walker@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '792 Lime Drive', 'Seattle', '+1-555-0118', '98101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(19, 'Tyler', 'Hall', 'tyler.hall@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '813 Grape Street', 'Denver', '+1-555-0119', '80201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(20, 'Rachel', 'Allen', 'rachel.allen@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '924 Berry Lane', 'Washington', '+1-555-0120', '20001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(21, 'Jason', 'Young', 'jason.young@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '135 Plum Court', 'Boston', '+1-555-0121', '02101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(22, 'Laura', 'Hernandez', 'laura.hernandez@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '246 Fig Avenue', 'El Paso', '+1-555-0122', '79901', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(23, 'Anthony', 'King', 'anthony.king@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '357 Date Road', 'Nashville', '+1-555-0123', '37201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(24, 'Melissa', 'Wright', 'melissa.wright@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '468 Mint Drive', 'Detroit', '+1-555-0124', '48201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(25, 'Daniel', 'Lopez', 'daniel.lopez@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '579 Basil Street', 'Portland', '+1-555-0125', '97201', '0', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(26, 'Jessica', 'Hill', 'jessica.hill@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '681 Sage Lane', 'Oklahoma City', '+1-555-0126', '73101', '0', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(27, 'Matthew', 'Scott', 'matthew.scott@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '792 Thyme Court', 'Las Vegas', '+1-555-0127', '89101', '0', '2025-09-27 14:55:05', '2025-09-30 05:30:52'),
-(28, 'Kimberly', 'Green', 'kimberly.green@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '813 Rosemary Avenue', 'Louisville', '+1-555-0128', '40201', '0', '2025-09-27 14:55:05', '2025-09-30 05:30:54'),
-(29, 'Joshua', 'Adams', 'joshua.adams@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '924 Parsley Road', 'Baltimore', '+1-555-0129', '21201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(30, 'Ashley', 'Baker', 'ashley.baker@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '135 Oregano Drive', 'Milwaukee', '+1-555-0130', '53201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(31, 'Test', 'Active', 'test.active@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '100 Test Street', 'Test City', '+1-555-9999', '99999', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(32, 'Test', 'Activee', 'test.inactive@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '', 'Dobrich', '', '', '1', '2025-09-27 14:55:05', '2025-09-30 06:19:10'),
-(33, 'Admin', 'Test', 'admin.test@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '300 Admin Road', 'Admin City', '+1-555-9997', '99997', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
-(34, 'Tony', 'Kostadinov', 'tkostadinov@sprintax.com', '5f4dcc3b5aa765d61d8327deb882cf99', 'Varna', '', '', '', '1', '2025-09-30 05:57:51', '2025-09-30 05:57:56'),
-(35, 'Rostislav', 'Demirov', 'rdemirov@abv.bg', '5f4dcc3b5aa765d61d8327deb882cf99', '', '', '', '', '1', '2025-09-30 05:59:43', '2025-09-30 05:59:43'),
-(36, 'Test', 'Tst', '124767@students.ue-varna.bg', '5f4dcc3b5aa765d61d8327deb882cf99', 'ADADA', '', '1231', '123', '1', '2025-10-09 16:44:28', '2025-10-09 16:44:28'),
-(37, 'Test', 'User', 'testuser@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
-(38, 'Test', 'User', 'test1user@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
-(39, 'Test', 'User', 'test2user@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
-(40, NULL, NULL, 'test123@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:17:48', '2025-10-23 13:17:48'),
-(41, NULL, NULL, 'test22@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:17:50', '2025-10-23 13:17:50'),
-(42, 'Test4b9efb', 'User030bf9', 'testA@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:19:16', '2025-10-23 13:19:16'),
-(43, 'Test4b9efb', 'User030bf9', 'testB@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:19:18', '2025-10-23 13:19:18'),
-(44, 'Test917317', 'User89d3d8', 'asd@abv.bg', '$2y$10$F8OG.svpQ/zo8T6ZMurOGOEEhu9eISswPt/vQLkIL9fCi0nXFkO.2', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
-(45, 'Test917317', 'User89d3d8', 'asd1@abv.bg', '$2y$10$jePQcweco4TzuOYFFqZynefu5bU4tEv84.OsMPK9/kojXIeUSUc4i', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
-(46, 'Test917317', 'User89d3d8', 'asd3@abv.bg', '$2y$10$XsKH3MFZqfif2.M/ns4XeOBVGFMCrqOE7/9l553Sx/T4CmU0Q4086', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
-(47, 'Test4c6ad1', 'User49b724', 'test4@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:14', '2025-10-23 13:21:14'),
-(48, 'Test4c6ad1', 'User49b724', 'test5@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:17', '2025-10-23 13:21:17'),
-(49, 'Test4c6ad1', 'User49b724', 'test6@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:19', '2025-10-23 13:21:19'),
-(50, 'Testc48ba7', 'User9082c1', 'ivan@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:55', '2025-10-23 13:32:55'),
-(51, 'Testc48ba7', 'User9082c1', 'dimitar@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:57', '2025-10-23 13:32:57'),
-(52, 'Testc48ba7', 'User9082c1', 'ivan2@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:59', '2025-10-23 13:32:59'),
-(53, 'Test760816', 'Userb16faf', 'asdff@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:47', '2025-10-23 13:37:47'),
-(54, 'Test760816', 'Userb16faf', 'asd2@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:49', '2025-10-23 13:37:49'),
-(55, 'Test760816', 'Userb16faf', 'asd4@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:56', '2025-10-23 13:37:56'),
-(56, 'Testaa8bb0', 'User6bc45c', 'stefan@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:38:54', '2025-10-23 13:38:54'),
-(57, 'Testaa8bb0', 'User6bc45c', 'dimcho@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:38:56', '2025-10-23 13:38:56'),
-(58, 'Testaa8bb0', 'User6bc45c', 'stoicho@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:39:03', '2025-10-23 13:39:03'),
-(59, 'Testaa8bb0', 'User6bc45c', 'dimi@gmail.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:39:09', '2025-10-23 13:39:09'),
-(60, 'New', 'User', 'work@gmail.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:55', '2025-10-23 13:42:55'),
-(61, 'New', 'User', 'working@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:57', '2025-10-23 13:42:57'),
-(62, 'New', 'User', 'vvvvv@example.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:59', '2025-10-23 13:42:59'),
-(63, 'New', 'User', 'aaaaaaaaa@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:53', '2025-10-23 13:45:53'),
-(64, 'New', 'User', 'bbbbbbb@gmail.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:55', '2025-10-23 13:45:55'),
-(65, 'New', 'User', 'vcdsgfdg@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:57', '2025-10-23 13:45:57'),
-(66, 'New', 'User', 'kgkgk@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:50:58', '2025-10-23 13:50:58'),
-(67, 'New', 'User', 'fgbnvnnvn@test.com', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:51:00', '2025-10-23 13:51:00'),
-(68, 'New', 'User', 'ytjt@abv.bg', '', NULL, NULL, NULL, NULL, '1', '2025-10-23 13:51:01', '2025-10-23 13:51:01');
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `remember_token`, `remember_expires`, `address`, `city`, `phone`, `zip_code`, `active`, `created_at`, `updated_at`) VALUES
+(1, 'John', 'Doe', 'john.doe@example.com', '$2y$10$gr1SJuUCJ1phmenHrQnOEeuraGwmbUFyWdrzEhJCzh3GD2ZW1DJ/e', NULL, NULL, '123 Main Street', 'New York', '+1-555-0101', '10001', '1', '2025-09-27 14:55:05', '2025-10-23 13:14:10'),
+(2, 'Jane', 'Smith', 'jane.smith@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '456 Oak Avenue', 'Los Angeles', '+1-555-0102', '90210', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(4, 'Emily', 'Davis', 'emily.davis@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '321 Elm Street', 'Houston', '+1-555-0104', '77001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(5, 'David', 'Wilson', 'david.wilson@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '654 Maple Drive', 'Phoenix', '+1-555-0105', '85001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(6, 'Sarah', 'Brown', 'sarah.brown@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '987 Cedar Lane', 'Philadelphia', '+1-555-0106', '19101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(7, 'Chris', 'Taylor', 'chris.taylor@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '147 Birch Court', 'San Antonio', '+1-555-0107', '78201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(8, 'Lisa', 'Anderson', 'lisa.anderson@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '258 Spruce Way', 'San Diego', '+1-555-0108', '92101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(9, 'Mark', 'Thomas', 'mark.thomas@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '369 Willow Street', 'Dallas', '+1-555-0109', '75201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(10, 'Jennifer', 'Jackson', 'jennifer.j@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '741 Poplar Avenue', 'San Jose', '+1-555-0110', '95101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(11, 'Robert', 'White', 'robert.white@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '852 Hickory Road', 'Austin', '+1-555-0111', '73301', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(12, 'Michelle', 'Harris', 'michelle.harris@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '963 Walnut Drive', 'Jacksonville', '+1-555-0112', '32099', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(13, 'Kevin', 'Martin', 'kevin.martin@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '159 Cherry Lane', 'Fort Worth', '+1-555-0113', '76101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(14, 'Amanda', 'Garcia', 'amanda.garcia@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '357 Peach Street', 'Columbus', '+1-555-0114', '43085', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(15, 'Ryan', 'Rodriguez', 'ryan.rodriguez@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '468 Apple Court', 'Charlotte', '+1-555-0115', '28201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(16, 'Nicole', 'Lewis', 'nicole.lewis@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '579 Orange Avenue', 'San Francisco', '+1-555-0116', '94101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(17, 'Brandon', 'Lee', 'brandon.lee@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '681 Lemon Road', 'Indianapolis', '+1-555-0117', '46201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(18, 'Stephanie', 'Walker', 'stephanie.walker@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '792 Lime Drive', 'Seattle', '+1-555-0118', '98101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(19, 'Tyler', 'Hall', 'tyler.hall@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '813 Grape Street', 'Denver', '+1-555-0119', '80201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(20, 'Rachel', 'Allen', 'rachel.allen@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '924 Berry Lane', 'Washington', '+1-555-0120', '20001', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(21, 'Jason', 'Young', 'jason.young@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '135 Plum Court', 'Boston', '+1-555-0121', '02101', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(22, 'Laura', 'Hernandez', 'laura.hernandez@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '246 Fig Avenue', 'El Paso', '+1-555-0122', '79901', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(23, 'Anthony', 'King', 'anthony.king@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '357 Date Road', 'Nashville', '+1-555-0123', '37201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(24, 'Melissa', 'Wright', 'melissa.wright@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '468 Mint Drive', 'Detroit', '+1-555-0124', '48201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(25, 'Daniel', 'Lopez', 'daniel.lopez@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '579 Basil Street', 'Portland', '+1-555-0125', '97201', '0', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(26, 'Jessica', 'Hill', 'jessica.hill@hotmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '681 Sage Lane', 'Oklahoma City', '+1-555-0126', '73101', '0', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(27, 'Matthew', 'Scott', 'matthew.scott@outlook.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '792 Thyme Court', 'Las Vegas', '+1-555-0127', '89101', '0', '2025-09-27 14:55:05', '2025-09-30 05:30:52'),
+(28, 'Kimberly', 'Green', 'kimberly.green@yahoo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '813 Rosemary Avenue', 'Louisville', '+1-555-0128', '40201', '0', '2025-09-27 14:55:05', '2025-09-30 05:30:54'),
+(29, 'Joshua', 'Adams', 'joshua.adams@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '924 Parsley Road', 'Baltimore', '+1-555-0129', '21201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(30, 'Ashley', 'Baker', 'ashley.baker@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '135 Oregano Drive', 'Milwaukee', '+1-555-0130', '53201', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(31, 'Test', 'Active', 'test.active@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '100 Test Street', 'Test City', '+1-555-9999', '99999', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(32, 'Test', 'Activee', 'test.inactive@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '', 'Dobrich', '', '', '1', '2025-09-27 14:55:05', '2025-09-30 06:19:10'),
+(33, 'Admin', 'Test', 'admin.test@palermo.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '300 Admin Road', 'Admin City', '+1-555-9997', '99997', '1', '2025-09-27 14:55:05', '2025-09-27 14:55:05'),
+(34, 'Tony', 'Kostadinov', 'tkostadinov@sprintax.com', '5f4dcc3b5aa765d61d8327deb882cf99', NULL, NULL, 'Varna', '', '', '', '1', '2025-09-30 05:57:51', '2025-09-30 05:57:56'),
+(35, 'Rostislav', 'Demirov', 'rdemirov@abv.bg', '5f4dcc3b5aa765d61d8327deb882cf99', NULL, NULL, '', '', '', '', '1', '2025-09-30 05:59:43', '2025-09-30 05:59:43'),
+(36, 'Test', 'Tst', '124767@students.ue-varna.bg', '5f4dcc3b5aa765d61d8327deb882cf99', NULL, NULL, 'ADADA', '', '1231', '123', '1', '2025-10-09 16:44:28', '2025-10-09 16:44:28'),
+(37, 'Test', 'User', 'testuser@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
+(38, 'Test', 'User', 'test1user@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
+(39, 'Test', 'User', 'test2user@example.com', '25d55ad283aa400af464c76d713c07ad', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 12:49:02', '2025-10-23 12:49:02'),
+(40, NULL, NULL, 'test123@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:17:48', '2025-10-23 13:17:48'),
+(41, NULL, NULL, 'test22@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:17:50', '2025-10-23 13:17:50'),
+(42, 'Test4b9efb', 'User030bf9', 'testA@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:19:16', '2025-10-23 13:19:16'),
+(43, 'Test4b9efb', 'User030bf9', 'testB@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:19:18', '2025-10-23 13:19:18'),
+(44, 'Test917317', 'User89d3d8', 'asd@abv.bg', '$2y$10$F8OG.svpQ/zo8T6ZMurOGOEEhu9eISswPt/vQLkIL9fCi0nXFkO.2', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
+(45, 'Test917317', 'User89d3d8', 'asd1@abv.bg', '$2y$10$jePQcweco4TzuOYFFqZynefu5bU4tEv84.OsMPK9/kojXIeUSUc4i', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
+(46, 'Test917317', 'User89d3d8', 'asd3@abv.bg', '$2y$10$XsKH3MFZqfif2.M/ns4XeOBVGFMCrqOE7/9l553Sx/T4CmU0Q4086', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:20:57', '2025-10-23 13:20:57'),
+(47, 'Test4c6ad1', 'User49b724', 'test4@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:14', '2025-10-23 13:21:14'),
+(48, 'Test4c6ad1', 'User49b724', 'test5@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:17', '2025-10-23 13:21:17'),
+(49, 'Test4c6ad1', 'User49b724', 'test6@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:21:19', '2025-10-23 13:21:19'),
+(50, 'Testc48ba7', 'User9082c1', 'ivan@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:55', '2025-10-23 13:32:55'),
+(51, 'Testc48ba7', 'User9082c1', 'dimitar@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:57', '2025-10-23 13:32:57'),
+(52, 'Testc48ba7', 'User9082c1', 'ivan2@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:32:59', '2025-10-23 13:32:59'),
+(53, 'Test760816', 'Userb16faf', 'asdff@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:47', '2025-10-23 13:37:47'),
+(54, 'Test760816', 'Userb16faf', 'asd2@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:49', '2025-10-23 13:37:49'),
+(55, 'Test760816', 'Userb16faf', 'asd4@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:37:56', '2025-10-23 13:37:56'),
+(56, 'Testaa8bb0', 'User6bc45c', 'stefan@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:38:54', '2025-10-23 13:38:54'),
+(57, 'Testaa8bb0', 'User6bc45c', 'dimcho@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:38:56', '2025-10-23 13:38:56'),
+(58, 'Testaa8bb0', 'User6bc45c', 'stoicho@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:39:03', '2025-10-23 13:39:03'),
+(59, 'Testaa8bb0', 'User6bc45c', 'dimi@gmail.com', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:39:09', '2025-10-23 13:39:09'),
+(60, 'New', 'User', 'work@gmail.com', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:55', '2025-10-23 13:42:55'),
+(61, 'New', 'User', 'working@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:57', '2025-10-23 13:42:57'),
+(62, 'New', 'User', 'vvvvv@example.com', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:42:59', '2025-10-23 13:42:59'),
+(63, 'New', 'User', 'aaaaaaaaa@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:53', '2025-10-23 13:45:53'),
+(64, 'New', 'User', 'bbbbbbb@gmail.com', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:55', '2025-10-23 13:45:55'),
+(65, 'New', 'User', 'vcdsgfdg@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2025-10-23 13:45:57', '2025-10-23 13:45:57'),
+(66, 'New', 'User', 'kgkgk@abv.bg', '', NULL, NULL, NULL, NULL, NULL, NULL, '0', '2025-10-23 13:50:58', '2025-11-05 18:13:37'),
+(67, 'New', 'User', 'fgbnvnnvn@test.com', '', NULL, NULL, NULL, NULL, NULL, NULL, '0', '2025-10-23 13:51:00', '2025-11-05 18:13:36'),
+(68, 'New', 'User', 'ytjt@abv.bg', '', NULL, NULL, 'test', '', '', '', '0', '2025-10-23 13:51:01', '2025-11-05 18:13:43'),
+(69, 'Hristo', 'Sabev', 'hsabev@sprintax.com', '$2y$10$4KhyBhf1NJasTFC4T88KO.BxGMjedNByRqy9AjNfQSk382aJUtIpm', NULL, NULL, NULL, NULL, '0884800809', NULL, '1', '2025-11-06 17:47:38', '2025-11-06 17:51:17');
 
 --
 -- Indexes for dumped tables
@@ -676,7 +740,8 @@ ALTER TABLE `product_addons`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_remember_token` (`remember_token`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -686,7 +751,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `addons`
 --
 ALTER TABLE `addons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `admins`
@@ -698,19 +763,19 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `blogs`
 --
 ALTER TABLE `blogs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `blog_categories`
 --
 ALTER TABLE `blog_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `galleries`
@@ -722,7 +787,7 @@ ALTER TABLE `galleries`
 -- AUTO_INCREMENT for table `gallery_images`
 --
 ALTER TABLE `gallery_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -734,19 +799,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `order_statuses`
 --
 ALTER TABLE `order_statuses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `password_reset_tokens`
@@ -764,7 +829,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- Constraints for dumped tables
