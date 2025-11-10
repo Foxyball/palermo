@@ -100,22 +100,13 @@ $seoData = [
     <div id="wrapper" class="clearfix">
         <div class="col-12 col-md-auto">
 
-            <!-- Top Links
-            ============================================= -->
-            <div class="top-links text-center">
-                <ul class="top-links-container">
-                    <li class="top-links-item"><a href="#"><i class="fas fa-truck"></i>Order now from 11:00 AM to 11:00 PM</a></li>
-                    <li class="top-links-item"><a href="#"><i class="fas fa-phone"></i> 0885 83 51 71 or 078 98 88 71</a></li>
-                    <li class="top-links-item"><a href="#"><i class="fas fa-envelope"></i>office@palermo.eu</a></li>
-                </ul>
-            </div><!-- .top-links end -->
+    <?php include(__DIR__ . '/sections/top-bar.php'); ?>
 
         </div>
 
         <?php navbarContainer(); ?>
 
-        <!-- Page Title
-        ============================================= -->
+
         <section id="page-title" class="page-title-parallax page-title-dark dark" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('images/others/section-2.jpg') center center no-repeat; background-size: cover; padding: 120px 0;">
             <div class="container clearfix">
                 <h1>Contact Us</h1>
@@ -125,7 +116,7 @@ $seoData = [
                     <li class="breadcrumb-item active" aria-current="page">Contact</li>
                 </ol>
             </div>
-        </section><!-- #page-title end -->
+        </section>
 
 
 
@@ -137,7 +128,6 @@ $seoData = [
                 <div class="container">
                     <div class="row gx-5">
 
-                        <!-- Contact Form -->
                         <div class="col-lg-8 mb-5">
                             <div class="card bg-dark border-secondary">
                                 <div class="card-header bg-danger text-white">
@@ -219,7 +209,6 @@ $seoData = [
                             </div>
                         </div>
 
-                        <!-- Contact Information -->
                         <div class="col-lg-4">
                             <div class="card bg-dark border-secondary mb-4">
                                 <div class="card-header bg-secondary text-white">
@@ -249,13 +238,6 @@ $seoData = [
                                         <h5 class="text-danger"><i class="fas fa-clock me-2"></i>Working Hours</h5>
                                         <p class="text-white-50 mb-1">Every Day: <strong>10:00 AM - 12:00 AM</strong></p>
                                         <p class="text-white-50 mb-0">Delivery: <strong>11:00 AM - 11:00 PM</strong></p>
-                                    </div>
-                                    <div>
-                                        <h5 class="text-danger"><i class="fas fa-truck me-2"></i>Delivery</h5>
-                                        <p class="text-white-50 mb-0">
-                                            <strong class="text-success">FREE DELIVERY</strong><br>
-                                            for orders over <strong>10.00 BGN</strong>
-                                        </p>
                                     </div>
                                 </div>
                             </div>
