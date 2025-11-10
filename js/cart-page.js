@@ -2,9 +2,7 @@ $(document).ready(function () {
     const baseUrl = document.getElementById('js-base-url')?.value || window.location.origin + '/';
     const bgnToEurRate = 1.95583;
 
-    /**
-     * Update quantity - decrease
-     */
+
     $(document).on('click', '.qty-decrease', function () {
         const cartKey = $(this).data('cart-key');
         const $input = $(`.quantity-input[data-cart-key="${cartKey}"]`);
@@ -15,9 +13,7 @@ $(document).ready(function () {
         }
     });
 
-    /**
-     * Update quantity - increase
-     */
+
     $(document).on('click', '.qty-increase', function () {
         const cartKey = $(this).data('cart-key');
         const $input = $(`.quantity-input[data-cart-key="${cartKey}"]`);
@@ -28,14 +24,10 @@ $(document).ready(function () {
         }
     });
 
-    /**
-     * Remove item from cart
-     */
+
     $(document).on('click', '.remove-item', function () {
         const cartKey = $(this).data('cart-key');
         const $cartItem = $(`.cart-item[data-cart-key="${cartKey}"]`);
-
-        $cartItem.addClass('updating');
 
         $.ajax({
             url: baseUrl + 'include/cart_remove.php',
@@ -45,45 +37,34 @@ $(document).ready(function () {
         })
         .done(function (response) {
             if (response.success) {
-                // Fade out and remove the item
                 $cartItem.fadeOut(300, function () {
                     $(this).remove();
                     
-                    // Update cart summary
                     updateCartSummary(response);
 
-                    // Check if cart is empty
                     if ($('.cart-item').length === 0) {
-                        location.reload(); // Reload to show empty cart message
+                        location.reload();
                     }
 
-                    // Update mini cart
                     if (window.PalermoCart) {
                         window.PalermoCart.refresh();
                     }
                 });
 
             } else {
-                $cartItem.removeClass('updating');
                 showAlert(response.message || 'Failed to remove item', 'danger');
             }
         })
         .fail(function () {
-            $cartItem.removeClass('updating');
             showAlert('An error occurred. Please try again.', 'danger');
         });
     });
 
-    /**
-     * Update item quantity
-     */
+
     function updateQuantity(cartKey, newQuantity) {
         const $cartItem = $(`.cart-item[data-cart-key="${cartKey}"]`);
         const $input = $(`.quantity-input[data-cart-key="${cartKey}"]`);
         const $itemTotal = $cartItem.find('.item-total-price');
-
-        $cartItem.addClass('updating');
-        $itemTotal.addClass('updating');
 
         $.ajax({
             url: baseUrl + 'include/cart_update.php',
@@ -96,10 +77,9 @@ $(document).ready(function () {
         })
         .done(function (response) {
             if (response.success) {
-                // Update quantity input
+             
                 $input.val(newQuantity);
 
-                // Update item total
                 const itemData = response.items.find(item => item.key === cartKey);
                 if (itemData) {
                     const itemTotal = itemData.item_total;
@@ -111,32 +91,22 @@ $(document).ready(function () {
                     );
                 }
 
-                // Update cart summary
                 updateCartSummary(response);
 
-                // Update mini cart
                 if (window.PalermoCart) {
                     window.PalermoCart.refresh();
                 }
 
-                $cartItem.removeClass('updating');
-                $itemTotal.removeClass('updating');
             } else {
-                $cartItem.removeClass('updating');
-                $itemTotal.removeClass('updating');
                 showAlert(response.message || 'Failed to update quantity', 'danger');
             }
         })
         .fail(function () {
-            $cartItem.removeClass('updating');
-            $itemTotal.removeClass('updating');
             showAlert('An error occurred. Please try again.', 'danger');
         });
     }
 
-    /**
-     * Update cart summary (totals)
-     */
+
     function updateCartSummary(data) {
         const total = data.cart_total || 0;
         const count = data.cart_count || 0;
@@ -149,19 +119,15 @@ $(document).ready(function () {
         $('#cart-total-eur').text(totalEur.toFixed(2) + ' €');
     }
 
-    /**
-     * Show alert message
-     */
+
     function showAlert(message, type) {
-        // Remove existing alerts
+      
         $('.bootstrap-alert-container .alert').remove();
 
-        // Create container if doesn't exist
         if (!$('.bootstrap-alert-container').length) {
             $('body').append('<div class="bootstrap-alert-container"></div>');
         }
 
-        // Create alert
         const alertHtml = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                 ${message}
@@ -171,7 +137,6 @@ $(document).ready(function () {
 
         $('.bootstrap-alert-container').append(alertHtml);
 
-        // Auto-hide after 3 seconds
         setTimeout(function () {
             $('.bootstrap-alert-container .alert').fadeOut(300, function () {
                 $(this).remove();

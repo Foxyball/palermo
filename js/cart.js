@@ -1,7 +1,5 @@
 const PalermoCart = (function () {
-    'use strict';
 
-    // config
     const config = {
         baseUrl: document.getElementById('js-base-url')?.value || window.location.origin + '/',
         bgnToEurRate: 1.95583,
@@ -20,29 +18,24 @@ const PalermoCart = (function () {
         }
     };
 
-    // Initialize cart
     function init() {
         loadCartData();
         bindEvents();
     }
 
-    // Bind event handlers
     function bindEvents() {
-        // Toggle cart dropdown
         $(document).on('click', config.selectors.trigger, function (e) {
             e.preventDefault();
             $(config.selectors.dropdown).toggleClass('active');
             $('.js-account-dropdown').removeClass('active');
         });
 
-        // Close cart when clicking outside
         $(document).on('click', function (e) {
             if (!$(e.target).closest(config.selectors.dropdown).length) {
                 $(config.selectors.dropdown).removeClass('active');
             }
         });
 
-        // Remove item from cart
         $(document).on('click', config.selectors.remove, function (e) {
             e.preventDefault();
             const cartKey = $(this).data('cart-key');
@@ -50,7 +43,6 @@ const PalermoCart = (function () {
         });
     }
 
-    // Load cart data from server
     function loadCartData() {
         $.ajax({
             url: config.baseUrl + config.endpoints.data,
@@ -67,7 +59,6 @@ const PalermoCart = (function () {
             });
     }
 
-    // Add item to cart
     function addItem(formData) {
         return $.ajax({
             url: config.baseUrl + config.endpoints.add,
@@ -77,7 +68,6 @@ const PalermoCart = (function () {
         });
     }
 
-    // Remove item from cart
     function removeItem(cartKey) {
         $.ajax({
             url: config.baseUrl + config.endpoints.remove,
@@ -98,14 +88,12 @@ const PalermoCart = (function () {
             });
     }
 
-    // Update cart display
     function updateDisplay(data) {
         updateCounter(data.cart_count);
         updateItems(data.items);
         updateTotal(data.cart_total);
     }
 
-    // Update cart counter
     function updateCounter(count) {
         const $counter = $(config.selectors.counter);
         if (count > 0) {
@@ -115,7 +103,6 @@ const PalermoCart = (function () {
         }
     }
 
-    // Update cart items list
     function updateItems(items) {
         const $items = $(config.selectors.items);
 
@@ -131,7 +118,6 @@ const PalermoCart = (function () {
         $items.html(html);
     }
 
-    // Build HTML for cart item
     function buildItemHtml(item) {
         const imageSrc = item.image ? config.baseUrl + item.image : config.baseUrl + 'images/svg/burger-house.svg';
         const itemUrl = config.baseUrl + 'art/' + item.slug;
@@ -168,12 +154,10 @@ const PalermoCart = (function () {
         `;
     }
 
-    // Update cart total
     function updateTotal(total) {
         $(config.selectors.total).html(formatPrice(total));
     }
 
-    // Format price with BGN and EUR
     function formatPrice(price) {
         const bgnPrice = parseFloat(price).toFixed(2);
         const eurPrice = (price / config.bgnToEurRate).toFixed(2);
