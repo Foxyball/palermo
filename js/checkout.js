@@ -1,7 +1,5 @@
 $(document).ready(function () {
-  /**
-   * Checkout form submission
-   */
+
   $("#checkout-form").on("submit", function (e) {
     e.preventDefault();
 
@@ -24,7 +22,6 @@ $(document).ready(function () {
     const originalHtml = $btn.html();
     $btn.prop("disabled", true).addClass("loading").html("Processing...");
 
-    // Submit form
     $.ajax({
       url: $(this).attr("action"),
       method: "POST",
@@ -54,19 +51,14 @@ $(document).ready(function () {
       });
   });
 
-  /**
-   * Show alert message
-   */
+
   function showAlert(message, type) {
-    // Remove existing alerts
     $(".bootstrap-alert-container .alert").remove();
 
-    // Create container if doesn't exist
     if (!$(".bootstrap-alert-container").length) {
       $("body").append('<div class="bootstrap-alert-container"></div>');
     }
 
-    // Create alert
     const alertHtml = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                 ${message}
@@ -76,7 +68,6 @@ $(document).ready(function () {
 
     $(".bootstrap-alert-container").append(alertHtml);
 
-    // Auto-hide after 5 seconds
     setTimeout(function () {
       $(".bootstrap-alert-container .alert").fadeOut(300, function () {
         $(this).remove();

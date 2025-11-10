@@ -296,8 +296,3 @@ class PalermoCartDropdown {
 document.addEventListener('DOMContentLoaded', () => {
     window.palermoCart = new PalermoCartDropdown();
 });
-
-// Export for module use if needed
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PalermoCartDropdown;
-}

@@ -1,7 +1,3 @@
-/**
- * Palermo Account Dropdown
- * Handles account dropdown functionality for the Palermo restaurant website
- */
 class PalermoAccountDropdown {
     constructor() {
         this.accountTrigger = document.querySelector('.js-account-dropdown__trigger');
@@ -17,7 +13,6 @@ class PalermoAccountDropdown {
             return;
         }
 
-        // Show the account dropdown by removing hidden class
         this.accountContainer.classList.remove('hidden');
         
         this.setupStyles();
@@ -127,12 +122,6 @@ class PalermoAccountDropdown {
     }
 }
 
-// Initialize account dropdown when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.palermoAccount = new PalermoAccountDropdown();
 });
-
-// Export for module use if needed
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PalermoAccountDropdown;
-}
