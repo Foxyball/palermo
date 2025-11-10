@@ -44,7 +44,7 @@ if (isset($_POST['login'])) {
     $remember = isset($_POST['remember']) ? true : false;
 
     try {
-        $stmt = $pdo->prepare("SELECT id, first_name, last_name, email, password, active FROM users WHERE email = ? LIMIT 1");
+        $stmt = $pdo->prepare("SELECT id, first_name, last_name, email, phone, password, active FROM users WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
 
         if ($stmt->rowCount() == 1) {
@@ -67,6 +67,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['user_first_name'] = $user['first_name'];
                 $_SESSION['user_last_name'] = $user['last_name'];
                 $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_phone'] = $user['phone'];
                 $_SESSION['user_logged_in'] = true;
 
                 if ($remember) {
