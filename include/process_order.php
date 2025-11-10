@@ -1,6 +1,5 @@
 <?php
 
-header('Content-Type: application/json');
 
 require_once(__DIR__ . '/connect.php');
 require_once(__DIR__ . '/Cart.php');
@@ -34,6 +33,11 @@ if (empty($orderAddress)) {
     exit;
 }
 
+if (empty($orderPhone)) {
+    echo json_encode(['success' => false, 'message' => 'Contact phone number is required']);
+    exit;
+}
+
 try {
     $cart = new Cart($pdo);
     $cartData = $cart->getData();
@@ -51,7 +55,7 @@ try {
     $totalAmount = $cartData['cart_total'];
 
     $orderRepo = new OrderProcessingRepository($pdo);
-    $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $message, $orderPhone);
+    $orderId = $orderRepo->createOrder($userId, $totalAmount, $items, $orderAddress, $orderPhone, $message);
 
     $cart->clear();
 
@@ -67,8 +71,8 @@ try {
                 $totalAmount,
                 $items,
                 $orderAddress,
-                $message,
-                $orderPhone
+                $orderPhone,
+                $message
             );
             
             sendEmail(

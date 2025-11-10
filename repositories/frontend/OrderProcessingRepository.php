@@ -14,14 +14,14 @@ class OrderProcessingRepository
         float $totalAmount,
         array $items,
         string $orderAddress,
-        ?string $message = null,
-        string $orderPhone
+        string $orderPhone,
+        ?string $message = null
     ): int {
         $this->pdo->beginTransaction();
 
         try {
 
-            $orderId = $this->insertOrder($userId, $totalAmount, $orderAddress, $message, $orderPhone);
+            $orderId = $this->insertOrder($userId, $totalAmount, $orderAddress, $orderPhone, $message);
 
             foreach ($items as $item) {
                 $orderItemId = $this->insertOrderItem($orderId, $item);
@@ -40,12 +40,18 @@ class OrderProcessingRepository
         }
     }
 
+
+    /*
+    NOTE:
+     In php8^ we cannot put optional parameters after required ones!
+     This is why orderPhone comes before message. O_o;
+    */
     private function insertOrder(
         int $userId,
         float $totalAmount,
         string $orderAddress,
-        ?string $message,
-        string $orderPhone
+        string $orderPhone,
+        ?string $message
     ): int {
         $sql = "INSERT INTO orders (user_id, amount, status_id, message, order_address, order_phone, created_at) 
                 VALUES (?, ?, 1, ?, ?, ?, NOW())";
