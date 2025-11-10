@@ -8,7 +8,6 @@ $token = $_GET['token'] ?? '';
 $validToken = false;
 $userEmail = '';
 
-// Validate token
 if ($token) {
     $stmt = $pdo->prepare('
         SELECT email 
@@ -49,12 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $validToken) {
         try {
             $pdo->beginTransaction();
             
-            // Update user password
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare('UPDATE users SET password = ?, updated_at = NOW() WHERE email = ?');
             $stmt->execute([$passwordHash, $userEmail]);
             
-            // Mark token as used
             $stmt = $pdo->prepare('UPDATE password_reset_tokens SET used_at = NOW() WHERE token = ?');
             $stmt->execute([$token]);
             
@@ -114,7 +111,7 @@ headerContainer();
                                         <strong><i class="fas fa-check-circle"></i> Success!</strong><br>
                                         <?php echo htmlspecialchars($successMessage); ?>
                                         <div class="mt-3">
-                                            <a href="index.php" class="btn btn-outline">
+                                            <a href="<?php echo BASE_URL; ?>login" class="btn btn-outline">
                                                 <i class="fas fa-sign-in-alt"></i> Go to Login
                                             </a>
                                         </div>
@@ -162,38 +159,14 @@ headerContainer();
                                         <p style="color: #6c757d; margin-bottom: 20px;">
                                             The password reset link you used is either invalid or has expired.
                                         </p>
-                                        <a href="forgot_password.php" class="btn btn-outline">
+                                        <a href="forgot_password" class="btn btn-outline">
                                             <i class="fas fa-redo"></i> Request New Reset Link
                                         </a>
                                     </div>
                                 <?php } ?>
                                 
-                                <div class="text-center mt-3">
-                                    <small class="text-muted">
-                                        <a href="index.php" class="back-link">
-                                            <i class="fas fa-arrow-left"></i> Back to Home
-                                        </a>
-                                    </small>
-                                </div>
                             </div>
                         </div>
-                        
-                        <!-- Security Tips -->
-                        <?php if ($validToken && !$successMessage) { ?>
-                        <div style="max-width: 500px; margin: 40px auto 0; text-align: center;">
-                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                                <h5 style="color: #333; margin-bottom: 15px;">
-                                    <i class="fas fa-shield-alt"></i> Password Security Tips
-                                </h5>
-                                <ul style="color: #6c757d; font-size: 14px; text-align: left; list-style: none; padding: 0;">
-                                    <li style="margin-bottom: 8px;"><i class="fas fa-check text-success"></i> Use at least 8 characters</li>
-                                    <li style="margin-bottom: 8px;"><i class="fas fa-check text-success"></i> Include uppercase and lowercase letters</li>
-                                    <li style="margin-bottom: 8px;"><i class="fas fa-check text-success"></i> Add numbers and special characters</li>
-                                    <li style="margin-bottom: 8px;"><i class="fas fa-check text-success"></i> Avoid common words or personal info</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -202,11 +175,6 @@ headerContainer();
         <?php footerContainer(); ?>
     </div>
 
-    <!-- JavaScripts -->
-    <script src="js/jquery.js"></script>
-    <script src="js/plugins.min.js"></script>
-    <script src="js/functions.js"></script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password');
@@ -224,10 +192,10 @@ headerContainer();
                     matchText.textContent = '';
                     matchText.style.color = '';
                 } else if (password === confirm) {
-                    matchText.textContent = '✓ Passwords match';
+                    matchText.textContent = 'Passwords match';
                     matchText.style.color = '#28a745';
                 } else {
-                    matchText.textContent = '✗ Passwords do not match';
+                    matchText.textContent = 'Passwords do not match';
                     matchText.style.color = '#dc3545';
                 }
             }

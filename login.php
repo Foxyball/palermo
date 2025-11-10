@@ -200,13 +200,6 @@ headerContainer();
 
     </div>
 
-    <div id="gotoTop" class="fas fa-arrow-up"></div>
-
-    <script src="js/jquery.js"></script>
-    <script src="js/plugins.min.js"></script>
-    <script src="js/hover-animate.js"></script>
-    <script src="js/functions.js"></script>
-    <script src="js/cart.js"></script>
 
 </body>
 

@@ -31,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare('INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)');
                 $stmt->execute([$email, $token, $expiresAt]);
                 
-                // Send email
                 $resetLink = "http://" . $_SERVER['HTTP_HOST'] . BASE_URL . "reset_password.php?token=" . $token;
                 $userName = trim($user['first_name'] . ' ' . $user['last_name']);
                 
@@ -115,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 if ($emailSent) {
                     $successMessage = 'Password reset instructions have been sent to your email address.';
-                    $_POST = []; // Clear form
+                    $_POST = [];
                 } else {
                     $errors[] = 'Failed to send email. Please try again later.';
                 }
@@ -179,7 +178,7 @@ headerContainer();
                                     <form method="post" novalidate>
                                         <div class="form-group">
                                             <label class="form-label" style="color:black;">
-                                                <i class="fas fa-envelope"></i> Email Address
+                                               Email Address
                                             </label>
                                             <input 
                                                 type="email" 
@@ -192,18 +191,12 @@ headerContainer();
                                             >
                                         </div>
                                         
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-paper-plane"></i> Send Reset Instructions
+                                        <button type="submit" class="btn-reset btn-reset-submit">
+                                          Send Email
                                         </button>
                                     </form>
                                 <?php } ?>
                                 
-                                <div class="text-center mt-3">
-                                    <small class="text-muted">
-                                        Remember your password? 
-                                        <a href="index.php" class="back-link">Back to Login</a>
-                                    </small>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -214,9 +207,5 @@ headerContainer();
         <?php footerContainer(); ?>
     </div>
 
-    <!-- JavaScripts -->
-    <script src="js/jquery.js"></script>
-    <script src="js/plugins.min.js"></script>
-    <script src="js/functions.js"></script>
 </body>
 </html>
