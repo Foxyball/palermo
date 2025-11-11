@@ -91,7 +91,7 @@ function navbarContainer(): void
             <ul class="navbar-nav ms-auto">
 
                 <!-- Notifications system - AJAX fetches pending orders -->
-                <li class="nav-item dropdown">
+                <li id="notifications-menu" class="nav-item dropdown notifications-menu">
                     <a class="nav-link" data-bs-toggle="dropdown" href="#">
                         <i class="bi bi-bell-fill"></i>
                         <span class="navbar-badge badge text-bg-warning" style="display: none;">0</span>
