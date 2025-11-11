@@ -67,7 +67,7 @@ jobs:
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          ssh -T -i private_key.pem -p 2222 -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             set -euo pipefail
             cd /var/www/kursova.balikgstudio.eu/ || exit 1
 
@@ -115,13 +115,13 @@ jobs:
             echo "Migrations complete."
           EOF
 
-      # 10. Remote commands: Install dependencies + Permissions + Version log
-      - name: Install dependencies + Permissions + Version log
+      # 10. Remote commands: Install dependencies + Permissions
+      - name: Install dependencies + Permissions
         if: github.event_name == 'release'
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          ssh -T -i private_key.pem -p 2222 -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /var/www/kursova.balikgstudio.eu/ || exit 1
             
             echo 'Installing Composer dependencies...'
@@ -135,11 +135,7 @@ jobs:
             echo 'Setting uploads/ permissions...'
             sudo chown -R www-data:www-data uploads/
             sudo chmod -R 775 uploads/
-            
-            echo 'Updating .version.txt...'
-            rm -f .version.txt
-            echo '${{ github.event.release.tag_name }} - $(date "+%Y-%m-%d %H:%M:%S")' > .version.txt
-            
+                        
             echo 'Testing database connection...'
             php -r "\$mysqli = new mysqli('${{ secrets.DB_HOST }}', '${{ secrets.DB_USER }}', '${{ secrets.DB_PASSWORD }}', '${{ secrets.DB_NAME }}'); if (\$mysqli->connect_errno) { echo 'DB connection failed: '.\$mysqli->connect_error; exit(1); } echo 'DB connection successful'; \$mysqli->close();"
             
