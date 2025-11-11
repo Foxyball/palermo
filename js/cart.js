@@ -55,7 +55,7 @@ const PalermoCart = (function () {
                 }
             })
             .fail(function () {
-                console.error('Failed to load cart data');
+                messageError('Failed to load cart data');
             });
     }
 
@@ -77,14 +77,14 @@ const PalermoCart = (function () {
         })
             .done(function (response) {
                 if (response.success) {
-                    showAlert('Item removed from cart', 'success');
+                    messageSuccess('Item removed from cart');
                     updateDisplay(response);
                 } else {
-                    showAlert(response.message || 'Failed to remove item', 'danger');
+                    messageError(response.message || 'Failed to remove item');
                 }
             })
             .fail(function () {
-                showAlert('An error occurred', 'danger');
+                messageError('Failed to remove item from cart');
             });
     }
 
@@ -200,5 +200,18 @@ const PalermoCart = (function () {
 $(document).ready(function () {
     PalermoCart.init();
 });
+
+const messageError = (errorMessage) => {
+    if (errorMessage.length === 0) {
+        errorMessage = 'A problem occurred, please refresh the page and try again';
+    }
+
+    PalermoCart.showAlert(errorMessage, 'danger');
+}
+
+const messageSuccess = (successMessage) => {
+
+    PalermoCart.showAlert(successMessage, 'success');
+}
 
 window.PalermoCart = PalermoCart;
