@@ -32,7 +32,7 @@
     }
 
     function updateNotificationDropdown(orders, count) {
-        const $dropdown = $('.nav-item.dropdown .dropdown-menu');
+        const $dropdown = $('#notifications-menu > .dropdown-menu');
         
         if (!$dropdown.length) return;
 
