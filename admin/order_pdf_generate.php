@@ -10,7 +10,7 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 requireAdminLogin();
 
-function fetchOrderData(PDO $pdo, int $orderId): array|false
+function fetchOrderData(PDO $pdo, int $orderId): array
 {
     $stmt = $pdo->prepare('
         SELECT 
@@ -32,6 +32,7 @@ function fetchOrderData(PDO $pdo, int $orderId): array|false
         WHERE o.id = ? LIMIT 1
     ');
     $stmt->execute([$orderId]);
+    
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
