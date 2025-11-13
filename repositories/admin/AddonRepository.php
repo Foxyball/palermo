@@ -98,7 +98,6 @@ class AddonRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Addon deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -140,7 +139,6 @@ class AddonRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Addon update failed: ' . $e->getMessage());
 
             return false;
         }

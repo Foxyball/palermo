@@ -106,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (PDOException $e) {
             $pdo->rollback();
             $errors[] = 'There was an error updating the product. Please try again.';
-            error_log("Product update error: " . $e->getMessage());
         }
     }
 }

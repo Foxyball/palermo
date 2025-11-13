@@ -93,7 +93,6 @@ class ProductRepository
             $stmt->execute([$id]);
             return true;
         } catch (Exception $e) {
-            error_log('Product deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -151,7 +150,6 @@ class ProductRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Product update failed: ' . $e->getMessage());
 
             return false;
         }

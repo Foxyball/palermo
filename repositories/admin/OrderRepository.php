@@ -191,7 +191,6 @@ class OrderRepository
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
-            error_log('Order deletion failed: ' . $e->getMessage());
 
             return false;
         }

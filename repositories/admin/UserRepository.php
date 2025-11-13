@@ -84,7 +84,6 @@ class UserRepository
             $stmt->execute([$id]);
             return true;
         } catch (Exception $e) {
-            error_log('User deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -152,7 +151,6 @@ class UserRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('User update failed: ' . $e->getMessage());
 
             return false;
         }
