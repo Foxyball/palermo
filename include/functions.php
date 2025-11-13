@@ -6,6 +6,25 @@ function convertToEuro(float $priceBgn): float
 }
 
 
+function is_user_logged_in(): bool
+{
+    return isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+}
+
+/**
+ * @param string|null $redirectUrl Optional URL to redirect to different place.
+ * 
+ */
+function require_user_login(?string $redirectUrl = null): void
+{
+    if (!is_user_logged_in()) {
+        $url = $redirectUrl ?? BASE_URL . 'login';
+        header('Location: ' . $url);
+        exit;
+    }
+}
+
+
 function displayPrice(float $priceBgn): string
 {
     $priceEur = convertToEuro($priceBgn);

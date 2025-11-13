@@ -3,11 +3,7 @@ require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/include/Cart.php');
 include(__DIR__ . '/include/html_functions.php');
 
-// Check if user is logged in
-if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
-    header('Location: ' . BASE_URL . 'login');
-    exit;
-}
+require_user_login();
 
 $cart = new Cart($pdo);
 $cartData = $cart->getData();

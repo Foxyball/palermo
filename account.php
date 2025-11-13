@@ -3,10 +3,7 @@
 require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/include/html_functions.php');
 
-if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
-    header('location: login');
-    exit;
-}
+require_user_login();
 
 $pageTitle = 'My Account';
 
