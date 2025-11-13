@@ -75,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: blog_list');
             exit;
         } catch (PDOException $e) {
-            $errors[] = 'There was an error creating the blog post: ' . $e->getMessage();
+            error_log('Blog creation error: ' . $e->getMessage());
+            $errors[] = 'There was an error creating the blog post. Please try again.';
         }
     }
 }

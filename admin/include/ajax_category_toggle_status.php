@@ -37,7 +37,8 @@ try {
         'active' => $newStatus,
     ]);
 } catch (Throwable $e) {
-    sendJsonError('Server error: ' . $e->getMessage(), 500);
+    error_log('Category toggle status error: ' . $e->getMessage());
+    sendJsonError('Server error occurred. Please try again.', 500);
 }
 
 function sendJsonError(string $message, int $status = 400): void
