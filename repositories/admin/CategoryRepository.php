@@ -97,7 +97,6 @@ class CategoryRepository
             return true;
 
         } catch (Exception $e) {
-            error_log('Category deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -139,7 +138,6 @@ class CategoryRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Category update failed: ' . $e->getMessage());
 
             return false;
         }

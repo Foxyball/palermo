@@ -95,7 +95,6 @@ class OrderStatusRepository
             $stmt->execute([$id]);
             return true;
         } catch (Exception $e) {
-            error_log('Order status deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -143,7 +142,6 @@ class OrderStatusRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Order status update failed: ' . $e->getMessage());
 
             return false;
         }

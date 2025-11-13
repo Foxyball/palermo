@@ -84,7 +84,6 @@ class AdminRepository
             $stmt->execute([$id]);
             return true;
         } catch (Exception $e) {
-            error_log('Admin deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -140,7 +139,6 @@ class AdminRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Admin update failed: ' . $e->getMessage());
 
             return false;
         }
@@ -182,7 +180,6 @@ class AdminRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Admin profile update failed: ' . $e->getMessage());
 
             return false;
         }
@@ -209,7 +206,6 @@ class AdminRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Password update failed: ' . $e->getMessage());
 
             return false;
         }

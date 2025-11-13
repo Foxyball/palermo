@@ -137,7 +137,6 @@ class BlogRepository
             $stmt->execute([$id]);
             return true;
         } catch (Exception $e) {
-            error_log('Blog deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -214,7 +213,6 @@ class BlogRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Blog update failed: ' . $e->getMessage());
 
             return false;
         }
@@ -256,7 +254,6 @@ class BlogRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Blog update failed: ' . $e->getMessage());
 
             return false;
         }

@@ -97,7 +97,6 @@ class BlogCategoryRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Blog category deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -138,7 +137,6 @@ class BlogCategoryRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Blog category update failed: ' . $e->getMessage());
 
             return false;
         }

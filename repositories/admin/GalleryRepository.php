@@ -91,7 +91,6 @@ class GalleryRepository
             $stmt->execute([$id]);
             return true;
         } catch (Exception $e) {
-            error_log('Gallery deletion failed: ' . $e->getMessage());
 
             return false;
         }
@@ -130,7 +129,6 @@ class GalleryRepository
 
             return true;
         } catch (Exception $e) {
-            error_log('Gallery update failed: ' . $e->getMessage());
 
             return false;
         }

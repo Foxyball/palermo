@@ -44,7 +44,6 @@ try {
         'orders' => $pendingOrders
     ]);
 } catch (PDOException $e) {
-    error_log('Notification fetch error: ' . $e->getMessage());
     echo json_encode([
         'success' => false,
         'message' => 'Error fetching notifications'
