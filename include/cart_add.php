@@ -44,3 +44,5 @@ try {
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'An error occurred']);
 }
+
+close_db();
