@@ -37,7 +37,6 @@ try {
         'active' => $newStatus,
     ]);
 } catch (Throwable $e) {
-    error_log('Category toggle status error: ' . $e->getMessage());
     sendJsonError('Server error occurred. Please try again.', 500);
 }
 
