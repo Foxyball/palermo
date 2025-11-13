@@ -24,6 +24,7 @@ if (!isset($_SESSION['user_logged_in']) && isset($_COOKIE['remember_token'])) {
                 $_SESSION['user_first_name'] = $user['first_name'];
                 $_SESSION['user_last_name'] = $user['last_name'];
                 $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_phone'] = $user['phone'];
                 $_SESSION['user_logged_in'] = true;
                 
                 session_regenerate_id(true);

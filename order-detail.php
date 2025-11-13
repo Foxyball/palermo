@@ -3,13 +3,10 @@ session_start();
 require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/repositories/frontend/UserOrderRepository.php');
+require_once(__DIR__ . '/include/functions.php');
 include(__DIR__ . '/include/html_functions.php');
 
-// Check if user is logged in
-if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
-    header('Location: ' . BASE_URL . 'login');
-    exit;
-}
+require_user_login();
 
 $userId = $_SESSION['user_id'];
 $orderId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
