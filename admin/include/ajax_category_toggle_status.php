@@ -37,7 +37,7 @@ try {
         'active' => $newStatus,
     ]);
 } catch (Throwable $e) {
-    sendJsonError('Server error: ' . $e->getMessage(), 500);
+    sendJsonError('Server error occurred. Please try again.', 500);
 }
 
 function sendJsonError(string $message, int $status = 400): void

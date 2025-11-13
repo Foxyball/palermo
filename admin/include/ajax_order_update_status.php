@@ -42,9 +42,7 @@ try {
         sendJsonError('Failed to update status', 500);
     }
 } catch (Throwable $e) {
-    error_log('Order status update error: ' . $e->getMessage());
-    error_log('Stack trace: ' . $e->getTraceAsString());
-    sendJsonError('Server error: ' . $e->getMessage(), 500);
+    sendJsonError('Server error occurred. Please try again.', 500);
 }
 
 function sendJsonError(string $message, int $status = 400): void

@@ -325,7 +325,7 @@ $html = generateInvoiceHTML($order, $orderItems, $cssContent);
 try {
     outputPDF($pdfConfig['library'], $pdfConfig['instance'], $html, $id);
 } catch (Exception $e) {
-    $_SESSION['error'] = 'PDF generation failed: ' . $e->getMessage();
+    $_SESSION['error'] = 'PDF generation failed. Please try again or contact support.';
     header('Location: order_show.php?id=' . $id);
     exit;
 }

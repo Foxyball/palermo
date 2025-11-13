@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: blog_list');
             exit;
         } catch (PDOException $e) {
-            $errors[] = 'There was an error updating the blog post: ' . $e->getMessage();
+            $errors[] = 'There was an error updating the blog post. Please try again.';
         }
     }
 }
