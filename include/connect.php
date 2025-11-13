@@ -15,3 +15,10 @@ try {
     echo "We are currently experiencing technical difficulties. Please try again later.";
     exit();
 }
+
+
+function close_db(): void
+{
+    global $pdo;
+    $pdo = null;
+}
