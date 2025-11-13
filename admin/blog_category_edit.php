@@ -50,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = 'Failed to update blog category. Please try again.';
             }
         } catch (PDOException $e) {
-            error_log('Blog category update error: ' . $e->getMessage() . ' | Category ID: ' . $categoryId);
             $errors[] = 'There was an error updating the blog category. Please try again.';
         }
     }
