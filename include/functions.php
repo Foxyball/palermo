@@ -31,12 +31,6 @@ function displayPrice(float $priceBgn): string
     return sprintf('%.2f лв / %.2f €', $priceBgn, $priceEur);
 }
 
-/**
- * Verify user password with backwards compatibility for md5 and password_hash
- * @param string $inputPassword The plain text password to verify
- * @param string $storedHash The stored password hash from database
- * @return bool True if password matches, false otherwise
- */
 function verifyUserPassword(string $inputPassword, string $storedHash): bool
 {
     if (empty($storedHash)) {
@@ -47,18 +41,12 @@ function verifyUserPassword(string $inputPassword, string $storedHash): bool
         return true;
     }
 
+    // legacy MD5 check
     if (md5($inputPassword) === $storedHash) {
         return true;
     }
 
     return false;
-}
-
-
-function passwordNeedsRehash(string $storedHash): bool
-{
-    // If it's not a password_hash format, it needs rehashing
-    return !password_get_info($storedHash)['algo'];
 }
 
 
