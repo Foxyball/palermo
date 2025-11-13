@@ -3,6 +3,7 @@ session_start();
 require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/repositories/frontend/UserOrderRepository.php');
+require_once(__DIR__ . '/include/functions.php');
 include(__DIR__ . '/include/html_functions.php');
 
 require_user_login();

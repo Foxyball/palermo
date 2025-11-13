@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__ . '/include/connect.php');
 require_once(__DIR__ . '/include/Cart.php');
+require_once(__DIR__ . '/include/functions.php');
 include(__DIR__ . '/include/html_functions.php');
 
 require_user_login();
