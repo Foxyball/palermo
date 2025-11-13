@@ -42,7 +42,6 @@ try {
         'category_id' => $categoryId,
     ]);
 } catch (Throwable $e) {
-    error_log('Category deletion error: ' . $e->getMessage());
     sendJsonError('Server error occurred. Please try again.', 500);
 }
 
