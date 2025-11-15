@@ -67,6 +67,8 @@ The shopping cart implements a sophisticated key-based system:
 - **Real-Time Updates**: AJAX-powered cart updates without page refreshes
 - **Quantity Controls**: Min/max quantity validation with increment/decrement buttons
 
+📖 **[View Complete Cart Session Flow Documentation](CART_SESSION_FLOW.md)** - Detailed explanation of the entire cart lifecycle from product page to order completion.
+
 ### **Order System Architecture**
 
 The system implements a normalized three-table order structure for flexibility and data integrity:
