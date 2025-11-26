@@ -24,6 +24,7 @@ function headerContainer(array $seoData = []): void
         <link rel="stylesheet" href="./css/font-icons.css" type="text/css" />
         <link rel="stylesheet" href="./css/animate.css" type="text/css" />
         <link rel="stylesheet" href="./css/magnific-popup.css" type="text/css" />
+        <link rel="stylesheet" href="./css/account-dropdown.css" type="text/css" />
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -242,7 +243,7 @@ function navbarContainer(): void
                                     <i class="fas fa-user me-1"></i>
                                     <span class="d-none d-md-inline me-1">
                                         <?php echo isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] 
-                                            ? htmlspecialchars($_SESSION['user_first_name']) 
+                                            ? $_SESSION['user_first_name']
                                             : 'Account'; ?>
                                     </span>
                                     <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
@@ -250,22 +251,22 @@ function navbarContainer(): void
                                 <div class="js-account-dropdown__content shadow-lg rounded">
                                     <div class="js-account-dropdown__header p-3 border-bottom">
                                         <h5 class="mb-0">
-                                            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
-                                                Welcome, <?php echo htmlspecialchars($_SESSION['user_first_name']); ?>!
-                                            <?php else: ?>
+                                            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']) { ?>
+                                                Welcome, <?php echo $_SESSION['user_first_name']; ?>!
+                                            <?php } else { ?>
                                                 My Account
-                                            <?php endif; ?>
+                                            <?php } ?>
                                         </h5>
                                         <small class="text-muted">
-                                            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
-                                                <?php echo htmlspecialchars($_SESSION['user_email']); ?>
-                                            <?php else: ?>
+                                            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']) { ?>
+                                                <?php echo $_SESSION['user_email']; ?>
+                                            <?php } else { ?>
                                                 Sign in to your account
-                                            <?php endif; ?>
+                                            <?php } ?>
                                         </small>
                                     </div>
                                     <div class="js-account-dropdown__items p-3">
-                                        <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
+                                        <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']) { ?>
                                             <!-- Logged In Menu -->
                                             <div class="list-group list-group-flush">
                                                 <a href="<?php echo BASE_URL; ?>account" class="list-group-item list-group-item-action border-0 px-0 py-2">
@@ -281,7 +282,7 @@ function navbarContainer(): void
                                                     <i class="fas fa-sign-out-alt me-2"></i>Logout
                                                 </a>
                                             </div>
-                                        <?php else: ?>
+                                        <?php } else { ?>
                                             <!-- Not Logged In Menu -->
                                             <div class="d-grid gap-2 mb-3">
                                                 <a href="<?php echo BASE_URL; ?>login" class="btn btn-primary btn-sm">
@@ -291,7 +292,7 @@ function navbarContainer(): void
                                                     <i class="fas fa-user-plus me-2"></i>Register
                                                 </a>
                                             </div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </div>

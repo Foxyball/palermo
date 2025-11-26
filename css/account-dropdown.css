@@ -1,0 +1,178 @@
+/* Account Dropdown Styles */
+
+.js-account-dropdown {
+    position: relative;
+    font-family: 'Lato', sans-serif;
+}
+
+.js-account-dropdown__trigger {
+    text-decoration: none !important;
+    padding: 10px 15px;
+    border-radius: 4px;
+    color: inherit;
+    transition: all 0.3s ease;
+    font-family: 'Lato', sans-serif;
+}
+
+.js-account-dropdown__trigger:hover {
+    background-color: rgba(156, 0, 0, 0.15);
+    color: inherit;
+}
+
+.js-account-dropdown__content {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 300px;
+    max-width: 340px;
+    z-index: 999;
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+}
+
+.js-account-dropdown__header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.js-account-dropdown__header h5 {
+    font-family: 'Poppins', sans-serif;
+    color: #444;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.js-account-dropdown__header .text-muted {
+    color: #777 !important;
+    font-family: 'Lato', sans-serif;
+}
+
+.js-account-dropdown .list-group-item-action {
+    font-family: 'Lato', sans-serif;
+    color: #555;
+    transition: all 0.2s ease;
+}
+
+.js-account-dropdown .list-group-item-action:hover {
+    background-color: rgba(156, 0, 0, 0.05);
+    color: #9c0000;
+    padding-left: 8px;
+}
+
+.js-account-dropdown .list-group-item-action i {
+    color: #9c0000;
+    width: 20px;
+}
+
+.js-account-dropdown .btn-primary {
+    background-color: #9c0000;
+    border-color: #9c0000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.js-account-dropdown .btn-primary:hover {
+    background-color: #7a0000;
+    border-color: #7a0000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(156, 0, 0, 0.3);
+}
+
+.js-account-dropdown .btn-outline-primary {
+    color: #9c0000;
+    border-color: #9c0000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.js-account-dropdown .btn-outline-primary:hover {
+    background-color: #9c0000;
+    border-color: #9c0000;
+    color: #fff;
+}
+
+.js-account-dropdown .btn-outline-danger {
+    color: #9c0000;
+    border-color: #9c0000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.js-account-dropdown .btn-outline-danger:hover {
+    background-color: #9c0000;
+    border-color: #9c0000;
+    color: #fff;
+}
+
+/* Dark Theme Styles for Account Dropdown */
+.dark .js-account-dropdown__content {
+    background-color: #1a1a1a !important;
+    color: #ffffff;
+    border: 1px solid #333;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+}
+
+.dark .js-account-dropdown__header {
+    background-color: #0d0d0d !important;
+    border-bottom-color: #333 !important;
+}
+
+.dark .js-account-dropdown__header h5 {
+    color: #fff !important;
+}
+
+.dark .js-account-dropdown__header .text-muted {
+    color: #aaa !important;
+}
+
+.dark .js-account-dropdown .list-group-item-action {
+    background-color: transparent !important;
+    color: #ccc !important;
+}
+
+.dark .js-account-dropdown .list-group-item-action:hover {
+    background-color: rgba(255, 107, 107, 0.1) !important;
+    color: #ff6b6b !important;
+}
+
+.dark .js-account-dropdown .list-group-item-action i {
+    color: #ff6b6b;
+}
+
+.dark .js-account-dropdown .btn-primary {
+    background-color: #9c0000;
+    border-color: #9c0000;
+}
+
+.dark .js-account-dropdown .btn-primary:hover {
+    background-color: #7a0000;
+    border-color: #7a0000;
+}
+
+.dark .js-account-dropdown .btn-outline-primary {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.dark .js-account-dropdown .btn-outline-primary:hover {
+    background-color: #ff6b6b;
+    border-color: #ff6b6b;
+    color: #1a1a1a;
+}
+
+.dark .js-account-dropdown .btn-outline-danger {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.dark .js-account-dropdown .btn-outline-danger:hover {
+    background-color: #ff6b6b;
+    border-color: #ff6b6b;
+    color: #1a1a1a;
+}
