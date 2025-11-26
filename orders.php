@@ -50,11 +50,10 @@ $pageTitle = 'My Orders - ' . SITE_TITLE;
                             <div class="row justify-content-center">
                                 <div class="col-lg-6">
                                     <div class="empty-orders-message text-center">
-                                        <i class="icon-line-shopping-basket" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1.5rem;"></i>
                                         <h3 class="mb-3">No orders yet</h3>
                                         <p class="text-muted mb-4">You haven't placed any orders yet. Start shopping!</p>
                                         <a href="<?php echo BASE_URL; ?>product-cat/all" class="btn btn-danger btn-lg">
-                                            <i class="icon-line-arrow-left me-2"></i>Browse Menu
+                                            Browse Menu
                                         </a>
                                     </div>
                                 </div>
@@ -70,18 +69,16 @@ $pageTitle = 'My Orders - ' . SITE_TITLE;
                                                     <div class="row align-items-center">
                                                         <div class="col-md-6 mb-3 mb-md-0">
                                                             <h5 class="order-id mb-2">
-                                                                <i class="icon-line-receipt me-2"></i>
                                                                 Order #<?php echo $order['id']; ?>
                                                             </h5>
                                                             <small class="text-muted">
-                                                                <i class="icon-line-calendar me-1"></i>
                                                                 <?php echo date('F j, Y - g:i A', strtotime($order['created_at'])); ?>
                                                             </small>
                                                         </div>
                                                         <div class="col-md-6 text-md-end">
                                                             <div class="mb-2">
                                                                 <span class="order-status <?php echo getStatusClass($order['status_name']); ?>">
-                                                                    <?php echo htmlspecialchars($order['status_name']); ?>
+                                                                    <?php echo $order['status_name']; ?>
                                                                 </span>
                                                             </div>
                                                             <div class="order-total">

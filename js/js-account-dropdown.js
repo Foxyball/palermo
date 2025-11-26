@@ -15,80 +15,9 @@ class PalermoAccountDropdown {
 
         this.accountContainer.classList.remove('hidden');
         
-        this.setupStyles();
         this.bindEvents();
     }
 
-    setupStyles() {
-        const styles = `
-            <style id="js-account-dropdown-styles">
-                .js-account-dropdown {
-                    position: relative;
-                }
-                
-                .js-account-dropdown__trigger {
-                    text-decoration: none !important;
-                    padding: 10px;
-                    border-radius: 4px;
-                    color: inherit;
-                    transition: background-color 0.2s ease;
-                }
-                
-                .js-account-dropdown__trigger:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                    color: inherit;
-                }
-                
-                .js-account-dropdown__content {
-                    position: absolute;
-                    top: 100%;
-                    right: 0;
-                    min-width: 280px;
-                    max-width: 320px;
-                    z-index: 999;
-                    display: none;
-                    background-color: #fff;
-                    border: 1px solid rgba(0,0,0,0.15);
-                }
-                
-                .js-account-dropdown__header {
-                    background-color: #f8f9fa;
-                }
-                
-                .list-group-item-action:hover {
-                    background-color: #f8f9fa;
-                }
-
-                /* Dark Theme Styles */
-                .dark .js-account-dropdown__content {
-                    background-color: #2d2d2d !important;
-                    color: #ffffff;
-                    border: 1px solid #444;
-                }
-                
-                .dark .js-account-dropdown__header {
-                    background-color: #1a1a1a !important;
-                    border-bottom-color: #444 !important;
-                }
-                
-                .dark .list-group-item-action {
-                    background-color: transparent !important;
-                    color: #aaa !important;
-                }
-                
-                .dark .list-group-item-action:hover {
-                    background-color: rgba(255, 255, 255, 0.1) !important;
-                    color: #fff !important;
-                }
-                
-                .dark .text-muted {
-                    color: #aaa !important;
-                }
-            </style>
-        `;
-        
-        document.head.insertAdjacentHTML('beforeend', styles);
-    }
 
     bindEvents() {
         this.accountTrigger.addEventListener('click', (e) => {
