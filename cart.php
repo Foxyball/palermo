@@ -61,18 +61,18 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                 <div class="col-lg-8 mb-4">
                                     <div class="cart-items-container">
                                         <?php foreach ($items as $item): ?>
-                                            <div class="cart-item" data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
+                                            <div class="cart-item" data-cart-key="<?php echo $item['key']; ?>">
                                                 <div class="row align-items-center">
 
                                                     <div class="col-md-2 col-3 mb-3 mb-md-0">
                                                         <div class="cart-item-image">
                                                             <?php if (!empty($item['image'])): ?>
                                                                 <img src="<?php echo BASE_URL . $item['image']; ?>"
-                                                                    alt="<?php echo htmlspecialchars($item['name']); ?>"
+                                                                    alt="<?php echo $item['name']; ?>"
                                                                     class="img-fluid rounded">
                                                             <?php else: ?>
                                                                 <img src="<?php echo BASE_URL; ?>images/svg/burger-house.svg"
-                                                                    alt="<?php echo htmlspecialchars($item['name']); ?>"
+                                                                    alt="<?php echo $item['name']; ?>"
                                                                     class="img-fluid rounded placeholder-image">
                                                             <?php endif; ?>
                                                         </div>
@@ -82,7 +82,7 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                                         <h5 class="cart-item-name mb-2">
                                                             <a href="<?php echo BASE_URL . 'art/' . $item['slug']; ?>"
                                                                 class="text-white text-decoration-none">
-                                                                <?php echo htmlspecialchars($item['name']); ?>
+                                                                <?php echo $item['name']; ?>
                                                             </a>
                                                         </h5>
 
@@ -97,7 +97,7 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                                                 <small class="text-muted">Extras:</small>
                                                                 <?php foreach ($item['addons'] as $addon): ?>
                                                                     <span class="badge bg-secondary">
-                                                                        + <?php echo htmlspecialchars($addon['name']); ?>
+                                                                        + <?php echo $addon['name']; ?>
                                                                         (<?php echo number_format($addon['price'], 2); ?> лв / <?php echo number_format($addon['price'] / BGN_TO_EUR_RATE, 2); ?> €)
                                                                     </span>
                                                                 <?php endforeach; ?>
@@ -109,7 +109,7 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                                         <div class="quantity-controls d-flex align-items-center justify-content-center">
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-light qty-decrease"
-                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
+                                                                data-cart-key="<?php echo $item['key']; ?>">
                                                                 -
                                                             </button>
                                                             <input type="number"
@@ -117,11 +117,11 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                                                 value="<?php echo $item['quantity']; ?>"
                                                                 min="1"
                                                                 max="99"
-                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>"
+                                                                data-cart-key="<?php echo $item['key']; ?>"
                                                                 readonly>
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-light qty-increase"
-                                                                data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
+                                                                data-cart-key="<?php echo $item['key']; ?>">
                                                                 +
                                                             </button>
                                                         </div>
@@ -145,8 +145,8 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                                         </div>
                                                         <button type="button"
                                                             class="btn btn-sm btn-outline-danger remove-item"
-                                                            data-cart-key="<?php echo htmlspecialchars($item['key']); ?>">
-                                                            <i class="icon-line-trash me-1"></i>Remove
+                                                            data-cart-key="<?php echo $item['key']; ?>">
+                                                            Remove
                                                         </button>
                                                     </div>
 
