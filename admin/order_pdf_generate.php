@@ -113,7 +113,7 @@ function generateInvoiceHeader(array $order): string
     <div class="invoice-details">
         <table>
             <tr>
-                <td width="50%"><strong>Invoice Number:</strong> #' . htmlspecialchars((string)$order['id'], ENT_QUOTES, 'UTF-8') . '</td>
+                <td width="50%"><strong>Invoice Number:</strong> #' . (string)$order['id'] . '</td>
                 <td width="50%"><strong>Date:</strong> ' . date('F j, Y', strtotime($order['created_at'])) . '</td>
             </tr>
         </table>
@@ -132,20 +132,20 @@ function generateCustomerInfo(array $order): string
     if ($order['user_id']) {
         $customerName = trim($order['first_name'] . ' ' . $order['last_name']);
         $html .= '
-                    <strong>' . htmlspecialchars($customerName, ENT_QUOTES, 'UTF-8') . '</strong><br>
-                    ' . htmlspecialchars($order['email'], ENT_QUOTES, 'UTF-8') . '<br>';
+                    <strong>' . $customerName . '</strong><br>
+                    ' . $order['email'] . '<br>';
 
         if (!empty($order['phone'])) {
-            $html .= 'Phone: ' . htmlspecialchars((string)$order['phone'], ENT_QUOTES, 'UTF-8') . '<br>';
+            $html .= 'Phone: ' . (string)$order['phone'] . '<br>';
         }
 
         if (!empty($order['address']) || !empty($order['city']) || !empty($order['zip_code'])) {
             $html .= '<br><strong>Address:</strong><br>';
             if (!empty($order['address'])) {
-                $html .= htmlspecialchars($order['address'], ENT_QUOTES, 'UTF-8') . '<br>';
+                $html .= $order['address'] . '<br>';
             }
             if (!empty($order['city']) || !empty($order['zip_code'])) {
-                $html .= htmlspecialchars(trim($order['city'] . ', ' . $order['zip_code']), ENT_QUOTES, 'UTF-8') . '<br>';
+                $html .= trim($order['city'] . ', ' . $order['zip_code']) . '<br>';
             }
         }
     } else {
@@ -158,13 +158,13 @@ function generateCustomerInfo(array $order): string
                     <strong>Delivery To:</strong><br><br>';
 
     if (!empty($order['order_address'])) {
-        $html .= nl2br(htmlspecialchars($order['order_address'], ENT_QUOTES, 'UTF-8'));
+        $html .= nl2br($order['order_address']);
     } else {
         $html .= '<em>No specific delivery address provided</em>';
     }
 
     if (!empty($order['message'])) {
-        $html .= '<br><br><strong>Special Instructions:</strong><br>' . nl2br(htmlspecialchars($order['message'], ENT_QUOTES, 'UTF-8'));
+        $html .= '<br><br><strong>Special Instructions:</strong><br>' . nl2br($order['message']);
     }
 
     $html .= '
@@ -208,12 +208,12 @@ function generateOrderItemsTable(array $orderItems): array
         $html .= '
             <tr>
                 <td>
-                    <strong>' . htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8') . '</strong>';
+                    <strong>' . $item['product_name'] . '</strong>';
 
 
         // Add addons
         foreach ($item['addons'] as $addon) {
-            $html .= '<br><div class="addon-item">+ ' . htmlspecialchars($addon['addon_name'], ENT_QUOTES, 'UTF-8') . ' — ' . displayPrice((float)$addon['unit_price']) . '</div>';
+            $html .= '<br><div class="addon-item">+ ' . $addon['addon_name'] . ' — ' . displayPrice((float)$addon['unit_price']) . '</div>';
         }
 
         $html .= '
