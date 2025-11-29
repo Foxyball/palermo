@@ -196,14 +196,9 @@ headerContainer();
                                                     <?php foreach ($orderItems as $item) { ?>
                                                         <?php
                                                         $itemAddons = $item['addons'] ?? [];
-
-                                                        $addonTotal = calculateAddonTotal($itemAddons);
-                                                        $effectiveUnitPrice = calculateEffectiveUnitPrice($item['unit_price'], $itemAddons);
+                                                        $effectiveUnitPrice = $item['unit_price'];
                                                         $calculatedSubtotal = calculateLineTotal($effectiveUnitPrice, $item['qty']);
-
                                                         $lineTotal = $item['subtotal'] ?: $calculatedSubtotal;
-
-                                                        // Check for mismatches
                                                         $hasMismatch = hasPriceDiscrepancy($calculatedSubtotal, $lineTotal);
                                                         ?>
                                                         <tr>
