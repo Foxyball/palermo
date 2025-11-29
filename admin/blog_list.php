@@ -118,7 +118,7 @@ headerContainer();
                                                                 <strong>#<?php echo $blog['id']; ?></strong>
                                                             </td>
                                                             <td class="align-middle">
-                                                                <img src="<?php echo '<?php echo BASE_URL; ?>' . htmlspecialchars($blog['image']); ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
+                                                                <img src="<?php echo  BASE_URL . $blog['image']; ?>" alt="img" style="max-width:100px; max-height:80px; object-fit:cover;" />
                                                             </td>
                                                             <td class="align-middle">
                                                                 <div class="d-flex align-items-center">
