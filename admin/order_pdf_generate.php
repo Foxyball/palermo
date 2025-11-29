@@ -193,16 +193,7 @@ function generateOrderItemsTable(array $orderItems): array
     $grandTotal = 0;
 
     foreach ($orderItems as $item) {
-        // Calculate item total: (unit_price * quantity) + addons
-        $baseItemTotal = (float)$item['unit_price'] * (int)$item['quantity'];
-
-        // Calculate addon total
-        $addonTotal = 0;
-        foreach ($item['addons'] as $addon) {
-            $addonTotal += (float)$addon['unit_price'];
-        }
-
-        $itemTotal = $baseItemTotal + $addonTotal;
+        $itemTotal = (float)$item['unit_price'] * (int)$item['quantity'];
         $grandTotal += $itemTotal;
 
         $html .= '

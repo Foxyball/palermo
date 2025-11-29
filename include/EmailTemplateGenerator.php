@@ -171,9 +171,9 @@ class EmailTemplateGenerator
         $itemsHtml = "";
         foreach ($items as $item) {
             $itemPriceBgn = number_format($item['price'], 2);
-            $itemPriceEur = number_format($item['price'] * $bgnToEurRate, 2);
+            $itemPriceEur = number_format($item['price'] / $bgnToEurRate, 2);
             $itemTotalBgn = number_format($item['item_price'] * $item['quantity'], 2);
-            $itemTotalEur = number_format($item['item_price'] * $item['quantity'] * $bgnToEurRate, 2);
+            $itemTotalEur = number_format($item['item_price'] * $item['quantity'] / $bgnToEurRate, 2);
             $qty = $item['quantity'];
             $productName = htmlspecialchars($item['name'] ?? 'Product');
             
@@ -189,7 +189,7 @@ class EmailTemplateGenerator
             if (!empty($item['addons'])) {
                 foreach ($item['addons'] as $addon) {
                     $addonPriceBgn = number_format($addon['price'], 2);
-                    $addonPriceEur = number_format($addon['price'] * $bgnToEurRate, 2);
+                    $addonPriceEur = number_format($addon['price'] / $bgnToEurRate, 2);
                     $addonName = htmlspecialchars($addon['name'] ?? 'Add-on');
                     $itemsHtml .= "
                     <tr>
@@ -203,7 +203,7 @@ class EmailTemplateGenerator
         }
         
         $totalBgn = number_format($totalAmount, 2);
-        $totalEur = number_format($totalAmount * $bgnToEurRate, 2);
+        $totalEur = number_format($totalAmount / $bgnToEurRate, 2);
         $messageHtml = $message ? "
         <div class='info-box'>
             <h3>Order Notes</h3>

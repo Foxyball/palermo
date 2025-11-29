@@ -140,11 +140,8 @@ $pageTitle = 'Order #' . $order['id'] . ' - ' . SITE_TITLE;
                                                 <?php 
                                                 $grandTotal = 0;
                                                 foreach ($items as $item): 
-                                                    $addonTotal = 0;
-                                                    foreach ($item['addons'] as $addon) {
-                                                        $addonTotal += (float)$addon['addon_price'];
-                                                    }
-                                                    $effectiveUnitPrice = $item['unit_price'] + $addonTotal;
+                                                    // Note: unit_price already includes addon prices
+                                                    $effectiveUnitPrice = $item['unit_price'];
                                                     $lineTotal = $effectiveUnitPrice * $item['qty'];
                                                     $grandTotal += $lineTotal;
                                                 ?>
