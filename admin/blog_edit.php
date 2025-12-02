@@ -227,7 +227,7 @@ headerContainer();
                                             <div class="col-12">
                                                 <label class="form-label" for="image">Current Featured Image</label>
                                                 <?php if (!empty($imagePath)) { ?>
-                                                    <img src="<?php echo BASE_URL . htmlspecialchars($imagePath); ?>"
+                                                    <img src="<?php echo BASE_URL . $imagePath; ?>"
                                                         alt="Current image"
                                                         style="max-width:200px; max-height:160px; object-fit:cover;" />
                                                 <?php } else { ?>
@@ -248,7 +248,12 @@ headerContainer();
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label">Preview</label><br>
-                                                <img class="js-image-preview" src="<?php echo (!empty($_POST['image_url'])) ? htmlspecialchars($_POST['image_url']) : ((!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name'])) ? '<?php echo BASE_URL; ?>' . htmlspecialchars($imagePath) : '#'); ?>" alt="Image preview" style="max-width:220px; max-height:180px;<?php echo (!empty($_POST['image_url']) || (!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name']))) ? '' : 'display:none;'; ?> border:1px solid #ccc; background:#fafafa;" />
+                                                <img class="js-image-preview" 
+                                                src="<?php echo (!empty($_POST['image_url'])) ? $_POST['image_url'] 
+                                                : ((!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name'])) 
+                                                ? BASE_URL . $imagePath : '#'); ?>" alt="Image preview" style="max-width:220px; max-height:180px;<?php echo (!empty($_POST['image_url']) 
+                                                || (!empty($imagePath) && empty($_POST['image_url']) && empty($_FILES['image']['name']))) 
+                                                ? '' : 'display:none;'; ?> border:1px solid #ccc; background:#fafafa;" />
                                             </div>
                                         </div>
 
