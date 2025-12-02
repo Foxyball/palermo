@@ -54,6 +54,21 @@ function buildPageUrl(int $page, ?string $base = null): string
     return $base . ($qs ? ('?' . $qs) : '');
 }
 
+
+function transliterateCyrillic(string $text): string
+{
+    $cyrillic = [
+        'а', 'б', 'в', 'г', 'д', 'ѓ', 'е', 'ж', 'з', 'ѕ', 'и', 'ј', 'к', 'л', 'љ', 'м', 'н', 'њ', 'о', 'п', 'р', 'с', 'т', 'ќ', 'у', 'ф', 'х', 'ц', 'ч', 'џ', 'ш',
+        'А', 'Б', 'В', 'Г', 'Д', 'Ѓ', 'Е', 'Ж', 'З', 'Ѕ', 'И', 'Ј', 'К', 'Л', 'Љ', 'М', 'Н', 'Њ', 'О', 'П', 'Р', 'С', 'Т', 'Ќ', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Џ', 'Ш'
+    ];
+    $latin = [
+        'a', 'b', 'v', 'g', 'd', 'gj', 'e', 'zh', 'z', 'dz', 'i', 'j', 'k', 'l', 'lj', 'm', 'n', 'nj', 'o', 'p', 'r', 's', 't', 'kj', 'u', 'f', 'h', 'c', 'ch', 'dj', 'sh',
+        'A', 'B', 'V', 'G', 'D', 'Gj', 'E', 'Zh', 'Z', 'Dz', 'I', 'J', 'K', 'L', 'Lj', 'M', 'N', 'Nj', 'O', 'P', 'R', 'S', 'T', 'Kj', 'U', 'F', 'H', 'C', 'Ch', 'Dj', 'Sh'
+    ];
+    
+    return str_replace($cyrillic, $latin, $text);
+}
+
 /**
  * Generate a URL-friendly slug from a string
  *
@@ -62,6 +77,7 @@ function buildPageUrl(int $page, ?string $base = null): string
  */
 function generateSlug(string $text): string
 {
+    $text = transliterateCyrillic($text);
     $text = strtolower($text);
     
     return trim(
