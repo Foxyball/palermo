@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /palermo/
+RewriteBase /
 
 # Blog routes
 RewriteRule ^bart/([a-zA-Z0-9-]+)$ blog-detail.php?slug=$1 [QSA,L]
