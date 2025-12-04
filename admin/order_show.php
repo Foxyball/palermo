@@ -193,6 +193,7 @@ headerContainer();
                                                     </tr>
                                                 <?php } else { ?>
                                                     <?php $grandTotal = 0; ?>
+                                                    <?php $addonTotal = 0; ?>
                                                     <?php foreach ($orderItems as $item) { ?>
                                                         <?php
                                                         $itemAddons = $item['addons'] ?? [];

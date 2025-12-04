@@ -76,10 +76,17 @@ function fetchOrderItems(PDO $pdo, int $orderId): array
 function initializePDFLibrary(): array
 {
     try {
+        // Ensure a writable temp directory exists for mPDF cache
+        $projectTmp = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'mpdf';
+        if (!is_dir($projectTmp)) {
+            @mkdir($projectTmp, 0777, true);
+        }
+
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
             'orientation' => 'P',
+            'tempDir' => $projectTmp,
             'margin_left' => 15,
             'margin_right' => 15,
             'margin_top' => 16,
