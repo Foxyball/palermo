@@ -193,7 +193,7 @@ $pageTitle = 'Shopping Cart - ' . SITE_TITLE;
                                             <a href="<?php echo BASE_URL; ?>checkout" class="btn btn-danger btn-lg">
                                                 Proceed to Checkout
                                             </a>
-                                            <a href="<?php echo BASE_URL; ?>product-cat/all" class="btn btn-outline-light">
+                                            <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light">
                                                 Continue Shopping
                                             </a>
                                         </div>
