@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonError('Invalid request method', 405);
 }
 
-$orderId = $_POST['id'] ?? 0;
+$orderId = (int)($_POST['id'] ?? 0);
 
 if ($orderId <= 0) {
     sendJsonError('Invalid order ID', 400);
